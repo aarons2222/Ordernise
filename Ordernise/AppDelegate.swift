@@ -41,5 +41,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension UIViewController {
     @IBAction func unwind(_ segue: UIStoryboardSegue) {}
+    
+ 
+     
+        func popupAlert(message: String, dismiss: Bool) {
+                
+            let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+            if dismiss {
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                }))
+            }
+            self.present(alert, animated: true, completion: nil)
+       
+        }
+        
+
 }
+
+
 

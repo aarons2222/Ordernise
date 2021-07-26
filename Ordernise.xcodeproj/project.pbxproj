@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B626ADDF0800F69E9C /* LoginController.swift */; };
+		930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B826ADDF4200F69E9C /* RegistrationController.swift */; };
+		933271AD26AF35140084166C /* InputValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AC26AF35140084166C /* InputValidation.swift */; };
+		933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AE26AF4C310084166C /* ResetPasswordController.swift */; };
 		936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865926A4DCD4006A9A1A /* AppDelegate.swift */; };
 		936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */; };
-		936C865E26A4DCD4006A9A1A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865D26A4DCD4006A9A1A /* ViewController.swift */; };
+		936C865E26A4DCD4006A9A1A /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865D26A4DCD4006A9A1A /* HomeController.swift */; };
 		936C866126A4DCD4006A9A1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 936C865F26A4DCD4006A9A1A /* Main.storyboard */; };
 		936C866326A4DCD5006A9A1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 936C866226A4DCD5006A9A1A /* Assets.xcassets */; };
 		936C866626A4DCD5006A9A1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */; };
@@ -25,10 +29,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		930ED9B626ADDF0800F69E9C /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
+		930ED9B826ADDF4200F69E9C /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
+		933271AC26AF35140084166C /* InputValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidation.swift; sourceTree = "<group>"; };
+		933271AE26AF4C310084166C /* ResetPasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordController.swift; sourceTree = "<group>"; };
 		936C865626A4DCD4006A9A1A /* Ordernise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ordernise.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		936C865926A4DCD4006A9A1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		936C865D26A4DCD4006A9A1A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		936C865D26A4DCD4006A9A1A /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		936C866026A4DCD4006A9A1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		936C866226A4DCD5006A9A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		936C866526A4DCD5006A9A1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -55,6 +63,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		933271AB26AF34FE0084166C /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				933271AC26AF35140084166C /* InputValidation.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		936C864D26A4DCD4006A9A1A = {
 			isa = PBXGroup;
 			children = (
@@ -74,14 +90,18 @@
 		936C865826A4DCD4006A9A1A /* Ordernise */ = {
 			isa = PBXGroup;
 			children = (
+				933271AB26AF34FE0084166C /* Helpers */,
 				936C866F26A770F5006A9A1A /* GoogleService-Info.plist */,
 				936C865926A4DCD4006A9A1A /* AppDelegate.swift */,
 				936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */,
-				936C865D26A4DCD4006A9A1A /* ViewController.swift */,
+				936C865D26A4DCD4006A9A1A /* HomeController.swift */,
 				936C865F26A4DCD4006A9A1A /* Main.storyboard */,
 				936C866226A4DCD5006A9A1A /* Assets.xcassets */,
 				936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */,
 				936C866726A4DCD5006A9A1A /* Info.plist */,
+				930ED9B626ADDF0800F69E9C /* LoginController.swift */,
+				930ED9B826ADDF4200F69E9C /* RegistrationController.swift */,
+				933271AE26AF4C310084166C /* ResetPasswordController.swift */,
 			);
 			path = Ordernise;
 			sourceTree = "<group>";
@@ -170,8 +190,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				936C865E26A4DCD4006A9A1A /* ViewController.swift in Sources */,
+				936C865E26A4DCD4006A9A1A /* HomeController.swift in Sources */,
+				933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */,
+				933271AD26AF35140084166C /* InputValidation.swift in Sources */,
+				930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */,
 				936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */,
+				930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */,
 				936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -326,7 +350,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.Ordernise;
+				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.ordernise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -345,7 +369,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.Ordernise;
+				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.ordernise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
