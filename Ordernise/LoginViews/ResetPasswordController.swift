@@ -15,6 +15,9 @@ class ResetPasswordController: UIViewController{
     
     override func viewDidLoad() {
         
+        
+        resetuserPaqsswordTV.spellCheckingType = .no
+        resetuserPaqsswordTV.autocorrectionType = . no
     }
     
     @IBAction func resetPassword(_ sender: Any) {
@@ -36,7 +39,7 @@ class ResetPasswordController: UIViewController{
         
         
         
-        Auth.auth().sendPasswordReset(withEmail: "email@email") { error in
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
             // Your code here
             
             if error != nil {

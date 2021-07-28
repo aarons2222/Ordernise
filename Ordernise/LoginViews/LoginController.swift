@@ -9,6 +9,7 @@ import UIKit
 import FirebaseAuth
 
 
+
 class LoginController: UIViewController {
     
     @IBOutlet weak var loginEmail: UITextField!
@@ -17,8 +18,10 @@ class LoginController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        
+        
     }
-    
     
     
     
