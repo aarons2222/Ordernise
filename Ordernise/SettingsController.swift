@@ -23,6 +23,15 @@ class SettingsController: UITableViewController
         
     }
  
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        
+        if section == 4{
+            return 50
+        }else{
+            return 10
+        }
+       
+    }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
