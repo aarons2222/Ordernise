@@ -8,7 +8,6 @@
 import UIKit
 import FirebaseAuth
 
-
 class SettingsController: UIViewController{
     
     weak var myVC : UIViewController?
