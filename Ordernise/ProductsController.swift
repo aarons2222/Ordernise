@@ -10,8 +10,12 @@ import UIKit
 class ProductsController: UIViewController{
     
     override func viewDidLoad() {
-        
 
         
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.generateHaptics()
+    }
+ 
 }

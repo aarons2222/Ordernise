@@ -74,6 +74,15 @@
         }
       },
       {
+        "package": "HapticGenerator",
+        "repositoryURL": "https://github.com/KaneCheshire/HapticGenerator",
+        "state": {
+          "branch": null,
+          "revision": "f07f180c8db9fcd896a7c9a41eac0eff8ab1553e",
+          "version": "4.1.1"
+        }
+      },
+      {
         "package": "leveldb",
         "repositoryURL": "https://github.com/firebase/leveldb.git",
         "state": {
@@ -125,6 +134,15 @@
           "branch": null,
           "revision": "f43489cdd743ba7ad86a422ebb5fcbf34e333df4",
           "version": "2.11.1"
+        }
+      },
+      {
+        "package": "TweeTextField",
+        "repositoryURL": "https://github.com/oleghnidets/TweeTextField",
+        "state": {
+          "branch": null,
+          "revision": "b712e44c1fe4020ee20f9d494572a9762ea5a59c",
+          "version": "1.6.3"
         }
       }
     ]

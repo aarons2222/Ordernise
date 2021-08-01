@@ -16,13 +16,13 @@ class OrdersController: TabmanViewController {
     private var viewControllers: Array<UIViewController> = []
     
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
    
-        
-    
         viewSetup()
         
         if Auth.auth().currentUser?.uid != nil {
@@ -45,7 +45,13 @@ class OrdersController: TabmanViewController {
                 
             }
     }
-    
+
+
+ 
+    override func viewWillAppear(_ animated: Bool) {
+        self.generateHaptics()
+    }
+
     
     
     func viewSetup() {
@@ -79,8 +85,10 @@ class OrdersController: TabmanViewController {
       }
       addBar(bar, dataSource: self, at: .top)
     }
-    
   }
+
+
+
 
   extension OrdersController: PageboyViewControllerDataSource, TMBarDataSource {
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
@@ -88,6 +96,7 @@ class OrdersController: TabmanViewController {
       let  item = TMBarItem(title: "")
       if (index == 0) {
         item.title = "Open"
+    
       } else if (index == 1) {
         item.title = "Completed"
       }
@@ -106,8 +115,5 @@ class OrdersController: TabmanViewController {
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
       return nil
     }
-
-
-  
 }
 

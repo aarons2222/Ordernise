@@ -7,10 +7,12 @@
 
 import UIKit
 import Firebase
+import HapticGenerator
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -54,11 +56,16 @@ extension UIViewController {
                 }))
             }
             self.present(alert, animated: true, completion: nil)
-       
         }
-        
+    
+    func generateHaptics(){
+        let lightImpact = Haptic(.impact(.medium))
+        lightImpact.generate()
+    }
 
 }
+
+
 
 
 

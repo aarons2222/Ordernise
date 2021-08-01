@@ -23,6 +23,9 @@
 		93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* Tabman */; };
 		93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */; };
 		93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */; };
+		93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EF826B6BAF700DE0A2E /* HapticGenerator */; };
+		93687EFC26B71D2600DE0A2E /* TweeTextField in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EFB26B71D2600DE0A2E /* TweeTextField */; };
+		93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */; };
 		936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865926A4DCD4006A9A1A /* AppDelegate.swift */; };
 		936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */; };
 		936C865E26A4DCD4006A9A1A /* OrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865D26A4DCD4006A9A1A /* OrdersController.swift */; };
@@ -42,6 +45,7 @@
 		933271C526B1E5F00084166C /* ProductsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsController.swift; sourceTree = "<group>"; };
 		93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentOrdersController.swift; sourceTree = "<group>"; };
 		93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedOrdersController.swift; sourceTree = "<group>"; };
+		93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordController.swift; sourceTree = "<group>"; };
 		936C865626A4DCD4006A9A1A /* Ordernise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ordernise.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		936C865926A4DCD4006A9A1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -58,12 +62,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */,
 				933271B726B0858B0084166C /* FirebaseDatabase in Frameworks */,
 				93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */,
 				933271BF26B0858B0084166C /* FirebaseAuth in Frameworks */,
 				933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */,
 				933271BB26B0858B0084166C /* FirebaseStorage in Frameworks */,
 				933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */,
+				93687EFC26B71D2600DE0A2E /* TweeTextField in Frameworks */,
 				933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */,
 				933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */,
 			);
@@ -90,6 +96,15 @@
 			path = LoginViews;
 			sourceTree = "<group>";
 		};
+		93687EFD26B71D3A00DE0A2E /* SettingsViews */ = {
+			isa = PBXGroup;
+			children = (
+				933271C226B1D6750084166C /* SettingsController.swift */,
+				93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */,
+			);
+			path = SettingsViews;
+			sourceTree = "<group>";
+		};
 		936C864D26A4DCD4006A9A1A = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +124,7 @@
 		936C865826A4DCD4006A9A1A /* Ordernise */ = {
 			isa = PBXGroup;
 			children = (
+				93687EFD26B71D3A00DE0A2E /* SettingsViews */,
 				933271C426B1D8EC0084166C /* LoginViews */,
 				933271B026B07C230084166C /* Ordernise.entitlements */,
 				933271AB26AF34FE0084166C /* Helpers */,
@@ -117,7 +133,6 @@
 				936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */,
 				936C865D26A4DCD4006A9A1A /* OrdersController.swift */,
 				936C865F26A4DCD4006A9A1A /* Main.storyboard */,
-				933271C226B1D6750084166C /* SettingsController.swift */,
 				936C866226A4DCD5006A9A1A /* Assets.xcassets */,
 				936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */,
 				936C866726A4DCD5006A9A1A /* Info.plist */,
@@ -153,6 +168,8 @@
 				933271BE26B0858B0084166C /* FirebaseAuth */,
 				933271C026B0858B0084166C /* FirebaseMessaging */,
 				93687EEE26B5CA0700DE0A2E /* Tabman */,
+				93687EF826B6BAF700DE0A2E /* HapticGenerator */,
+				93687EFB26B71D2600DE0A2E /* TweeTextField */,
 			);
 			productName = Ordernise;
 			productReference = 936C865626A4DCD4006A9A1A /* Ordernise.app */;
@@ -184,6 +201,8 @@
 			packageReferences = (
 				933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */,
+				93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */,
+				93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */,
 			);
 			productRefGroup = 936C865726A4DCD4006A9A1A /* Products */;
 			projectDirPath = "";
@@ -215,6 +234,7 @@
 			files = (
 				933271C326B1D6750084166C /* SettingsController.swift in Sources */,
 				93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */,
+				93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */,
 				936C865E26A4DCD4006A9A1A /* OrdersController.swift in Sources */,
 				933271C626B1E5F00084166C /* ProductsController.swift in Sources */,
 				933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */,
@@ -445,6 +465,22 @@
 				minimumVersion = 2.11.1;
 			};
 		};
+		93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/KaneCheshire/HapticGenerator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.1.1;
+			};
+		};
+		93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/oleghnidets/TweeTextField";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -487,6 +523,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */;
 			productName = Tabman;
+		};
+		93687EF826B6BAF700DE0A2E /* HapticGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */;
+			productName = HapticGenerator;
+		};
+		93687EFB26B71D2600DE0A2E /* TweeTextField */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */;
+			productName = TweeTextField;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
