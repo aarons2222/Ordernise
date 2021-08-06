@@ -7,31 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8712980ED2F62D5AB32DBC72 /* Pods_Ordernise.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */; };
 		930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B626ADDF0800F69E9C /* LoginController.swift */; };
 		930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B826ADDF4200F69E9C /* RegistrationController.swift */; };
 		933271AD26AF35140084166C /* InputValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AC26AF35140084166C /* InputValidation.swift */; };
 		933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AE26AF4C310084166C /* ResetPasswordController.swift */; };
-		933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B426B0858B0084166C /* FirebaseFirestore */; };
-		933271B726B0858B0084166C /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B626B0858B0084166C /* FirebaseDatabase */; };
-		933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B826B0858B0084166C /* FirebaseAnalytics */; };
-		933271BB26B0858B0084166C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BA26B0858B0084166C /* FirebaseStorage */; };
-		933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BC26B0858B0084166C /* FirebaseCrashlytics */; };
-		933271BF26B0858B0084166C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BE26B0858B0084166C /* FirebaseAuth */; };
-		933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 933271C026B0858B0084166C /* FirebaseMessaging */; };
+		933271B526B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B426B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271B726B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B626B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271B926B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B826B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271BB26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BA26B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271BD26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BC26B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271BF26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BE26B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271C126B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271C026B0858B0084166C /* SwiftPackageProductDependency */; };
 		933271C326B1D6750084166C /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C226B1D6750084166C /* SettingsController.swift */; };
 		933271C626B1E5F00084166C /* ProductsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C526B1E5F00084166C /* ProductsController.swift */; };
 		9338492726B864BC002292E7 /* CompleteAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492626B864BC002292E7 /* CompleteAccountController.swift */; };
 		9338492926B9B78A002292E7 /* AccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492826B9B78A002292E7 /* AccountController.swift */; };
 		9338492C26BC73DF002292E7 /* ShareSheetStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */; };
 		9338492E26BC9297002292E7 /* Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492D26BC9297002292E7 /* Currencies.swift */; };
-		9338493126BDB1EC002292E7 /* CountryPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 9338493026BDB1EC002292E7 /* CountryPicker */; };
+		9338493126BDB1EC002292E7 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */; };
 		9338493326BDB33E002292E7 /* PickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338493226BDB33E002292E7 /* PickerVC.swift */; };
 		93384B6626BDB98E002292E7 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */; };
-		93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* Tabman */; };
+		93687EEF26B5CA0700DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */; };
 		93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */; };
 		93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */; };
-		93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EF826B6BAF700DE0A2E /* HapticGenerator */; };
-		93687EFC26B71D2600DE0A2E /* TweeTextField in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EFB26B71D2600DE0A2E /* TweeTextField */; };
+		93687EF926B6BAF700DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */; };
+		93687EFC26B71D2600DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */; };
 		93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */; };
 		936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865926A4DCD4006A9A1A /* AppDelegate.swift */; };
 		936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ordernise.debug.xcconfig"; path = "Target Support Files/Pods-Ordernise/Pods-Ordernise.debug.xcconfig"; sourceTree = "<group>"; };
 		930ED9B626ADDF0800F69E9C /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		930ED9B826ADDF4200F69E9C /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		933271AC26AF35140084166C /* InputValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidation.swift; sourceTree = "<group>"; };
@@ -68,6 +70,8 @@
 		936C866526A4DCD5006A9A1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		936C866726A4DCD5006A9A1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		936C866F26A770F5006A9A1A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ordernise.release.xcconfig"; path = "Target Support Files/Pods-Ordernise/Pods-Ordernise.release.xcconfig"; sourceTree = "<group>"; };
+		DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ordernise.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,23 +79,42 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */,
-				933271B726B0858B0084166C /* FirebaseDatabase in Frameworks */,
-				93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */,
-				933271BF26B0858B0084166C /* FirebaseAuth in Frameworks */,
-				933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */,
-				933271BB26B0858B0084166C /* FirebaseStorage in Frameworks */,
-				933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */,
-				93687EFC26B71D2600DE0A2E /* TweeTextField in Frameworks */,
-				933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */,
-				9338493126BDB1EC002292E7 /* CountryPicker in Frameworks */,
-				933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */,
+				93687EF926B6BAF700DE0A2E /* BuildFile in Frameworks */,
+				933271B726B0858B0084166C /* BuildFile in Frameworks */,
+				93687EEF26B5CA0700DE0A2E /* BuildFile in Frameworks */,
+				933271BF26B0858B0084166C /* BuildFile in Frameworks */,
+				933271C126B0858B0084166C /* BuildFile in Frameworks */,
+				933271BB26B0858B0084166C /* BuildFile in Frameworks */,
+				933271BD26B0858B0084166C /* BuildFile in Frameworks */,
+				93687EFC26B71D2600DE0A2E /* BuildFile in Frameworks */,
+				933271B526B0858B0084166C /* BuildFile in Frameworks */,
+				9338493126BDB1EC002292E7 /* BuildFile in Frameworks */,
+				933271B926B0858B0084166C /* BuildFile in Frameworks */,
+				8712980ED2F62D5AB32DBC72 /* Pods_Ordernise.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A230C56E9D5BC5EF95912D0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */,
+				94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		5C934536846B5EF74AEF4690 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		933271AB26AF34FE0084166C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +152,8 @@
 			children = (
 				936C865826A4DCD4006A9A1A /* Ordernise */,
 				936C865726A4DCD4006A9A1A /* Products */,
+				5A230C56E9D5BC5EF95912D0 /* Pods */,
+				5C934536846B5EF74AEF4690 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,9 +195,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 936C866A26A4DCD5006A9A1A /* Build configuration list for PBXNativeTarget "Ordernise" */;
 			buildPhases = (
+				3D90BC5AB6EBA909EDE8823C /* [CP] Check Pods Manifest.lock */,
 				936C865226A4DCD4006A9A1A /* Sources */,
 				936C865326A4DCD4006A9A1A /* Frameworks */,
 				936C865426A4DCD4006A9A1A /* Resources */,
+				59E194690BD0EA78EF30B600 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -180,17 +207,17 @@
 			);
 			name = Ordernise;
 			packageProductDependencies = (
-				933271B426B0858B0084166C /* FirebaseFirestore */,
-				933271B626B0858B0084166C /* FirebaseDatabase */,
-				933271B826B0858B0084166C /* FirebaseAnalytics */,
-				933271BA26B0858B0084166C /* FirebaseStorage */,
-				933271BC26B0858B0084166C /* FirebaseCrashlytics */,
-				933271BE26B0858B0084166C /* FirebaseAuth */,
-				933271C026B0858B0084166C /* FirebaseMessaging */,
-				93687EEE26B5CA0700DE0A2E /* Tabman */,
-				93687EF826B6BAF700DE0A2E /* HapticGenerator */,
-				93687EFB26B71D2600DE0A2E /* TweeTextField */,
-				9338493026BDB1EC002292E7 /* CountryPicker */,
+				933271B426B0858B0084166C /* SwiftPackageProductDependency */,
+				933271B626B0858B0084166C /* SwiftPackageProductDependency */,
+				933271B826B0858B0084166C /* SwiftPackageProductDependency */,
+				933271BA26B0858B0084166C /* SwiftPackageProductDependency */,
+				933271BC26B0858B0084166C /* SwiftPackageProductDependency */,
+				933271BE26B0858B0084166C /* SwiftPackageProductDependency */,
+				933271C026B0858B0084166C /* SwiftPackageProductDependency */,
+				93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */,
+				93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */,
+				93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */,
+				9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */,
 			);
 			productName = Ordernise;
 			productReference = 936C865626A4DCD4006A9A1A /* Ordernise.app */;
@@ -220,11 +247,11 @@
 			);
 			mainGroup = 936C864D26A4DCD4006A9A1A;
 			packageReferences = (
-				933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */,
-				93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */,
-				93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */,
-				9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */,
+				933271B326B0858B0084166C /* RemoteSwiftPackageReference */,
+				93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */,
+				93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */,
+				93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */,
+				9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */,
 			);
 			productRefGroup = 936C865726A4DCD4006A9A1A /* Products */;
 			projectDirPath = "";
@@ -248,6 +275,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3D90BC5AB6EBA909EDE8823C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Ordernise-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		59E194690BD0EA78EF30B600 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		936C865226A4DCD4006A9A1A /* Sources */ = {
@@ -415,6 +484,7 @@
 		};
 		936C866B26A4DCD5006A9A1A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -435,6 +505,7 @@
 		};
 		936C866C26A4DCD5006A9A1A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -477,7 +548,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		933271B326B0858B0084166C /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
@@ -485,7 +556,7 @@
 				minimumVersion = 8.4.0;
 			};
 		};
-		9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */ = {
+		9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SURYAKANTSHARMA/CountryPicker";
 			requirement = {
@@ -493,7 +564,7 @@
 				minimumVersion = 1.3.2;
 			};
 		};
-		93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */ = {
+		93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman";
 			requirement = {
@@ -501,7 +572,7 @@
 				minimumVersion = 2.11.1;
 			};
 		};
-		93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */ = {
+		93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/KaneCheshire/HapticGenerator";
 			requirement = {
@@ -509,7 +580,7 @@
 				minimumVersion = 4.1.1;
 			};
 		};
-		93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */ = {
+		93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/oleghnidets/TweeTextField";
 			requirement = {
@@ -520,59 +591,59 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		933271B426B0858B0084166C /* FirebaseFirestore */ = {
+		933271B426B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseFirestore;
 		};
-		933271B626B0858B0084166C /* FirebaseDatabase */ = {
+		933271B626B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseDatabase;
 		};
-		933271B826B0858B0084166C /* FirebaseAnalytics */ = {
+		933271B826B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseAnalytics;
 		};
-		933271BA26B0858B0084166C /* FirebaseStorage */ = {
+		933271BA26B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseStorage;
 		};
-		933271BC26B0858B0084166C /* FirebaseCrashlytics */ = {
+		933271BC26B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseCrashlytics;
 		};
-		933271BE26B0858B0084166C /* FirebaseAuth */ = {
+		933271BE26B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseAuth;
 		};
-		933271C026B0858B0084166C /* FirebaseMessaging */ = {
+		933271C026B0858B0084166C /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
 			productName = FirebaseMessaging;
 		};
-		9338493026BDB1EC002292E7 /* CountryPicker */ = {
+		9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */;
+			package = 9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */;
 			productName = CountryPicker;
 		};
-		93687EEE26B5CA0700DE0A2E /* Tabman */ = {
+		93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */;
+			package = 93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */;
 			productName = Tabman;
 		};
-		93687EF826B6BAF700DE0A2E /* HapticGenerator */ = {
+		93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */;
+			package = 93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */;
 			productName = HapticGenerator;
 		};
-		93687EFB26B71D2600DE0A2E /* TweeTextField */ = {
+		93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */;
+			package = 93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */;
 			productName = TweeTextField;
 		};
 /* End XCSwiftPackageProductDependency section */
