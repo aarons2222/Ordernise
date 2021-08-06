@@ -7,20 +7,41 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
 
 
 
 class LoginController: UIViewController {
-    
+    let db = Firestore.firestore()
+
     @IBOutlet weak var loginEmail: UITextField!
     @IBOutlet weak var loginPassword: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
         
-        
+        if Auth.auth().currentUser != nil && Auth.auth().currentUser!.isEmailVerified {
+            print("USER LOGGED IN")
+            
+            if !UserDefaults.standard.bool(forKey: "isAccountComplete")
+
+            {
+                
+                DispatchQueue.main.async {
+                self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+                }
+                
+            }else{
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: "toHome", sender: nil)
+            }
+            }
+         }
     }
     
     
@@ -58,6 +79,8 @@ class LoginController: UIViewController {
         
         FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: { [weak self]result, error in
             
+            
+    
             if error != nil {
 
                 if let errCode = AuthErrorCode(rawValue: error!._code) {
@@ -85,14 +108,52 @@ class LoginController: UIViewController {
                          }
 
                      } else {
-                        self?.performSegue(withIdentifier: "loggedInSegue", sender: nil)
+                        
+                        
+                        if result?.user.isEmailVerified == true{
+
+                   
+                       
+                           
+                            // check if user has completed account
+                            if !UserDefaults.standard.bool(forKey: "isAccountComplete")
+
+                            {
+                                
+                                
+                    
+                        
+                                
+                                self?.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+
+                                
+                            }else{
+                                
+                          // login success
+                                    
+                                    self?.performSegue(withIdentifier: "toHome", sender: nil)
+                                
+                            }
+                            
+                  
+                        } else{
+                            // user is not verified
+                            
+                            let alert = UIAlertController(title: "Account not verified", message: "Please check your inbox for a verification email", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                                
+                                
+                
+                            }))
+                            self!.present(alert, animated: true, completion: nil)
+                            
+                            
+                        }
+                        
+                        
                         
                      }
-            
-            
-        
-
-        })
+                    })
     }
     
     
@@ -108,8 +169,17 @@ class LoginController: UIViewController {
            self.present(alert, animated: true, completion: nil)
       
        }
-       
+    
+    
+    var fromLogin = true
 
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toHome" {
+          fromLogin = false
+        }
+    }
+    
 
 }
 

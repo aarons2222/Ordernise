@@ -7,16 +7,49 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
+
+
+import MessageUI
+import StoreKit
+import SafariServices
 
 class SettingsController: UITableViewController
 {
     @IBOutlet weak var appearanceSegmentedControl: UISegmentedControl!
+    let supportEmail = "support@ordernise.com"
 
+    
 
     
     override func viewDidLoad() {
         
+        
         setAppearance()
+        
+        let db = Firestore.firestore()
+      
+       let user = Auth.auth().currentUser?.uid
+       
+       let docRef = db.collection("Users").document(user!)
+
+       docRef.getDocument { [self] (document, error) in
+           if let document = document, document.exists {
+            
+            
+          //grab details from forebase
+            UserDefaults.standard.set(document.get("business") as? String, forKey: "businessName")
+            UserDefaults.standard.set(document.get("email") as? String, forKey: "userEmail")
+            UserDefaults.standard.set(document.get("name") as? String, forKey: "userName")
+            UserDefaults.standard.set(document.get("currency") as? String, forKey: "userCurrency")
+               
+           
+              // let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+             //  print("Document data: \(dataDescription)")
+           } else {
+               print("Document does not exist")
+           }
+       }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -90,12 +123,20 @@ class SettingsController: UITableViewController
                 print("password")
             }
         } else if indexPath.section == 2 {
-            if (indexPath.row == 1) {
+            if (indexPath.row == 0) {
+       
                 
+                
+            }else if (indexPath.row == 1) {
+               
+
+                let shareSheet =  UIActivityViewController(activityItems: [ShareSheetStrings()], applicationActivities: .none)
+                        self.present(shareSheet, animated: true, completion: nil)
+
             }
         }else if indexPath.section == 3 {
-            if (indexPath.row == 1) {
-                print("section 3 row 1")
+            if (indexPath.row == 0) {
+                composeShareEmail()
             }
         }else if indexPath.section == 4 {
             if (indexPath.row == 0) {
@@ -118,6 +159,7 @@ class SettingsController: UITableViewController
     
     
     
+    
 }
         
 
@@ -125,7 +167,51 @@ class SettingsController: UITableViewController
         
         
         
+extension SettingsController: MFMailComposeViewControllerDelegate {
     
+    func composeShareEmail() {
+        let mailComposeViewController = configuredMailComposeViewController()
+        if MFMailComposeViewController.canSendMail() {
+            self.present(mailComposeViewController, animated: true, completion: nil)
+        } else {
+            showSendMailErrorAlert()
+        }
+    }
+    
+    func configuredMailComposeViewController() -> MFMailComposeViewController {
+        
+        let messageBody: String
+        let deviceModelName = UIDevice.modelName
+        let iOSVersion = UIDevice.current.systemVersion
+        let topDivider = "------- Developer Info -------"
+        let divider = "------------------------------"
+        
+        if let appVersion = UIApplication.appVersion {
+            
+            messageBody =  "\n\n\n\n\(topDivider)\nApp version: \(appVersion)\nDevice model: \(deviceModelName)\niOS version: \(iOSVersion)\n\(divider)"
+        } else {
+            messageBody = "\n\n\n\n\(topDivider)\nDevice model: \(deviceModelName)\niOS version: \(iOSVersion)\n\(divider)"
+        }
+        
+        let mailComposerVC = MFMailComposeViewController()
+        mailComposerVC.mailComposeDelegate = self
+        mailComposerVC.setToRecipients([supportEmail])
+        mailComposerVC.setSubject("Your Ordernise Feedback")
+        mailComposerVC.setMessageBody(messageBody, isHTML: false)
+        return mailComposerVC
+    }
+    
+    /// This alert gets shown if the device is a simulator, doesn't have Apple mail set up, or if mail in not available due to connectivity issues.
+    func showSendMailErrorAlert() {
+        let sendMailErrorAlert = UIAlertController(title: "Could Not Send Email", message: "Your device could not send email. Please check email configuration and internet connection and try again.", preferredStyle: .alert)
+        sendMailErrorAlert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+        self.present(sendMailErrorAlert, animated: true, completion: nil)
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
 
     
     

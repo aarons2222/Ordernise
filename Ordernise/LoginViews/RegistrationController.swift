@@ -7,6 +7,9 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
+
+import Firebase
 
 class RegistrationController: UIViewController {
 
@@ -15,6 +18,8 @@ class RegistrationController: UIViewController {
     @IBOutlet weak var registrationPassword: UITextField!
     
 
+    let db = Firestore.firestore()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +28,6 @@ class RegistrationController: UIViewController {
         
     }
 
-    
-    
     
     @IBAction func btnRegister(_ sender: Any) {
         
@@ -41,10 +44,10 @@ class RegistrationController: UIViewController {
             return
         }
         
-        FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: { [weak self] result, error in
+        Auth.auth().createUser(withEmail: email, password: password, completion: { [weak self] result, error in
             
 
-            
+        
             print("REGISTRATIOPN in")
             
             
@@ -80,7 +83,66 @@ class RegistrationController: UIViewController {
                          }
 
                      } else {
-                        self?.performSegue(withIdentifier: "registeredSeque", sender: nil)
+                        
+                        // registered successfully
+                        
+                        Auth.auth().currentUser?.sendEmailVerification { error in
+                     
+                            if error != nil {
+                                
+                                // error sengin vrification email
+                                print("TAG REGISTRATION \(String(describing: error))")
+                            }else{
+                                
+                          //Bool
+
+                                print("TAG REGISTRATION SUCCESS")
+                                let alert = UIAlertController(title: "Thank you for registering", message: "A verification email has been to \(email)", preferredStyle: .alert)
+                                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                                    
+                                    
+                                    
+                                    if action.style == .default{
+                                        DispatchQueue.main.async {
+
+                                            
+                                                          self?.performSegue(withIdentifier: "toLogin", sender: nil)
+                                            
+                                        }
+                                    }
+                                    
+                                }))
+                                self!.present(alert, animated: true, completion: nil)
+                                
+                            }
+                        }
+                        
+                        
+
+                        
+                        
+                        
+                        
+                        
+                        
+//                        let userID = result?.user.uid
+//
+//
+//                        self?.db.collection("Users").document(userID!).setData([
+//                            "email": email,
+//                            "name": "Aaron Strickland",
+//                            "business": "Knot in the shops",
+//                            "currency": "GBP"
+//
+//                        ]) { err in
+//                            if let err = err {
+//                                print("Error writing document: \(err)")
+//                            } else {
+//                                print("Document successfully written!")
+//                            }
+//                        }
+//
+//                        self?.performSegue(withIdentifier: "registeredSeque", sender: nil)
 
                      }
             

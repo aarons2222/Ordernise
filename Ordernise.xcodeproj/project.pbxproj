@@ -20,6 +20,13 @@
 		933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 933271C026B0858B0084166C /* FirebaseMessaging */; };
 		933271C326B1D6750084166C /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C226B1D6750084166C /* SettingsController.swift */; };
 		933271C626B1E5F00084166C /* ProductsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C526B1E5F00084166C /* ProductsController.swift */; };
+		9338492726B864BC002292E7 /* CompleteAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492626B864BC002292E7 /* CompleteAccountController.swift */; };
+		9338492926B9B78A002292E7 /* AccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492826B9B78A002292E7 /* AccountController.swift */; };
+		9338492C26BC73DF002292E7 /* ShareSheetStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */; };
+		9338492E26BC9297002292E7 /* Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492D26BC9297002292E7 /* Currencies.swift */; };
+		9338493126BDB1EC002292E7 /* CountryPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 9338493026BDB1EC002292E7 /* CountryPicker */; };
+		9338493326BDB33E002292E7 /* PickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338493226BDB33E002292E7 /* PickerVC.swift */; };
+		93384B6626BDB98E002292E7 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */; };
 		93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* Tabman */; };
 		93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */; };
 		93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */; };
@@ -43,6 +50,12 @@
 		933271B026B07C230084166C /* Ordernise.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ordernise.entitlements; sourceTree = "<group>"; };
 		933271C226B1D6750084166C /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		933271C526B1E5F00084166C /* ProductsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsController.swift; sourceTree = "<group>"; };
+		9338492626B864BC002292E7 /* CompleteAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteAccountController.swift; sourceTree = "<group>"; };
+		9338492826B9B78A002292E7 /* AccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountController.swift; sourceTree = "<group>"; };
+		9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetStrings.swift; sourceTree = "<group>"; };
+		9338492D26BC9297002292E7 /* Currencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currencies.swift; sourceTree = "<group>"; };
+		9338493226BDB33E002292E7 /* PickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerVC.swift; sourceTree = "<group>"; };
+		93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentOrdersController.swift; sourceTree = "<group>"; };
 		93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedOrdersController.swift; sourceTree = "<group>"; };
 		93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordController.swift; sourceTree = "<group>"; };
@@ -71,6 +84,7 @@
 				933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */,
 				93687EFC26B71D2600DE0A2E /* TweeTextField in Frameworks */,
 				933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */,
+				9338493126BDB1EC002292E7 /* CountryPicker in Frameworks */,
 				933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -82,6 +96,9 @@
 			isa = PBXGroup;
 			children = (
 				933271AC26AF35140084166C /* InputValidation.swift */,
+				9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */,
+				9338492D26BC9297002292E7 /* Currencies.swift */,
+				93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -92,6 +109,7 @@
 				930ED9B626ADDF0800F69E9C /* LoginController.swift */,
 				930ED9B826ADDF4200F69E9C /* RegistrationController.swift */,
 				933271AE26AF4C310084166C /* ResetPasswordController.swift */,
+				9338492626B864BC002292E7 /* CompleteAccountController.swift */,
 			);
 			path = LoginViews;
 			sourceTree = "<group>";
@@ -101,6 +119,7 @@
 			children = (
 				933271C226B1D6750084166C /* SettingsController.swift */,
 				93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */,
+				9338492826B9B78A002292E7 /* AccountController.swift */,
 			);
 			path = SettingsViews;
 			sourceTree = "<group>";
@@ -139,6 +158,7 @@
 				933271C526B1E5F00084166C /* ProductsController.swift */,
 				93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */,
 				93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */,
+				9338493226BDB33E002292E7 /* PickerVC.swift */,
 			);
 			path = Ordernise;
 			sourceTree = "<group>";
@@ -170,6 +190,7 @@
 				93687EEE26B5CA0700DE0A2E /* Tabman */,
 				93687EF826B6BAF700DE0A2E /* HapticGenerator */,
 				93687EFB26B71D2600DE0A2E /* TweeTextField */,
+				9338493026BDB1EC002292E7 /* CountryPicker */,
 			);
 			productName = Ordernise;
 			productReference = 936C865626A4DCD4006A9A1A /* Ordernise.app */;
@@ -203,6 +224,7 @@
 				93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */,
 				93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */,
 				93687EFA26B71D2600DE0A2E /* XCRemoteSwiftPackageReference "TweeTextField" */,
+				9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */,
 			);
 			productRefGroup = 936C865726A4DCD4006A9A1A /* Products */;
 			projectDirPath = "";
@@ -233,16 +255,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				933271C326B1D6750084166C /* SettingsController.swift in Sources */,
+				9338492C26BC73DF002292E7 /* ShareSheetStrings.swift in Sources */,
 				93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */,
+				93384B6626BDB98E002292E7 /* UIDeviceExtension.swift in Sources */,
 				93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */,
 				936C865E26A4DCD4006A9A1A /* OrdersController.swift in Sources */,
 				933271C626B1E5F00084166C /* ProductsController.swift in Sources */,
 				933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */,
 				933271AD26AF35140084166C /* InputValidation.swift in Sources */,
+				9338492926B9B78A002292E7 /* AccountController.swift in Sources */,
 				930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */,
+				9338493326BDB33E002292E7 /* PickerVC.swift in Sources */,
 				936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */,
 				930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */,
 				93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */,
+				9338492726B864BC002292E7 /* CompleteAccountController.swift in Sources */,
+				9338492E26BC9297002292E7 /* Currencies.swift in Sources */,
 				936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -457,6 +485,14 @@
 				minimumVersion = 8.4.0;
 			};
 		};
+		9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SURYAKANTSHARMA/CountryPicker";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.2;
+			};
+		};
 		93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman";
@@ -518,6 +554,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		9338493026BDB1EC002292E7 /* CountryPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9338492F26BDB1EB002292E7 /* XCRemoteSwiftPackageReference "CountryPicker" */;
+			productName = CountryPicker;
 		};
 		93687EEE26B5CA0700DE0A2E /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;

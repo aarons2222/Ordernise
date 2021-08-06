@@ -23,7 +23,7 @@ class ChangePasswordController: UIViewController{
        
         
         let password = passwordField.text!
-        let newPassword = newPasswordField.text as! String
+        let newPassword = newPasswordField.text!
         let confNewPassword = convirmNewPasswordField.text!
         
         

@@ -14,41 +14,21 @@ class OrdersController: TabmanViewController {
   
     
     private var viewControllers: Array<UIViewController> = []
-    
-    
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-   
-        viewSetup()
-        
-        if Auth.auth().currentUser?.uid != nil {
-
-           //user is logged in
-
-            }else{
-             //user is not logged in
-
-                DispatchQueue.main.async {
-                    let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-                    let newViewController = storyBoard.instantiateViewController(withIdentifier: "LoginController") as! LoginController
-                            self.present(newViewController, animated: true, completion: nil)
-                    
-                    
-                    
-                    
-                    
-                }
-                
-            }
+                viewSetup()
     }
 
-
+    
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+    }
  
     override func viewWillAppear(_ animated: Bool) {
+        
+        
         self.generateHaptics()
     }
 

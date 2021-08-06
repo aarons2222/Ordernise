@@ -21,6 +21,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 
  
+        let userDefaults = UserDefaults.standard
+        if userDefaults.value(forKey: "appFirstTimeOpend") == nil {
+            //if app is first time opened then it will be nil
+            userDefaults.setValue(true, forKey: "appFirstTimeOpend")
+            // signOut from FIRAuth
+            do {
+                try Auth.auth().signOut()
+            }catch {
+
+            }
+            // go to beginning of app
+        } else {
+           //go to where you want
+        }
         
         return true
     }
@@ -63,6 +77,13 @@ extension UIViewController {
         lightImpact.generate()
     }
 
+}
+
+
+extension UIApplication {
+    static var appVersion: String? {
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+    }
 }
 
 
