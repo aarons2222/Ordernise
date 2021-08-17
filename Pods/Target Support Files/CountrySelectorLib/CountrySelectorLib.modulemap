@@ -1,6 +1,0 @@
-framework module CountrySelectorLib {
-  umbrella header "CountrySelectorLib-umbrella.h"
-
-  export *
-  module * { export * }
-}

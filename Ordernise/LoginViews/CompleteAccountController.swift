@@ -23,6 +23,25 @@ class CompleteAccountController: UIViewController{
     
     @IBOutlet weak var welcomeMessage: UILabel!
     
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        welcomeMessage.font = welcomeMessage.font.withSize(22)
+        
+        let email : String = (Auth.auth().currentUser?.email)!
+
+            
+        welcomeMessage.text = "Hi, \(email)"
+        
+        self.addBottomBorder(textView: yourName)
+        self.addBottomBorder(textView: businessName)
+        self.addBottomBorder(textView: currency)
+        
+    }
+    
+    
+    
     @IBAction func completeAccount(_ sender: Any) {
         
         
@@ -30,9 +49,10 @@ class CompleteAccountController: UIViewController{
             
             let userID : String = (Auth.auth().currentUser?.uid)!
             let email : String = (Auth.auth().currentUser?.email)!
-      
-            self.db.collection("Users").document(userID).setData([
-                "email": email,
+            
+            
+            db.collection("Users").document(userID).setData([
+                 "email": email,
                 "name": yourName.text! as String,
                 "business": businessName.text! as String,
                 "currency": currency.text! as String
@@ -76,18 +96,7 @@ class CompleteAccountController: UIViewController{
     
     
     
-    override func viewDidLoad() {
-    
-        welcomeMessage.font = welcomeMessage.font.withSize(22)
-        
-        let email : String = (Auth.auth().currentUser?.email)!
-
-            
-        welcomeMessage.text = "Hi, \(email)"
-        
-        
-        
-    }
+ 
     
     
     

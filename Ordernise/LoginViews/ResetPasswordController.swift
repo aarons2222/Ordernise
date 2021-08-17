@@ -10,20 +10,38 @@ import FirebaseAuth
 
 
 class ResetPasswordController: UIViewController{
-    @IBOutlet weak var resetuserPaqsswordTV: UITextField!
+    @IBOutlet weak var resetPasswordTV: UITextView!
+    
+    
+    
+    
+    
+    @IBOutlet weak var forgotPasswordView: UIView!
 
+    @IBOutlet weak var resetNowButton: UIButton!
+
+    
     
     override func viewDidLoad() {
         
         
-        resetuserPaqsswordTV.spellCheckingType = .no
-        resetuserPaqsswordTV.autocorrectionType = . no
+        forgotPasswordView.setShadow()
+        forgotPasswordView.layer.cornerRadius = 40.0
+        
+        
+        
+       resetNowButton.layer.cornerRadius = resetNowButton.frame.height / 2
+        
+        
+        
+        resetPasswordTV.spellCheckingType = .no
+        resetPasswordTV.autocorrectionType = . no
     }
     
     @IBAction func resetPassword(_ sender: Any) {
    
         
-        guard let email = resetuserPaqsswordTV.text, !email.isEmpty else{
+        guard let email = resetPasswordTV.text, !email.isEmpty else{
             
             DispatchQueue.main.async {
                 self.showError(message: "Please provide a valid email address", dismiss: false, toLogin: false)            }

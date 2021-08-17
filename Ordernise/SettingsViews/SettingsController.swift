@@ -37,11 +37,11 @@ class SettingsController: UITableViewController
            if let document = document, document.exists {
             
             
-          //grab details from forebase
-            UserDefaults.standard.set(document.get("business") as? String, forKey: "businessName")
-            UserDefaults.standard.set(document.get("email") as? String, forKey: "userEmail")
-            UserDefaults.standard.set(document.get("name") as? String, forKey: "userName")
-            UserDefaults.standard.set(document.get("currency") as? String, forKey: "userCurrency")
+            //grab details from forebase
+              UserDefaults.standard.set(document.get("business") as? String, forKey: "businessName")
+              UserDefaults.standard.set(document.get("email") as? String, forKey: "userEmail")
+              UserDefaults.standard.set(document.get("name") as? String, forKey: "userName")
+              UserDefaults.standard.set(document.get("currency") as? String, forKey: "userCurrency")
                
            
               // let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
@@ -55,6 +55,7 @@ class SettingsController: UITableViewController
     override func viewWillAppear(_ animated: Bool) {
         self.generateHaptics()
     }
+    
     
     
     func setAppearance() {
@@ -148,8 +149,10 @@ class SettingsController: UITableViewController
                        do { try Auth.auth().signOut() }
                          catch { print("already logged out") }
                     let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-                    let newViewController = storyBoard.instantiateViewController(withIdentifier: "LoginController") as! LoginController
+                    let newViewController = storyBoard.instantiateViewController(withIdentifier: "WelcomeController") as! WelcomeController
                             self.present(newViewController, animated: true, completion: nil)
+                    UserDefaults.standard.set("", forKey: "LoginMethod")
+
                       }))
               
                 self.present(myActionSheet, animated: true, completion: nil)

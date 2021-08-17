@@ -7,32 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8712980ED2F62D5AB32DBC72 /* Pods_Ordernise.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */; };
 		930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B626ADDF0800F69E9C /* LoginController.swift */; };
 		930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930ED9B826ADDF4200F69E9C /* RegistrationController.swift */; };
 		933271AD26AF35140084166C /* InputValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AC26AF35140084166C /* InputValidation.swift */; };
 		933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271AE26AF4C310084166C /* ResetPasswordController.swift */; };
-		933271B526B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B426B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271B726B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B626B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271B926B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B826B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271BB26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BA26B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271BD26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BC26B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271BF26B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BE26B0858B0084166C /* SwiftPackageProductDependency */; };
-		933271C126B0858B0084166C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 933271C026B0858B0084166C /* SwiftPackageProductDependency */; };
+		933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B426B0858B0084166C /* FirebaseFirestore */; };
+		933271B726B0858B0084166C /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B626B0858B0084166C /* FirebaseDatabase */; };
+		933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 933271B826B0858B0084166C /* FirebaseAnalytics */; };
+		933271BB26B0858B0084166C /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BA26B0858B0084166C /* FirebaseStorage */; };
+		933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BC26B0858B0084166C /* FirebaseCrashlytics */; };
+		933271BF26B0858B0084166C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 933271BE26B0858B0084166C /* FirebaseAuth */; };
+		933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 933271C026B0858B0084166C /* FirebaseMessaging */; };
 		933271C326B1D6750084166C /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C226B1D6750084166C /* SettingsController.swift */; };
 		933271C626B1E5F00084166C /* ProductsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933271C526B1E5F00084166C /* ProductsController.swift */; };
 		9338492726B864BC002292E7 /* CompleteAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492626B864BC002292E7 /* CompleteAccountController.swift */; };
 		9338492926B9B78A002292E7 /* AccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492826B9B78A002292E7 /* AccountController.swift */; };
 		9338492C26BC73DF002292E7 /* ShareSheetStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */; };
 		9338492E26BC9297002292E7 /* Currencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338492D26BC9297002292E7 /* Currencies.swift */; };
-		9338493126BDB1EC002292E7 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */; };
-		9338493326BDB33E002292E7 /* PickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9338493226BDB33E002292E7 /* PickerVC.swift */; };
 		93384B6626BDB98E002292E7 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */; };
-		93687EEF26B5CA0700DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */; };
+		93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EEE26B5CA0700DE0A2E /* Tabman */; };
 		93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */; };
 		93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */; };
-		93687EF926B6BAF700DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */; };
-		93687EFC26B71D2600DE0A2E /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */; };
+		93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */ = {isa = PBXBuildFile; productRef = 93687EF826B6BAF700DE0A2E /* HapticGenerator */; };
 		93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */; };
 		936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865926A4DCD4006A9A1A /* AppDelegate.swift */; };
 		936C865C26A4DCD4006A9A1A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */; };
@@ -41,10 +37,17 @@
 		936C866326A4DCD5006A9A1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 936C866226A4DCD5006A9A1A /* Assets.xcassets */; };
 		936C866626A4DCD5006A9A1A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */; };
 		936C867026A770F5006A9A1A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 936C866F26A770F5006A9A1A /* GoogleService-Info.plist */; };
+		9376D4FB26C6C9DB00067C7E /* AppleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9376D4FA26C6C9DB00067C7E /* AppleButton.swift */; };
+		937B111E26BDD7AE00DABB26 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 937B111D26BDD7AE00DABB26 /* GoogleSignIn */; };
+		939DAE6326C05D2000C7B8FF /* ChangeEmailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939DAE6226C05D2000C7B8FF /* ChangeEmailController.swift */; };
+		93A3762A26C02C6F00F71FCE /* FloatingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A3762926C02C6F00F71FCE /* FloatingTextField.swift */; };
+		93B6254926C7D9C2001A2908 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B6254826C7D9C2001A2908 /* WelcomeController.swift */; };
+		93B6254C26C7DA1C001A2908 /* DiagonalLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B6254B26C7DA1C001A2908 /* DiagonalLine.swift */; };
+		93B6254E26C7DA34001A2908 /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B6254D26C7DA34001A2908 /* Triangle.swift */; };
+		93B6255126CAFC63001A2908 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 93B6255026CAFC63001A2908 /* IQKeyboardManagerSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ordernise.debug.xcconfig"; path = "Target Support Files/Pods-Ordernise/Pods-Ordernise.debug.xcconfig"; sourceTree = "<group>"; };
 		930ED9B626ADDF0800F69E9C /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		930ED9B826ADDF4200F69E9C /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		933271AC26AF35140084166C /* InputValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputValidation.swift; sourceTree = "<group>"; };
@@ -56,7 +59,6 @@
 		9338492826B9B78A002292E7 /* AccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountController.swift; sourceTree = "<group>"; };
 		9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetStrings.swift; sourceTree = "<group>"; };
 		9338492D26BC9297002292E7 /* Currencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currencies.swift; sourceTree = "<group>"; };
-		9338493226BDB33E002292E7 /* PickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerVC.swift; sourceTree = "<group>"; };
 		93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentOrdersController.swift; sourceTree = "<group>"; };
 		93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletedOrdersController.swift; sourceTree = "<group>"; };
@@ -70,8 +72,12 @@
 		936C866526A4DCD5006A9A1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		936C866726A4DCD5006A9A1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		936C866F26A770F5006A9A1A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ordernise.release.xcconfig"; path = "Target Support Files/Pods-Ordernise/Pods-Ordernise.release.xcconfig"; sourceTree = "<group>"; };
-		DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ordernise.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9376D4FA26C6C9DB00067C7E /* AppleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleButton.swift; sourceTree = "<group>"; };
+		939DAE6226C05D2000C7B8FF /* ChangeEmailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailController.swift; sourceTree = "<group>"; };
+		93A3762926C02C6F00F71FCE /* FloatingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTextField.swift; sourceTree = "<group>"; };
+		93B6254826C7D9C2001A2908 /* WelcomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
+		93B6254B26C7DA1C001A2908 /* DiagonalLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLine.swift; sourceTree = "<group>"; };
+		93B6254D26C7DA34001A2908 /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,42 +85,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93687EF926B6BAF700DE0A2E /* BuildFile in Frameworks */,
-				933271B726B0858B0084166C /* BuildFile in Frameworks */,
-				93687EEF26B5CA0700DE0A2E /* BuildFile in Frameworks */,
-				933271BF26B0858B0084166C /* BuildFile in Frameworks */,
-				933271C126B0858B0084166C /* BuildFile in Frameworks */,
-				933271BB26B0858B0084166C /* BuildFile in Frameworks */,
-				933271BD26B0858B0084166C /* BuildFile in Frameworks */,
-				93687EFC26B71D2600DE0A2E /* BuildFile in Frameworks */,
-				933271B526B0858B0084166C /* BuildFile in Frameworks */,
-				9338493126BDB1EC002292E7 /* BuildFile in Frameworks */,
-				933271B926B0858B0084166C /* BuildFile in Frameworks */,
-				8712980ED2F62D5AB32DBC72 /* Pods_Ordernise.framework in Frameworks */,
+				93687EF926B6BAF700DE0A2E /* HapticGenerator in Frameworks */,
+				933271B726B0858B0084166C /* FirebaseDatabase in Frameworks */,
+				93687EEF26B5CA0700DE0A2E /* Tabman in Frameworks */,
+				933271BF26B0858B0084166C /* FirebaseAuth in Frameworks */,
+				933271C126B0858B0084166C /* FirebaseMessaging in Frameworks */,
+				937B111E26BDD7AE00DABB26 /* GoogleSignIn in Frameworks */,
+				933271BB26B0858B0084166C /* FirebaseStorage in Frameworks */,
+				933271BD26B0858B0084166C /* FirebaseCrashlytics in Frameworks */,
+				933271B526B0858B0084166C /* FirebaseFirestore in Frameworks */,
+				93B6255126CAFC63001A2908 /* IQKeyboardManagerSwift in Frameworks */,
+				933271B926B0858B0084166C /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5A230C56E9D5BC5EF95912D0 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */,
-				94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		5C934536846B5EF74AEF4690 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				DC7A604A41185061EA36CB9C /* Pods_Ordernise.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		933271AB26AF34FE0084166C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +109,8 @@
 				9338492B26BC73DE002292E7 /* ShareSheetStrings.swift */,
 				9338492D26BC9297002292E7 /* Currencies.swift */,
 				93384B6526BDB98E002292E7 /* UIDeviceExtension.swift */,
+				93A3762926C02C6F00F71FCE /* FloatingTextField.swift */,
+				9376D4FA26C6C9DB00067C7E /* AppleButton.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -133,6 +122,7 @@
 				930ED9B826ADDF4200F69E9C /* RegistrationController.swift */,
 				933271AE26AF4C310084166C /* ResetPasswordController.swift */,
 				9338492626B864BC002292E7 /* CompleteAccountController.swift */,
+				93B6254826C7D9C2001A2908 /* WelcomeController.swift */,
 			);
 			path = LoginViews;
 			sourceTree = "<group>";
@@ -143,6 +133,7 @@
 				933271C226B1D6750084166C /* SettingsController.swift */,
 				93687EFE26B71D7800DE0A2E /* ChangePasswordController.swift */,
 				9338492826B9B78A002292E7 /* AccountController.swift */,
+				939DAE6226C05D2000C7B8FF /* ChangeEmailController.swift */,
 			);
 			path = SettingsViews;
 			sourceTree = "<group>";
@@ -152,8 +143,6 @@
 			children = (
 				936C865826A4DCD4006A9A1A /* Ordernise */,
 				936C865726A4DCD4006A9A1A /* Products */,
-				5A230C56E9D5BC5EF95912D0 /* Pods */,
-				5C934536846B5EF74AEF4690 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -168,24 +157,41 @@
 		936C865826A4DCD4006A9A1A /* Ordernise */ = {
 			isa = PBXGroup;
 			children = (
+				93B6254A26C7DA0F001A2908 /* Components */,
+				93A3762B26C0410900F71FCE /* Dependencies */,
 				93687EFD26B71D3A00DE0A2E /* SettingsViews */,
 				933271C426B1D8EC0084166C /* LoginViews */,
-				933271B026B07C230084166C /* Ordernise.entitlements */,
 				933271AB26AF34FE0084166C /* Helpers */,
-				936C866F26A770F5006A9A1A /* GoogleService-Info.plist */,
 				936C865926A4DCD4006A9A1A /* AppDelegate.swift */,
 				936C865B26A4DCD4006A9A1A /* SceneDelegate.swift */,
 				936C865D26A4DCD4006A9A1A /* OrdersController.swift */,
 				936C865F26A4DCD4006A9A1A /* Main.storyboard */,
 				936C866226A4DCD5006A9A1A /* Assets.xcassets */,
 				936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */,
-				936C866726A4DCD5006A9A1A /* Info.plist */,
 				933271C526B1E5F00084166C /* ProductsController.swift */,
 				93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */,
 				93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */,
-				9338493226BDB33E002292E7 /* PickerVC.swift */,
 			);
 			path = Ordernise;
+			sourceTree = "<group>";
+		};
+		93A3762B26C0410900F71FCE /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				933271B026B07C230084166C /* Ordernise.entitlements */,
+				936C866726A4DCD5006A9A1A /* Info.plist */,
+				936C866F26A770F5006A9A1A /* GoogleService-Info.plist */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		93B6254A26C7DA0F001A2908 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				93B6254B26C7DA1C001A2908 /* DiagonalLine.swift */,
+				93B6254D26C7DA34001A2908 /* Triangle.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,11 +201,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 936C866A26A4DCD5006A9A1A /* Build configuration list for PBXNativeTarget "Ordernise" */;
 			buildPhases = (
-				3D90BC5AB6EBA909EDE8823C /* [CP] Check Pods Manifest.lock */,
 				936C865226A4DCD4006A9A1A /* Sources */,
 				936C865326A4DCD4006A9A1A /* Frameworks */,
 				936C865426A4DCD4006A9A1A /* Resources */,
-				59E194690BD0EA78EF30B600 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -207,17 +211,17 @@
 			);
 			name = Ordernise;
 			packageProductDependencies = (
-				933271B426B0858B0084166C /* SwiftPackageProductDependency */,
-				933271B626B0858B0084166C /* SwiftPackageProductDependency */,
-				933271B826B0858B0084166C /* SwiftPackageProductDependency */,
-				933271BA26B0858B0084166C /* SwiftPackageProductDependency */,
-				933271BC26B0858B0084166C /* SwiftPackageProductDependency */,
-				933271BE26B0858B0084166C /* SwiftPackageProductDependency */,
-				933271C026B0858B0084166C /* SwiftPackageProductDependency */,
-				93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */,
-				93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */,
-				93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */,
-				9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */,
+				933271B426B0858B0084166C /* FirebaseFirestore */,
+				933271B626B0858B0084166C /* FirebaseDatabase */,
+				933271B826B0858B0084166C /* FirebaseAnalytics */,
+				933271BA26B0858B0084166C /* FirebaseStorage */,
+				933271BC26B0858B0084166C /* FirebaseCrashlytics */,
+				933271BE26B0858B0084166C /* FirebaseAuth */,
+				933271C026B0858B0084166C /* FirebaseMessaging */,
+				93687EEE26B5CA0700DE0A2E /* Tabman */,
+				93687EF826B6BAF700DE0A2E /* HapticGenerator */,
+				937B111D26BDD7AE00DABB26 /* GoogleSignIn */,
+				93B6255026CAFC63001A2908 /* IQKeyboardManagerSwift */,
 			);
 			productName = Ordernise;
 			productReference = 936C865626A4DCD4006A9A1A /* Ordernise.app */;
@@ -247,11 +251,11 @@
 			);
 			mainGroup = 936C864D26A4DCD4006A9A1A;
 			packageReferences = (
-				933271B326B0858B0084166C /* RemoteSwiftPackageReference */,
-				93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */,
-				93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */,
-				93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */,
-				9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */,
+				933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */,
+				93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */,
+				937B111C26BDD7AE00DABB26 /* XCRemoteSwiftPackageReference "GoogleSignIn-Swift" */,
+				93B6254F26CAFC63001A2908 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 			);
 			productRefGroup = 936C865726A4DCD4006A9A1A /* Products */;
 			projectDirPath = "";
@@ -276,53 +280,12 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		3D90BC5AB6EBA909EDE8823C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Ordernise-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		59E194690BD0EA78EF30B600 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ordernise/Pods-Ordernise-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		936C865226A4DCD4006A9A1A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				939DAE6326C05D2000C7B8FF /* ChangeEmailController.swift in Sources */,
 				933271C326B1D6750084166C /* SettingsController.swift in Sources */,
 				9338492C26BC73DF002292E7 /* ShareSheetStrings.swift in Sources */,
 				93687EF326B5CB0B00DE0A2E /* CompletedOrdersController.swift in Sources */,
@@ -330,13 +293,17 @@
 				93687EFF26B71D7800DE0A2E /* ChangePasswordController.swift in Sources */,
 				936C865E26A4DCD4006A9A1A /* OrdersController.swift in Sources */,
 				933271C626B1E5F00084166C /* ProductsController.swift in Sources */,
+				93B6254C26C7DA1C001A2908 /* DiagonalLine.swift in Sources */,
 				933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */,
 				933271AD26AF35140084166C /* InputValidation.swift in Sources */,
 				9338492926B9B78A002292E7 /* AccountController.swift in Sources */,
 				930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */,
-				9338493326BDB33E002292E7 /* PickerVC.swift in Sources */,
 				936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */,
 				930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */,
+				9376D4FB26C6C9DB00067C7E /* AppleButton.swift in Sources */,
+				93B6254E26C7DA34001A2908 /* Triangle.swift in Sources */,
+				93B6254926C7D9C2001A2908 /* WelcomeController.swift in Sources */,
+				93A3762A26C02C6F00F71FCE /* FloatingTextField.swift in Sources */,
 				93687EF126B5CACD00DE0A2E /* CurrentOrdersController.swift in Sources */,
 				9338492726B864BC002292E7 /* CompleteAccountController.swift in Sources */,
 				9338492E26BC9297002292E7 /* Currencies.swift in Sources */,
@@ -484,43 +451,43 @@
 		};
 		936C866B26A4DCD5006A9A1A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 636C1B926F08556E3D410298 /* Pods-Ordernise.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Ordernise/Ordernise.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Ordernise/Dependencies/Ordernise.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DT7Q5YWA83;
-				INFOPLIST_FILE = Ordernise/Info.plist;
+				INFOPLIST_FILE = Ordernise/Dependencies/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.ordernise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		936C866C26A4DCD5006A9A1A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94C9AF43D74188251230D717 /* Pods-Ordernise.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Ordernise/Ordernise.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Ordernise/Dependencies/Ordernise.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DT7Q5YWA83;
-				INFOPLIST_FILE = Ordernise/Info.plist;
+				INFOPLIST_FILE = Ordernise/Dependencies/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = it.flatwhite.ordernise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -548,7 +515,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		933271B326B0858B0084166C /* RemoteSwiftPackageReference */ = {
+		933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
@@ -556,15 +523,7 @@
 				minimumVersion = 8.4.0;
 			};
 		};
-		9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SURYAKANTSHARMA/CountryPicker";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.2;
-			};
-		};
-		93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */ = {
+		93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman";
 			requirement = {
@@ -572,7 +531,7 @@
 				minimumVersion = 2.11.1;
 			};
 		};
-		93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */ = {
+		93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/KaneCheshire/HapticGenerator";
 			requirement = {
@@ -580,71 +539,79 @@
 				minimumVersion = 4.1.1;
 			};
 		};
-		93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */ = {
+		937B111C26BDD7AE00DABB26 /* XCRemoteSwiftPackageReference "GoogleSignIn-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/oleghnidets/TweeTextField";
+			repositoryURL = "https://github.com/darrarski/GoogleSignIn-Swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.6.3;
+				minimumVersion = 0.0.5;
+			};
+		};
+		93B6254F26CAFC63001A2908 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.5.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		933271B426B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271B426B0858B0084166C /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
-		933271B626B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271B626B0858B0084166C /* FirebaseDatabase */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
 		};
-		933271B826B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271B826B0858B0084166C /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
 		};
-		933271BA26B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271BA26B0858B0084166C /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
 		};
-		933271BC26B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271BC26B0858B0084166C /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
 		};
-		933271BE26B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271BE26B0858B0084166C /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		933271C026B0858B0084166C /* SwiftPackageProductDependency */ = {
+		933271C026B0858B0084166C /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 933271B326B0858B0084166C /* RemoteSwiftPackageReference */;
+			package = 933271B326B0858B0084166C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
 		};
-		9338493026BDB1EC002292E7 /* SwiftPackageProductDependency */ = {
+		93687EEE26B5CA0700DE0A2E /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9338492F26BDB1EB002292E7 /* RemoteSwiftPackageReference */;
-			productName = CountryPicker;
-		};
-		93687EEE26B5CA0700DE0A2E /* SwiftPackageProductDependency */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 93687EED26B5CA0600DE0A2E /* RemoteSwiftPackageReference */;
+			package = 93687EED26B5CA0600DE0A2E /* XCRemoteSwiftPackageReference "Tabman" */;
 			productName = Tabman;
 		};
-		93687EF826B6BAF700DE0A2E /* SwiftPackageProductDependency */ = {
+		93687EF826B6BAF700DE0A2E /* HapticGenerator */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93687EF726B6BAF700DE0A2E /* RemoteSwiftPackageReference */;
+			package = 93687EF726B6BAF700DE0A2E /* XCRemoteSwiftPackageReference "HapticGenerator" */;
 			productName = HapticGenerator;
 		};
-		93687EFB26B71D2600DE0A2E /* SwiftPackageProductDependency */ = {
+		937B111D26BDD7AE00DABB26 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93687EFA26B71D2600DE0A2E /* RemoteSwiftPackageReference */;
-			productName = TweeTextField;
+			package = 937B111C26BDD7AE00DABB26 /* XCRemoteSwiftPackageReference "GoogleSignIn-Swift" */;
+			productName = GoogleSignIn;
+		};
+		93B6255026CAFC63001A2908 /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93B6254F26CAFC63001A2908 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

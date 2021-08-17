@@ -8,18 +8,39 @@
 import UIKit
 import FirebaseAuth
 import Firebase
-
+import CryptoKit
+import FirebaseCore
+import AuthenticationServices
+import GoogleSignIn
 
 
 class LoginController: UIViewController {
     let db = Firestore.firestore()
 
-    @IBOutlet weak var loginEmail: UITextField!
-    @IBOutlet weak var loginPassword: UITextField!
+    @IBOutlet weak var loginEmail: FloatingTextField!
+    @IBOutlet weak var loginPassword: FloatingTextField!
+    @IBOutlet weak var btnLogin: UIButton!
     
+    @IBOutlet weak var loginView: UIView!
+        
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
+
+        
+        
+        loginView.setShadow()
+        loginView.layer.cornerRadius = 40.0
+        
+        
+        btnLogin.layer.cornerRadius = btnLogin.frame.height / 2
+
+        
+        
+        
+ 
+            
     }
     
     
@@ -121,9 +142,6 @@ class LoginController: UIViewController {
                             {
                                 
                                 
-                    
-                        
-                                
                                 self?.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
 
                                 
@@ -132,7 +150,8 @@ class LoginController: UIViewController {
                           // login success
                                     
                                     self?.performSegue(withIdentifier: "toHome", sender: nil)
-                                
+                                UserDefaults.standard.set("EMAIL", forKey: "LoginMethod")
+
                             }
                             
                   
@@ -140,14 +159,22 @@ class LoginController: UIViewController {
                             // user is not verified
                             
                             let alert = UIAlertController(title: "Account not verified", message: "Please check your inbox for a verification email", preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { action in
                                 
-                                
-                
                             }))
+                            
+                            
+                            alert.addAction(UIAlertAction(title: "Resend Confirmation", style: .default, handler: { action in
+                                
+                                
+                                
+                                Auth.auth().currentUser?.sendEmailVerification { error in
+                                  // ...
+                                }
+                            }))
+                            
+                            
                             self!.present(alert, animated: true, completion: nil)
-                            
-                            
                         }
                         
                         
@@ -181,5 +208,11 @@ class LoginController: UIViewController {
     }
     
 
+    
+    
+    
+    
+    
 }
+
 

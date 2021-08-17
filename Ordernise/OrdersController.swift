@@ -10,10 +10,11 @@ import FirebaseAuth
 import Tabman
 import Pageboy
 
-class OrdersController: TabmanViewController {
+class OrdersController: TabmanViewController{
   
     
     private var viewControllers: Array<UIViewController> = []
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,8 @@ class OrdersController: TabmanViewController {
     }
 
     
+
+    
     
     func viewSetup() {
       let currentOrdersVC = self.storyboard?.instantiateViewController(withIdentifier: "currentOrdersVC")
@@ -40,18 +43,15 @@ class OrdersController: TabmanViewController {
       
       viewControllers.append(currentOrdersVC!)
       viewControllers.append(completedOrdersVC!)
+        
+        
+        
       
       self.dataSource = self
       let bar = TMBar.ButtonBar()
         
         let tabBar = TMBar.TabBar()
-        
-        
-        
       tabBar.layout.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-    
-        
-        
       bar.backgroundView.style = .blur(style: .light)
       bar.backgroundColor = .white
       bar.layout.interButtonSpacing = 40
@@ -74,6 +74,7 @@ class OrdersController: TabmanViewController {
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
       scrollToPage(.at(index: 0), animated: true)
       let  item = TMBarItem(title: "")
+        
       if (index == 0) {
         item.title = "Open"
     
@@ -88,7 +89,7 @@ class OrdersController: TabmanViewController {
     }
     
     func viewController(for pageboyViewController: PageboyViewController, at index: PageboyViewController.PageIndex) -> UIViewController? {
-      // 어떤 뷰
+
       return viewControllers[index]
     }
     

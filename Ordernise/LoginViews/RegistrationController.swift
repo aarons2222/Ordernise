@@ -11,13 +11,16 @@ import FirebaseFirestore
 
 import Firebase
 
+
 class RegistrationController: UIViewController {
 
+    @IBOutlet weak var businessName: UITextField!
     @IBOutlet weak var registrationEmail: UITextField!
-    
     @IBOutlet weak var registrationPassword: UITextField!
-    
-
+    @IBOutlet weak var confirmPassword: UITextField!
+    @IBOutlet weak var registrationView: UIView!
+    @IBOutlet weak var btnLogin: UIButton!
+        
     let db = Firestore.firestore()
     
     
@@ -25,6 +28,14 @@ class RegistrationController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
+       
+        
+        
+        registrationView.setShadow()
+        registrationView.layer.cornerRadius = 40.0
+        
+        
+        btnLogin.layer.cornerRadius = btnLogin.frame.height / 2
         
     }
 
@@ -166,5 +177,7 @@ class RegistrationController: UIViewController {
         self.present(alert, animated: true, completion: nil)
    
     }
+    
+
 }
 
