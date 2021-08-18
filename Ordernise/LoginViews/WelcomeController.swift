@@ -197,41 +197,24 @@ extension WelcomeController: ASAuthorizationControllerDelegate {
                     print("err")
                     return
                 }else{
-                    print("not err")
-                }
-                guard let user = authResult?.user else { return }
-                let email = user.email ?? ""
-                let displayName = user.displayName ?? ""
-                guard let uid = Auth.auth().currentUser?.uid else { return }
-                let db = Firestore.firestore()
-                db.collection("User").document(uid).setData([
-                    "email": email,
-                    "displayName": displayName,
-                    "uid": uid
-                ]) { err in
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    } else {
-                        
-                        // check if user has completed account
-                        if !UserDefaults.standard.bool(forKey: "isAccountComplete")
+                    
+                    if !UserDefaults.standard.bool(forKey: "isAccountComplete")
 
-                        {
-                            
-                            
-                            self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
-
-                            
-                        }else{
-                            
-                      // login success
-                                
-                                self.performSegue(withIdentifier: "toHome", sender: nil)
-                            UserDefaults.standard.set("APPLE", forKey: "LoginMethod")
-                            
-                        }
+                    {
                         
+                        
+                        self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+
+                        
+                    }else{
+                        
+                  // login success
+                            
+                        self.performSegue(withIdentifier: "toHome", sender: nil)
+                        UserDefaults.standard.set("EMAIL", forKey: "LoginMethod")
+
                     }
+                    
                 }
             }
         }

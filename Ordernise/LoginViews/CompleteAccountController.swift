@@ -16,27 +16,32 @@ class CompleteAccountController: UIViewController{
     
     let db = Firestore.firestore()
 
-    
-    @IBOutlet weak var yourName: UITextField!
-    @IBOutlet weak var businessName: UITextField!
+
     @IBOutlet weak var currency: UITextField!
     
     @IBOutlet weak var welcomeMessage: UILabel!
     
+    @IBOutlet weak var completeAccount: UIButton!
+    
+    @IBOutlet weak var completeView: UIView!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        welcomeMessage.font = welcomeMessage.font.withSize(22)
+
         
         let email : String = (Auth.auth().currentUser?.email)!
-
-            
-        welcomeMessage.text = "Hi, \(email)"
         
-        self.addBottomBorder(textView: yourName)
-        self.addBottomBorder(textView: businessName)
-        self.addBottomBorder(textView: currency)
+        
+        
+
+        completeView.setShadow()
+        completeView.layer.cornerRadius = 40.0
+        
+        completeAccount.layer.cornerRadius = completeAccount.frame.height / 2
+    
+
+
         
     }
     
@@ -45,16 +50,14 @@ class CompleteAccountController: UIViewController{
     @IBAction func completeAccount(_ sender: Any) {
         
         
-        if yourName.text != "" && businessName.text != "" && currency.text != ""{
+        if currency.text != ""{
             
             let userID : String = (Auth.auth().currentUser?.uid)!
             let email : String = (Auth.auth().currentUser?.email)!
             
             
-            db.collection("Users").document(userID).setData([
-                 "email": email,
-                "name": yourName.text! as String,
-                "business": businessName.text! as String,
+            db.collection("Users").document(userID).updateData([
+              
                 "currency": currency.text! as String
           
                                   ]) { err in
@@ -86,8 +89,7 @@ class CompleteAccountController: UIViewController{
             
             showError(message: "Please complete all fields", dismiss: true)
 
-            yourName.text = ""
-            businessName.text = ""
+ 
             currency.text = ""
         
     

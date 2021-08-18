@@ -17,8 +17,8 @@ import GoogleSignIn
 class LoginController: UIViewController {
     let db = Firestore.firestore()
 
-    @IBOutlet weak var loginEmail: FloatingTextField!
-    @IBOutlet weak var loginPassword: FloatingTextField!
+    @IBOutlet weak var loginEmail: UITextView!
+    @IBOutlet weak var loginPassword: UITextView!
     @IBOutlet weak var btnLogin: UIButton!
     
     @IBOutlet weak var loginView: UIView!
