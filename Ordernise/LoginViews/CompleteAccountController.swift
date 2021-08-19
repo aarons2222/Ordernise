@@ -18,6 +18,8 @@ class CompleteAccountController: UIViewController{
 
 
     @IBOutlet weak var currency: UITextField!
+
+    @IBOutlet weak var buinessName: UITextField!
     
     @IBOutlet weak var welcomeMessage: UILabel!
     
@@ -58,6 +60,7 @@ class CompleteAccountController: UIViewController{
             
             db.collection("Users").document(userID).updateData([
               
+                "businessName": buinessName.text!,
                 "currency": currency.text! as String
           
                                   ]) { err in

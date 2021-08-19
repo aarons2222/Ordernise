@@ -211,7 +211,7 @@ extension WelcomeController: ASAuthorizationControllerDelegate {
                   // login success
                             
                         self.performSegue(withIdentifier: "toHome", sender: nil)
-                        UserDefaults.standard.set("EMAIL", forKey: "LoginMethod")
+                        UserDefaults.standard.set("APPLE", forKey: "LoginMethod")
 
                     }
                     

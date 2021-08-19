@@ -15,7 +15,6 @@ import CryptoKit
 
 class RegistrationController: UIViewController {
 
-    @IBOutlet weak var businessName: UITextField!
     @IBOutlet weak var registrationEmail: UITextField!
     @IBOutlet weak var registrationPassword: UITextField!
     @IBOutlet weak var confirmPassword: UITextField!
@@ -58,8 +57,7 @@ class RegistrationController: UIViewController {
 
         
         guard let email = registrationEmail.text, !email.isEmpty,
-        let password = registrationPassword.text, !password.isEmpty,
-        let businessName = businessName.text, !businessName.isEmpty else{
+        let password = registrationPassword.text, !password.isEmpty else{
             
             
             
@@ -130,7 +128,6 @@ class RegistrationController: UIViewController {
                                 
                                 db.collection("Users").document(userID).setData([
                                     "email": email,
-                                    "business": businessName,
                               
                                                       ]) { err in
                                                           if let err = err {
@@ -296,24 +293,39 @@ extension RegistrationController: ASAuthorizationControllerDelegate {
                     return
                 }else{
                     
-                    if !UserDefaults.standard.bool(forKey: "isAccountComplete")
+            
+                        
+                        let userID : String = (Auth.auth().currentUser?.uid)!
+                        let userEmail : String = (Auth.auth().currentUser?.email)!
+                        
 
-                    {
+                        let db = Firestore.firestore()
+
+                        
+                        
+                        db.collection("Users").document(userID).setData([
+                            "email": userEmail,
+                      
+                                              ]) { err in
+                                                  if let err = err {
+                                                      print("Error writing document: \(err)")
+                                                  } else {
+                                                      print("Document successfully written!")
+                                                    
+                                                    
+                                                    print("USER ACCOUNT CREATED")
+                                                    
+                                                  }
+                                              }
+                        
                         
                         
                         self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
-
-                        
-                    }else{
-                        
-                  // login success
-                            
-                        self.performSegue(withIdentifier: "toHome", sender: nil)
-                        UserDefaults.standard.set("EMAIL", forKey: "LoginMethod")
+                        UserDefaults.standard.set("APPLE", forKey: "LoginMethod")
 
                     }
                     
-                }
+                
             }
         }
     }
