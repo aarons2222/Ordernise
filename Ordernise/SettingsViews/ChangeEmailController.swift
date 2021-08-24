@@ -12,16 +12,24 @@ import Firebase
 class ChangeEmailController: UIViewController{
     
     
-    @IBOutlet weak var newEmailField: FloatingTextField!
-    @IBOutlet weak var confirmNewEmailField: FloatingTextField!
-    @IBOutlet weak var passwordField: FloatingTextField!
-    @IBOutlet weak var changeEmailButton: UIButton!
+    @IBOutlet weak var newEmailField: UITextField!
+    @IBOutlet weak var confirmNewEmailField: UITextField!
+    @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var emailUpdateButton: UIButton!
+    @IBOutlet weak var bkgView: UIView!
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super .viewDidLoad()
         
         self.title = "Update Email Address"
+        
+        bkgView.setShadow()
+        bkgView.layer.cornerRadius = 40.0
+        
+        
+        emailUpdateButton.layer.cornerRadius = emailUpdateButton.frame.height / 2
+
         
     }
     

@@ -12,11 +12,11 @@ class ChangePasswordController: UIViewController{
 
     
     
-    @IBOutlet weak var passwordField: FloatingTextField!
-    @IBOutlet weak var newPasswordField: FloatingTextField!
-    @IBOutlet weak var convirmNewPasswordField: FloatingTextField!
+    @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var newPasswordField: UITextField!
+    @IBOutlet weak var convirmNewPasswordField: UITextField!
     @IBOutlet weak var changePasswordButton: UIButton!
-    
+    @IBOutlet weak var bkgrndview: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +24,14 @@ class ChangePasswordController: UIViewController{
         changePasswordButton.isEnabled = false
        
         convirmNewPasswordField.addTarget(self, action: #selector(yourHandler(textField:)), for: .editingChanged)
+
+        
+        
+        bkgrndview.setShadow()
+        bkgrndview.layer.cornerRadius = 40.0
+        
+        
+        changePasswordButton.layer.cornerRadius = changePasswordButton.frame.height / 2
 
 
     }

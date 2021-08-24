@@ -39,6 +39,9 @@
 		936C867026A770F5006A9A1A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 936C866F26A770F5006A9A1A /* GoogleService-Info.plist */; };
 		9376D4FB26C6C9DB00067C7E /* AppleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9376D4FA26C6C9DB00067C7E /* AppleButton.swift */; };
 		937B111E26BDD7AE00DABB26 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 937B111D26BDD7AE00DABB26 /* GoogleSignIn */; };
+		938C16DD26D597E400C8AD1B /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938C16DC26D597E400C8AD1B /* ProductViewController.swift */; };
+		938C16DF26D5980800C8AD1B /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938C16DE26D5980800C8AD1B /* EntryViewController.swift */; };
+		938C16E126D59E3C00C8AD1B /* MyCustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938C16E026D59E3C00C8AD1B /* MyCustomCell.swift */; };
 		939DAE6326C05D2000C7B8FF /* ChangeEmailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939DAE6226C05D2000C7B8FF /* ChangeEmailController.swift */; };
 		93A3762A26C02C6F00F71FCE /* FloatingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A3762926C02C6F00F71FCE /* FloatingTextField.swift */; };
 		93B6254926C7D9C2001A2908 /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B6254826C7D9C2001A2908 /* WelcomeController.swift */; };
@@ -73,6 +76,9 @@
 		936C866726A4DCD5006A9A1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		936C866F26A770F5006A9A1A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9376D4FA26C6C9DB00067C7E /* AppleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleButton.swift; sourceTree = "<group>"; };
+		938C16DC26D597E400C8AD1B /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
+		938C16DE26D5980800C8AD1B /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
+		938C16E026D59E3C00C8AD1B /* MyCustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCustomCell.swift; sourceTree = "<group>"; };
 		939DAE6226C05D2000C7B8FF /* ChangeEmailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailController.swift; sourceTree = "<group>"; };
 		93A3762926C02C6F00F71FCE /* FloatingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTextField.swift; sourceTree = "<group>"; };
 		93B6254826C7D9C2001A2908 /* WelcomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
@@ -157,6 +163,7 @@
 		936C865826A4DCD4006A9A1A /* Ordernise */ = {
 			isa = PBXGroup;
 			children = (
+				938C16DB26D5977D00C8AD1B /* ProductControllers */,
 				93B6254A26C7DA0F001A2908 /* Components */,
 				93A3762B26C0410900F71FCE /* Dependencies */,
 				93687EFD26B71D3A00DE0A2E /* SettingsViews */,
@@ -168,11 +175,21 @@
 				936C865F26A4DCD4006A9A1A /* Main.storyboard */,
 				936C866226A4DCD5006A9A1A /* Assets.xcassets */,
 				936C866426A4DCD5006A9A1A /* LaunchScreen.storyboard */,
-				933271C526B1E5F00084166C /* ProductsController.swift */,
 				93687EF026B5CACD00DE0A2E /* CurrentOrdersController.swift */,
 				93687EF226B5CB0B00DE0A2E /* CompletedOrdersController.swift */,
 			);
 			path = Ordernise;
+			sourceTree = "<group>";
+		};
+		938C16DB26D5977D00C8AD1B /* ProductControllers */ = {
+			isa = PBXGroup;
+			children = (
+				933271C526B1E5F00084166C /* ProductsController.swift */,
+				938C16DC26D597E400C8AD1B /* ProductViewController.swift */,
+				938C16DE26D5980800C8AD1B /* EntryViewController.swift */,
+				938C16E026D59E3C00C8AD1B /* MyCustomCell.swift */,
+			);
+			path = ProductControllers;
 			sourceTree = "<group>";
 		};
 		93A3762B26C0410900F71FCE /* Dependencies */ = {
@@ -296,11 +313,14 @@
 				93B6254C26C7DA1C001A2908 /* DiagonalLine.swift in Sources */,
 				933271AF26AF4C310084166C /* ResetPasswordController.swift in Sources */,
 				933271AD26AF35140084166C /* InputValidation.swift in Sources */,
+				938C16DF26D5980800C8AD1B /* EntryViewController.swift in Sources */,
+				938C16E126D59E3C00C8AD1B /* MyCustomCell.swift in Sources */,
 				9338492926B9B78A002292E7 /* AccountController.swift in Sources */,
 				930ED9B726ADDF0800F69E9C /* LoginController.swift in Sources */,
 				936C865A26A4DCD4006A9A1A /* AppDelegate.swift in Sources */,
 				930ED9B926ADDF4200F69E9C /* RegistrationController.swift in Sources */,
 				9376D4FB26C6C9DB00067C7E /* AppleButton.swift in Sources */,
+				938C16DD26D597E400C8AD1B /* ProductViewController.swift in Sources */,
 				93B6254E26C7DA34001A2908 /* Triangle.swift in Sources */,
 				93B6254926C7D9C2001A2908 /* WelcomeController.swift in Sources */,
 				93A3762A26C02C6F00F71FCE /* FloatingTextField.swift in Sources */,

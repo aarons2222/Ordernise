@@ -21,7 +21,6 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
     @IBOutlet weak var businessLogo: UIButton!
     @IBOutlet weak var businessNameLabel: UILabel!
     
-    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var currencyLabel: UILabel!
     
@@ -58,7 +57,6 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
         
         self.businessNameLabel.text = UserDefaults.standard.string(forKey: "businessName")
                 self.emailLabel.text = UserDefaults.standard.string(forKey: "userEmail")
-                self.nameLabel.text = UserDefaults.standard.string(forKey: "userName")
         self.currencyLabel.text = UserDefaults.standard.string(forKey: "userCurrency")
 
         
@@ -245,6 +243,8 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
         
     
     }
+    
+    
     
     
     
