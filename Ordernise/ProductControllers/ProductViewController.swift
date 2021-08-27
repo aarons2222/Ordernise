@@ -14,14 +14,17 @@ class ProductViewController: UIViewController {
     
     @IBOutlet var productTitle: UILabel!
     @IBOutlet var productDesc: UITextView!
+    @IBOutlet var productPrice: UILabel!
     
     public var product_Title: String = ""
-    public var desc: String = ""
+    public var product_Desc: String = ""
+    public var product_Price: String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         productTitle.text = product_Title
-        productDesc.text = desc
+        productDesc.text = product_Desc
+        productPrice.text = product_Price
     }
 
 

@@ -98,15 +98,14 @@ class ResetPasswordController: UIViewController{
     
     
     
-    
-    
-    
     @IBAction func toLogin(_ sender: Any) {
-        self.performSegue(withIdentifier: "unwind", sender: self)
+        self.dismiss(animated: true, completion: nil)
 
     }
     
     
+    
+
     
     
     func showError(message: String, dismiss: Bool, toLogin: Bool) {
@@ -117,7 +116,8 @@ class ResetPasswordController: UIViewController{
                             
                 
                 if toLogin{
-                    self.performSegue(withIdentifier: "unwind", sender: self)
+                    self.dismiss(animated: true, completion: nil)
+
                 }
 
             }))
@@ -126,6 +126,19 @@ class ResetPasswordController: UIViewController{
    
     }
 
+    
+    
+    static func showPopup(parentVC: UIViewController){
+        
+        //creating a reference for the dialogView controller
+        if let popupViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ResetPasswordController") as? ResetPasswordController {
+            popupViewController.modalPresentationStyle = .custom
+            popupViewController.modalTransitionStyle = .crossDissolve
+            
+            //presenting the pop up viewController from the parent viewController
+            parentVC.present(popupViewController, animated: true)
+        }
+    }
     
     
 }

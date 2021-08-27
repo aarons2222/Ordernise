@@ -44,6 +44,17 @@ class WelcomeController: UIViewController{
         
     }
     
+    @IBAction func signInWithEmail(_ sender: Any) {
+        
+        LoginController.showPopup(parentVC: self)
+
+    }
+    
+    
+    @IBAction func signUp(_ sender: Any) {
+        
+        RegistrationController.showPopup(parentVC: self)
+    }
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,6 +97,7 @@ class WelcomeController: UIViewController{
 
         }else{
         DispatchQueue.main.async {
+            
             self.performSegue(withIdentifier: "toHome", sender: nil)
         }
         }
@@ -134,8 +146,7 @@ class WelcomeController: UIViewController{
           return hashString
       }
     
-    
-    // Adapted from https://auth0.com/docs/api-auth/tutorials/nonce#generate-a-cryptographically-random-nonce
+   
     private func randomNonceString(length: Int = 32) -> String {
       precondition(length > 0)
       let charset: Array<Character> =
@@ -198,24 +209,39 @@ extension WelcomeController: ASAuthorizationControllerDelegate {
                     return
                 }else{
                     
-                    if !UserDefaults.standard.bool(forKey: "isAccountComplete")
+            
+                        
+                        let userID : String = (Auth.auth().currentUser?.uid)!
+                        let userEmail : String = (Auth.auth().currentUser?.email)!
+                        
 
-                    {
+                        let db = Firestore.firestore()
+
+                        
+                        
+                        db.collection("Users").document(userID).setData([
+                            "email": userEmail,
+                      
+                                              ]) { err in
+                                                  if let err = err {
+                                                      print("Error writing document: \(err)")
+                                                  } else {
+                                                      print("Document successfully written!")
+                                                    
+                                                    
+                                                    print("USER ACCOUNT CREATED")
+                                                    
+                                                  }
+                                              }
+                        
                         
                         
                         self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
-
-                        
-                    }else{
-                        
-                  // login success
-                            
-                        self.performSegue(withIdentifier: "toHome", sender: nil)
                         UserDefaults.standard.set("APPLE", forKey: "LoginMethod")
 
                     }
                     
-                }
+                
             }
         }
     }
@@ -223,6 +249,21 @@ extension WelcomeController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         // Handle error.
         print("Sign in with Apple errored: \(error)")
+    }
+    
+    
+    
+    
+    static func showPopup(parentVC: UIViewController){
+        
+        //creating a reference for the dialogView controller
+        if let popupViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "RegistrationController") as? RegistrationController {
+            popupViewController.modalPresentationStyle = .custom
+            popupViewController.modalTransitionStyle = .crossDissolve
+            
+            //presenting the pop up viewController from the parent viewController
+            parentVC.present(popupViewController, animated: true)
+        }
     }
 }
 

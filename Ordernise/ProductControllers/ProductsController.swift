@@ -14,15 +14,14 @@ class ProductsController: UIViewController, UITableViewDelegate, UITableViewData
     
 
 
-    var models: [(title: String, note: String)] = []
+    var models: [(title: String, description: String, price: String)] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         table.delegate = self
         table.dataSource = self
-        title = "Notes"
       
-        
+        self.navigationItem.setHidesBackButton(true, animated: true)
       
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .add, target: self, action: #selector(self.didTapNewNote))
@@ -38,20 +37,27 @@ class ProductsController: UIViewController, UITableViewDelegate, UITableViewData
  
     
     @IBAction func didTapNewNote() {
-        guard let vc = storyboard?.instantiateViewController(identifier: "new") as? EntryViewController else {
+        
+   
+
+        guard let vc = storyboard?.instantiateViewController(identifier: "EntryViewController") as? EntryViewController else {
+            
             return
         }
-        vc.title = "New Product"
+        vc.title = "Products"
+        vc.modalPresentationStyle = .custom
+        vc.modalTransitionStyle = .crossDissolve
+        
         vc.navigationItem.largeTitleDisplayMode = .never
-        vc.completion = { noteTitle, note, price in
-            self.navigationController?.popToRootViewController(animated: true)
-            self.models.append((title: noteTitle, note: note))
+        vc.completion = { productTitle, productDesc, productPrice in
+            self.navigationController?.popToRootViewController(animated: false)
+            self.models.append((title: productTitle, description: productDesc, price: productPrice))
             self.label.isHidden = true
             self.table.isHidden = false
 
             self.table.reloadData()
         }
-        navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: false)
     }
 
     // Table
@@ -70,7 +76,8 @@ class ProductsController: UIViewController, UITableViewDelegate, UITableViewData
    
 
         cell.productTitle.text = models[indexPath.row].title
-        cell.productDescription.text = models[indexPath.row].note
+        cell.productDescription.text = models[indexPath.row].description
+        cell.productPrice.text = models[indexPath.row].price
         
      
 
@@ -103,7 +110,8 @@ class ProductsController: UIViewController, UITableViewDelegate, UITableViewData
         
         
         vc.productTitle.text = model.title
-        vc.productDesc.text = model.note
+        vc.productDesc.text = model.description
+        vc.productPrice.text = model.price
         
         
         navigationController?.pushViewController(vc, animated: true)

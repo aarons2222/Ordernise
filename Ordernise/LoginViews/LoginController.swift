@@ -36,12 +36,17 @@ class LoginController: UIViewController {
         
         btnLogin.layer.cornerRadius = btnLogin.frame.height / 2
 
-        
-        
-        
- 
-            
     }
+    
+    @IBAction func resetPassword(_ sender: Any) {
+        ResetPasswordController.showPopup(parentVC: self)
+
+    }
+    @IBAction func dismiss(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+
+    }
+    
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,7 +59,9 @@ class LoginController: UIViewController {
             {
                 
                 DispatchQueue.main.async {
-                self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+                    
+                    CompleteAccountController.showPopup(parentVC: self)
+
                 }
                 
             }else{
@@ -142,7 +149,7 @@ class LoginController: UIViewController {
                             {
                                 
                                 
-                                self?.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+                                CompleteAccountController.showPopup(parentVC: self!)
 
                                 
                             }else{
@@ -176,9 +183,6 @@ class LoginController: UIViewController {
                             
                             self!.present(alert, animated: true, completion: nil)
                         }
-                        
-                        
-                        
                      }
                     })
     }
@@ -206,11 +210,20 @@ class LoginController: UIViewController {
           fromLogin = false
         }
     }
-    
 
     
-    
-    
+
+    static func showPopup(parentVC: UIViewController){
+        
+        //creating a reference for the dialogView controller
+        if let popupViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginController") as? LoginController {
+            popupViewController.modalPresentationStyle = .custom
+            popupViewController.modalTransitionStyle = .crossDissolve
+            
+            //presenting the pop up viewController from the parent viewController
+            parentVC.present(popupViewController, animated: true)
+        }
+    }
     
     
 }

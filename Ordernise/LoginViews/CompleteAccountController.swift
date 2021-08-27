@@ -116,4 +116,17 @@ class CompleteAccountController: UIViewController{
    
     }
     
+    
+    static func showPopup(parentVC: UIViewController){
+        
+        //creating a reference for the dialogView controller
+        if let popupViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "CompleteAccountController") as? CompleteAccountController {
+            popupViewController.modalPresentationStyle = .custom
+            popupViewController.modalTransitionStyle = .crossDissolve
+            
+            //presenting the pop up viewController from the parent viewController
+            parentVC.present(popupViewController, animated: true)
+        }
+    }
+    
 }

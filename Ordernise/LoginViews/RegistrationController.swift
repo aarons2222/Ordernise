@@ -51,6 +51,9 @@ class RegistrationController: UIViewController {
         
     }
 
+    @IBAction func dismiss(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     @IBAction func btnRegister(_ sender: Any) {
         
@@ -151,8 +154,8 @@ class RegistrationController: UIViewController {
                                         DispatchQueue.main.async {
 
                                             
-                                                          self?.performSegue(withIdentifier: "toLogin", sender: nil)
-                                            
+                                            self!.dismiss(animated: true, completion: nil)
+
                                         }
                                     }
                                     
@@ -184,13 +187,13 @@ class RegistrationController: UIViewController {
                             
                 
                 if toLogin{
-                    self.performSegue(withIdentifier: "unwind", sender: self)
+                    self.dismiss(animated: true, completion: nil)
                 }
 
             }))
         }
-        self.present(alert, animated: true, completion: nil)
-   
+        self.dismiss(animated: true, completion: nil)
+
     }
     
 
@@ -228,7 +231,6 @@ class RegistrationController: UIViewController {
       }
     
     
-    // Adapted from https://auth0.com/docs/api-auth/tutorials/nonce#generate-a-cryptographically-random-nonce
     private func randomNonceString(length: Int = 32) -> String {
       precondition(length > 0)
       let charset: Array<Character> =
@@ -320,7 +322,7 @@ extension RegistrationController: ASAuthorizationControllerDelegate {
                         
                         
                         
-                        self.performSegue(withIdentifier: "toCompleteAccount", sender: nil)
+                    CompleteAccountController.showPopup(parentVC: self)
                         UserDefaults.standard.set("APPLE", forKey: "LoginMethod")
 
                     }
@@ -333,6 +335,21 @@ extension RegistrationController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         // Handle error.
         print("Sign in with Apple errored: \(error)")
+    }
+    
+    
+    
+    
+    static func showPopup(parentVC: UIViewController){
+        
+        //creating a reference for the dialogView controller
+        if let popupViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "RegistrationController") as? RegistrationController {
+            popupViewController.modalPresentationStyle = .custom
+            popupViewController.modalTransitionStyle = .crossDissolve
+            
+            //presenting the pop up viewController from the parent viewController
+            parentVC.present(popupViewController, animated: true)
+        }
     }
 }
 

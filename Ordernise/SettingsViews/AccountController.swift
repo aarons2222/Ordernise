@@ -18,7 +18,6 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
 
     @IBOutlet weak var accountInfoTable: UITableView!
     
-    @IBOutlet weak var businessLogo: UIButton!
     @IBOutlet weak var businessNameLabel: UILabel!
     
     @IBOutlet weak var emailLabel: UILabel!
@@ -38,10 +37,7 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
     
     override func viewDidLoad() {
       
-        businessLogo.layer.cornerRadius = 45
-        businessLogo.clipsToBounds = true
-        
-        businessLogo.setBackgroundImage(self.loadImageFromDiskWith(fileName: imgName), for: .normal)
+     
   
         setFields()
         
@@ -67,8 +63,7 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
     
     override func viewDidLayoutSubviews() {
        super.viewDidLayoutSubviews()
-        businessLogo.layer.cornerRadius = businessLogo.frame.size.width/2
-        businessLogo.clipsToBounds = true
+  
     }
     
     
@@ -256,7 +251,6 @@ class  AccountController:  UITableViewController, UIImagePickerControllerDelegat
         self.dismiss(animated: true, completion: nil)
         
         
-        businessLogo.setBackgroundImage(self.loadImageFromDiskWith(fileName: imgName), for: .normal)
     }
     
 
