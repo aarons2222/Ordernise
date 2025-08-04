@@ -131,7 +131,7 @@ fileprivate struct FloatingTabBar<Value: CaseIterable & Hashable & FloatingTabPr
                 let index = (Value.allCases.firstIndex(of: tab) as? Int) ?? 0
                 
                 Image(systemName: tab.symbolImage)
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundStyle(isActive ? config.activeTint : config.inactiveTint)
                     .symbolEffect(.bounce.byLayer.down, value: toggleSymbolEffect[index])
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

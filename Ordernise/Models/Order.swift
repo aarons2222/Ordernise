@@ -16,6 +16,13 @@ class Order {
     var status: OrderStatus
     var platform: Platform
     var attributes: [String: String]
+    
+    // Cost-related fields
+    var shippingCost: Double
+    var additionalCosts: Double
+    var shippingMethod: String?
+    var trackingReference: String?
+    var additionalCostNotes: String?
 
     @Relationship(deleteRule: .cascade)
     var items: [OrderItem]
@@ -24,10 +31,15 @@ class Order {
         id: UUID = UUID(),
         date: Date,
         customerName: String? = nil,
-        status: OrderStatus = .pending,
-        platform: Platform = .custom,
+        status: OrderStatus = .received,
+        platform: Platform = .amazon,
         attributes: [String: String] = [:],
-        items: [OrderItem] = []
+        items: [OrderItem] = [],
+        shippingCost: Double = 0.0,
+        additionalCosts: Double = 0.0,
+        shippingMethod: String? = nil,
+        trackingReference: String? = nil,
+        additionalCostNotes: String? = nil
     ) {
         self.id = id
         self.date = date
@@ -36,5 +48,37 @@ class Order {
         self.platform = platform
         self.attributes = attributes
         self.items = items
+        self.shippingCost = shippingCost
+        self.additionalCosts = additionalCosts
+        self.shippingMethod = shippingMethod
+        self.trackingReference = trackingReference
+        self.additionalCostNotes = additionalCostNotes
+    }
+    
+    // MARK: - Computed Properties
+    
+    /// Total value of all items in the order
+    var itemsTotal: Double {
+        items.reduce(0) { total, item in
+            total + (item.stockItem?.price ?? 0) * Double(item.quantity)
+        }
+    }
+    
+    /// Total order value including items, shipping, and additional costs
+    var totalValue: Double {
+        itemsTotal + shippingCost + additionalCosts
+    }
+    
+    /// Total cost of goods sold (for profit calculations)
+    var totalCost: Double {
+        let itemsCost = items.reduce(0) { total, item in
+            total + (item.stockItem?.cost ?? 0) * Double(item.quantity)
+        }
+        return itemsCost + shippingCost + additionalCosts
+    }
+    
+    /// Net profit for this order (revenue - all costs)
+    var profit: Double {
+        itemsTotal - totalCost
     }
 }

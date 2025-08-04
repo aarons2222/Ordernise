@@ -21,15 +21,17 @@ struct CustomSearchBar: View {
     /// Search Bar Properties
     @State private var isSearchExpanded: Bool = true
     @FocusState private var isKeyboardActive: Bool
+    
+    
     var body: some View {
    
 
             
-            ExpandableSearchBar(height: isSearchExpanded ? 45 : 50)
+            ExpandableSearchBar(height: isSearchExpanded ? 40 : 45)
         
-        .frame(height: 56)
+        .frame(height: 35)
         .padding(.horizontal, 25)
-        .padding(.bottom, isKeyboardActive ? 10 : 0)
+     
         /// Animations (Customize it as per your needs!)
         .animation(.bouncy, value: dragOffset)
         .animation(.bouncy, value: isActive)

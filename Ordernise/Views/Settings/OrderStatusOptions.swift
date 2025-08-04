@@ -1,0 +1,158 @@
+//
+//  Order Status Options.swift
+//  Ordernise
+//
+//  Created by Aaron Strickland on 29/07/2025.
+//
+
+import SwiftUI
+
+struct OrderStatusOptions: View {
+    
+    
+    // Order Status Settings - Default to all enabled
+    @AppStorage("enabledOrderStatuses") private var enabledOrderStatusesData: Data = {
+        let defaultStatuses = OrderStatus.allCases.map { $0.rawValue }
+        return (try? JSONEncoder().encode(defaultStatuses)) ?? Data()
+    }()
+    
+    
+    var enabledOrderStatuses: [String] {
+        get {
+            (try? JSONDecoder().decode([String].self, from: enabledOrderStatusesData)) ?? OrderStatus.allCases.map { $0.rawValue }
+        }
+        set {
+            enabledOrderStatusesData = (try? JSONEncoder().encode(newValue)) ?? Data()
+        }
+    }
+    
+    func isStatusEnabled(_ status: OrderStatus) -> Bool {
+        enabledOrderStatuses.contains(status.rawValue)
+    }
+    
+    func toggleStatus(_ status: OrderStatus) {
+        var currentStatuses = enabledOrderStatuses
+        if currentStatuses.contains(status.rawValue) {
+            // Don't allow disabling all statuses - must have at least one
+            if currentStatuses.count > 1 {
+                currentStatuses.removeAll { $0 == status.rawValue }
+            }
+        } else {
+            currentStatuses.append(status.rawValue)
+        }
+        enabledOrderStatusesData = (try? JSONEncoder().encode(currentStatuses)) ?? Data()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    var body: some View {
+        
+        VStack{
+            
+            HeaderWithButton(
+                title: "Order status options",
+                buttonImage: "plus.circle",
+                showTrailingButton: false,
+                showLeadingButton: true
+            ) {
+              
+            }
+      
+            ScrollView{
+                
+              
+                
+                VStack{
+                    
+                    HStack{
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Choose which order statuses are available in your workflow")
+                                .font(.headline)
+                             
+                            Text("At least one status must remain enabled")
+                                .font(.subheadline)
+                                .foregroundColor(.orange)
+                        }
+                        .padding(.vertical, 4)
+                        
+                        
+                        Spacer()
+                    }
+                    
+                    ForEach(OrderStatus.allCases.indices, id: \.self) { index in
+                        let status = OrderStatus.allCases[index]
+                        
+                        VStack(spacing: 0) {
+                            HStack {
+                                Toggle(isOn: Binding(
+                                    get: { isStatusEnabled(status) },
+                                    set: { _ in toggleStatus(status) }
+                                )) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(status.rawValue.capitalized)
+                                            .font(.headline)
+                                        Text(statusDescription(for: status))
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .tint(.color1)
+                                .disabled(enabledOrderStatuses.count == 1 && isStatusEnabled(status))
+                                .padding(.horizontal, 0)
+                                .padding(.vertical)
+                            }
+                            
+                            // Show divider only if not the last item
+                            if index < OrderStatus.allCases.count - 1 {
+                                Divider()
+                            }
+                        }
+                    }
+
+                    
+                    
+                }
+                .padding()
+                .cardBackground()
+                
+                
+               
+                
+            }
+            .scrollIndicators(.hidden)
+            .padding(.bottom, 60)
+            .padding(.horizontal, 20)
+        }
+        .navigationBarHidden(true)
+     
+       
+    
+    }
+    
+    
+    private func statusDescription(for status: OrderStatus) -> String {
+        switch status {
+        case .received: return "Order has been recorded"
+        case .pending: return "Waiting for payment or confirmation"
+        case .processing: return "Being prepared/packed"
+        case .shipped: return "Handed over to carrier"
+        case .delivered: return "Reached customer"
+        case .fulfilled: return "Successfully completed"
+        case .returned: return "Sent back by customer"
+        case .refunded: return "Payment returned to customer"
+        case .canceled: return "Manually or automatically canceled"
+        case .failed: return "Payment or processing failure"
+        case .onHold: return "Temporarily paused"
+        }
+    }
+}
+
+#Preview {
+    OrderStatusOptions()
+}

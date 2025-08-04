@@ -3,10 +3,12 @@ import SwiftData
 
 struct StockList: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var stockItems: [StockItem]
+    @Query(sort: \StockItem.name, order: .forward) private var stockItems: [StockItem]
     
     @State private var showingAddStock = false
+    @State private var confirmDelete = false
     @State private var selectedStockItem: StockItem?
+    @State private var itemToDelete: StockItem?
     @State private var searchText = ""
     
     var filteredItems: [StockItem] {
@@ -26,76 +28,131 @@ struct StockList: View {
     var body: some View {
         NavigationStack {
             VStack {
-                HeaderWithButton(
-                    title: "Stock",
-                    buttonImage: "plus.circle",
-                    showButton: true
-                ) {
-                    showingAddStock = true
-                }
-                
-                
-                CustomSearchBar(searchText: $searchText) { status in
-                    
-                }
-             
-             
-
-                if stockItems.isEmpty {
-                    Spacer()
-                    ContentUnavailableView("No Stock Items", systemImage: "shippingbox", description: Text("Tap + to add your first item."))
-                    Spacer()
-                } else if filteredItems.isEmpty {
-                    Spacer()
-                    ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No stock items match your search."))
-                    Spacer()
-                } else {
-                    List {
-                        ForEach(groupedItems, id: \.0) { groupName, items in
-                            Section(groupName) {
-                                ForEach(items) { item in
-                                    VStack(alignment: .leading) {
-                                        Text(item.name)
-                                            .font(.headline)
-                                        HStack {
-                                            Text("Qty: \(item.quantityAvailable)")
-                                                .font(.caption)
-                                                .foregroundColor(item.quantityAvailable == 0 ? .red : item.quantityAvailable <= 10 ? .orange : .secondary)
-                                            Spacer()
-                                            Text(item.price, format: .currency(code: item.currency.rawValue.uppercased()))
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        selectedStockItem = item
-                                    }
-                                }
-                                .onDelete { indexSet in
-                                    deleteItemsFromGroup(at: indexSet, in: items)
-                                }
-                            }
-                        }
-                    }
-                   
-                }
+                headerSection
+                searchSection
+                mainContentView
             }
-            .sheet(isPresented: $showingAddStock) {
+            .fullScreenCover(isPresented: $showingAddStock) {
                 StockItemDetailView(mode: .add)
             }
-            .sheet(item: $selectedStockItem) { selectedItem in
+            .fullScreenCover(item: $selectedStockItem) { selectedItem in
                 StockItemDetailView(stockItem: selectedItem, mode: .view)
             }
+            
+            .alert("Confirm deletion", isPresented: $confirmDelete, actions: {
+                
+                /// A destructive button that appears in red.
+                Button(role: .destructive) {
+                    if let item = itemToDelete {
+                        deleteItem(item)
+                    }
+                } label: {
+                    Text("Delete")
+                }
+                
+                /// A cancellation button that appears with bold text.
+                Button("Cancel", role: .cancel) {
+                    // Perform cancellation
+                }
+                
           
+            }, message: {
+                Text("This action cannot be undone")
+            })
         }
-       
+    }
+    
+    private var headerSection: some View {
+        HeaderWithButton(
+            title: "Stock",
+            buttonImage: "plus.circle",
+            showTrailingButton: true,
+            showLeadingButton: false
+        ) {
+            showingAddStock = true
+        }
+    }
+    
+    private var searchSection: some View {
+        CustomSearchBar(searchText: $searchText) { status in
+            
+        }
+    }
+    
+    private var mainContentView: some View {
+        Group {
+            if stockItems.isEmpty {
+                Spacer()
+                ContentUnavailableView("No Stock Items", systemImage: "shippingbox", description: Text("Tap + to add your first item."))
+                Spacer()
+            } else if filteredItems.isEmpty {
+                Spacer()
+                ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No stock items match your search."))
+                Spacer()
+            } else {
+                stockListView
+            }
+        }
+    }
+    
+    private var stockListView: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+                ForEach(groupedItems, id: \.0) { groupName, items in
+                    Section(header: sectionHeader(groupName)) {
+                        ForEach(items) { item in
+                            stockItemRow(item)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func stockItemRow(_ item: StockItem) -> some View {
+        StockItemCard(item: item, height: 50)
         
+         
+            .swipeActions {
+                Action(symbolImage: "trash.fill", tint: .white, background: .red) { reset in
+                    if let index = filteredItems.firstIndex(where: { $0.id == item.id }) {
+                        itemToDelete = item
+                        confirmDelete = true
+                    }
+                    reset = true
+                }
+            }
+            .onTapGesture {
+                selectedStockItem = item
+            }
+    }
+    
+    private func sectionHeader(_ groupName: String) -> some View {
+        HStack {
+            Text(groupName)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+      
     }
 
+    
     private func deleteItems(at offsets: IndexSet) {
-        let itemsToDelete = offsets.map { filteredItems[$0] }
-        for item in itemsToDelete {
+        withAnimation {
+            for index in offsets {
+                let item = filteredItems[index]
+                modelContext.delete(item)
+            }
+        }
+    }
+    
+    private func deleteItem(_ item: StockItem) {
+        withAnimation {
             modelContext.delete(item)
         }
     }
@@ -106,8 +163,6 @@ struct StockList: View {
         }
     }
 }
-
-
 
 
 

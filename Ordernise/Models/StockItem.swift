@@ -28,6 +28,9 @@ class StockItem {
     var cost: Double
     var currency: Currency
     var attributes: [String: String]
+    
+    @Relationship(deleteRule: .nullify)
+    var category: Category?
 
     @Relationship(deleteRule: .nullify, inverse: \OrderItem.stockItem)
     var orderItems: [OrderItem]?

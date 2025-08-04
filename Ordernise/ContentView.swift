@@ -29,14 +29,21 @@ enum AppTab: String, CaseIterable, FloatingTabProtocol {
 }
 
 struct ContentView: View {
-  
     @State private var activeTab: AppTab = .dashboard
 
-    var body: some View {
+    private let selectedTabKey = "selectedTab"
 
+    init() {
+        // Load the saved tab from UserDefaults
+        if let savedTab = UserDefaults.standard.string(forKey: selectedTabKey),
+           let tab = AppTab(rawValue: savedTab) {
+            _activeTab = State(initialValue: tab)
+        }
+    }
+
+    var body: some View {
         FloatingTabView(selection: $activeTab) { tab, tabBarHeight in
-            switch  tab {
-                
+            switch tab {
             case .dashboard:
                 DashboardView()
             case .orders:
@@ -45,14 +52,14 @@ struct ContentView: View {
                 StockList()
             case .settings:
                 SettingsView()
-            
             }
         }
+        .onChange(of: activeTab) {
+            // Save tab to UserDefaults
+            UserDefaults.standard.set(activeTab.rawValue, forKey: selectedTabKey)
+        }
     }
-
-
 }
-
 
 
 #Preview {

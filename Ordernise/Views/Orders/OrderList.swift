@@ -17,19 +17,40 @@ extension DateFormatter {
     }()
 }
 
+enum OrderFilter: String, CaseIterable {
+    case received = "Received"
+    case completed = "Completed"
+    
+    func matchesOrder(_ order: Order) -> Bool {
+        switch self {
+        case .received:
+            return [.received, .pending, .processing, .shipped, .onHold].contains(order.status)
+        case .completed:
+            return [.delivered, .fulfilled, .canceled, .failed, .refunded, .returned].contains(order.status)
+        }
+    }
+}
+
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Order.date, order: .reverse) private var orders: [Order]
     
     @State private var showingAddOrder = false
+    @State private var confirmDelete = false
     @State private var selectedOrder: Order?
+    @State private var orderToDelete: Order?
     @State private var searchText = ""
+    @State private var selectedFilter: OrderFilter = .received
     
     var filteredOrders: [Order] {
         orders.filter { order in
-            searchText.isEmpty || 
-            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            let matchesSearch = searchText.isEmpty || 
+                order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+                order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            
+            let matchesFilter = selectedFilter.matchesOrder(order)
+            
+            return matchesSearch && matchesFilter
         }
     }
     
@@ -50,16 +71,32 @@ struct OrderList: View {
     }
     
     var body: some View {
+        
+        
+        
+        
+        
         NavigationStack {
             VStack {
                 HeaderWithButton(
                     title: "Orders",
                     buttonImage: "plus.circle",
-                    showButton: true
+                    showTrailingButton: true,
+                    showLeadingButton: false
                 ) {
                     showingAddOrder = true
                 }
                 
+                // Tab switcher for order filters
+                Picker("Order Filter", selection: $selectedFilter) {
+                    ForEach(OrderFilter.allCases, id: \.self) { filter in
+                        Text(filter.rawValue)
+                            .tag(filter)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 8)
           
                 if orders.isEmpty {
                     Spacer()
@@ -70,72 +107,28 @@ struct OrderList: View {
                     ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No orders match your search."))
                     Spacer()
                 } else {
-                    List {
-                        ForEach(groupedOrders, id: \.0) { dateString, ordersForDate in
-                            Section(header: Text(dateString).font(.headline)) {
-                                ForEach(ordersForDate) { order in
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        HStack {
-                                            VStack(alignment: .leading, spacing: 4) {
-                                                HStack {
-                                                    Text(order.date, style: .time)
-                                                        .font(.subheadline)
-                                                        .foregroundColor(.secondary)
-                                                    Spacer()
-                                                    HStack {
-                                                        Circle()
-                                                            .fill(statusColor(for: order.status))
-                                                            .frame(width: 8, height: 8)
-                                                        Text(order.status.rawValue.capitalized)
-                                                            .font(.caption)
-                                                            .foregroundColor(statusColor(for: order.status))
-                                                    }
-                                                }
+                    
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+                            ForEach(groupedOrders, id: \.0) { dateString, ordersForDate in
+                                Section(header: sectionHeader(dateString)) {
+                                    ForEach(ordersForDate) { order in
+                                        
+                                        
+                                        
+                                        OrderCardView(height: 90, order: order)
+                                            .swipeActions {
+                                             
                                                 
-                                                HStack {
-                                                    if let customerName = order.customerName, !customerName.isEmpty {
-                                                        Text(customerName)
-                                                            .font(.subheadline)
-                                                            .foregroundColor(.primary)
-                                                    } else {
-                                                        Text("No customer name")
-                                                            .font(.subheadline)
-                                                            .foregroundColor(.secondary)
-                                                            .italic()
-                                                    }
-                                                    Spacer()
-                                                    Text(order.platform.rawValue)
-                                                        .font(.caption)
-                                                        .padding(.horizontal, 8)
-                                                        .padding(.vertical, 2)
-                                                        .background(Color(.systemGray5))
-                                                        .cornerRadius(4)
-                                                }
-                                                
-                                                HStack {
-                                                    Text("\(order.items.count) item\(order.items.count == 1 ? "" : "s")")
-                                                        .font(.caption)
-                                                        .foregroundColor(.secondary)
-                                                    Spacer()
-                                                    if !order.items.isEmpty {
-                                                        let totalValue = order.items.reduce(0.0) { total, orderItem in
-                                                            total + (orderItem.stockItem?.price ?? 0.0) * Double(orderItem.quantity)
-                                                        }
-                                                        Text(totalValue, format: .currency(code: "GBP"))
-                                                            .font(.caption)
-                                                            .fontWeight(.semibold)
-                                                    }
+                                                Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
+                                                    orderToDelete = order
+                                                    confirmDelete = true
                                                 }
                                             }
-                                        }
+                                            .onTapGesture {
+                                                selectedOrder = order
+                                            }
                                     }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        selectedOrder = order
-                                    }
-                                }
-                                .onDelete { indexSet in
-                                    deleteOrdersInSection(ordersForDate, at: indexSet)
                                 }
                             }
                         }
@@ -143,14 +136,29 @@ struct OrderList: View {
                   
                 }
             }
-//            .sheet(isPresented: $showingAddOrder) {
-//                OrderDetailView(mode: .add)
-//            }
-//            .sheet(item: $selectedOrder) { selectedOrder in
-//                OrderDetailView(order: selectedOrder, mode: .view)
-//            }
-//
             
+            .alert("Confirm deletion", isPresented: $confirmDelete, actions: {
+                
+                /// A destructive button that appears in red.
+                Button(role: .destructive) {
+                    if let order = orderToDelete {
+                        deleteOrder(order)
+                    }
+                } label: {
+                    Text("Delete")
+                }
+                
+                /// A cancellation button that appears with bold text.
+                Button("Cancel", role: .cancel) {
+                    // Perform cancellation
+                }
+                
+          
+            }, message: {
+                Text("This action cannot be undone")
+            })
+            
+
             .fullScreenCover(isPresented: $showingAddOrder) {
                 OrderDetailView(mode: .add)
             }
@@ -162,12 +170,32 @@ struct OrderList: View {
         }
     }
     
-    private func statusColor(for status: OrderStatus) -> Color {
-        switch status {
-        case .received: return .blue
-        case .pending: return .orange
-        case .fulfilled: return .green
-        case .canceled: return .red
+    private func sectionHeader(_ dateString: String) -> some View {
+        HStack {
+            Text(dateString)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
+    }
+    
+    private func deleteOrder(_ order: Order) {
+        withAnimation {
+            // Return items to stock if order is not fulfilled
+            if order.status != .fulfilled {
+                for orderItem in order.items {
+                    if let stockItem = orderItem.stockItem {
+                        stockItem.quantityAvailable += orderItem.quantity
+                    }
+                }
+            }
+            
+            // Delete the order from the model context
+            modelContext.delete(order)
         }
     }
     
@@ -175,7 +203,7 @@ struct OrderList: View {
         withAnimation {
             for index in offsets {
                 let orderToDelete = ordersInSection[index]
-                modelContext.delete(orderToDelete)
+                deleteOrder(orderToDelete)
             }
         }
     }
@@ -184,3 +212,8 @@ struct OrderList: View {
 #Preview {
     OrderList()
 }
+
+
+
+
+

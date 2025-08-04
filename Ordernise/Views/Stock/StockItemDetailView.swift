@@ -11,6 +11,8 @@ import SwiftData
 struct StockItemDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Query(sort: \Category.name) private var categories: [Category]
+    
     // Using direct fetch instead of @Query to avoid SwiftData macro issues
     var attributeTemplates: [AttributeTemplate] {
         do {
@@ -57,6 +59,7 @@ struct StockItemDetailView: View {
     }()
     
     @State private var currency: Currency = .gbp
+    @State private var selectedCategory: Category?
     
     // Dynamic attributes storage
     @State private var attributes: [AttributeField] = []
@@ -115,7 +118,74 @@ struct StockItemDetailView: View {
                                 .padding(.vertical, 8)
                         }
                     }
-                }
+                    
+                    
+                    // Only show category section if editing or if a category is set
+                    if (mode.isEditable || isEditMode) || selectedCategory != nil {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Category")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            if mode.isEditable || isEditMode {
+                                Menu {
+                                    Button("None") {
+                                        selectedCategory = nil
+                                    }
+                                    
+                                    ForEach(categories) { category in
+                                        Button {
+                                            selectedCategory = category
+                                        } label: {
+                                            HStack {
+                                                Image(systemName: "largecircle.fill.circle")
+                                                    .font(.body)
+                                                    .tint(category.color)
+                                                
+                                                Text(category.name)
+                                            }
+                                        }
+                                        
+                                        Divider()
+                                    }
+                                } label: {
+                                    HStack {
+                                        if let selectedCategory = selectedCategory {
+                                            Circle()
+                                                .fill(selectedCategory.color)
+                                                .frame(width: 12, height: 12)
+                                            Text(selectedCategory.name)
+                                        } else {
+                                            Text("Select Category")
+                                                .foregroundColor(.secondary)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "chevron.down")
+                                            .foregroundColor(.secondary)
+                                            .font(.caption)
+                                    }
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                            } else {
+                                if let selectedCategory = selectedCategory {
+                                    HStack {
+                                  
+                                        
+                                        Image(systemName: "largecircle.fill.circle")
+                                            .font(.body)
+                                            .foregroundStyle(selectedCategory.color)
+                                        Text(selectedCategory.name)
+                                    }
+                                    .padding(.vertical, 8)
+                                }
+                            }
+                        }
+                    }
+                    }
+                
+                
                 
                 Section("Pricing") {
                     VStack(alignment: .leading, spacing: 4) {
@@ -261,6 +331,7 @@ struct StockItemDetailView: View {
             price = item.price
             cost = item.cost
             currency = item.currency
+            selectedCategory = item.category
             
             // Load attributes
             attributes = item.attributes.map { key, value in
@@ -339,6 +410,7 @@ struct StockItemDetailView: View {
             existingItem.price = price
             existingItem.cost = cost
             existingItem.currency = currency
+            existingItem.category = selectedCategory
             existingItem.attributes = attributesDict
         } else {
             // Add new item
@@ -350,6 +422,7 @@ struct StockItemDetailView: View {
                 currency: currency,
                 attributes: attributesDict
             )
+            newItem.category = selectedCategory
             modelContext.insert(newItem)
         }
         
