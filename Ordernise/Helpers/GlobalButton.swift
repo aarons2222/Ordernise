@@ -11,11 +11,16 @@ import SwiftUI
 struct GlobalButton: View {
     // Properties
     var title: String
-    var backgroundColor: Color = .color1
+    var backgroundColor: Color = Color.appTint
     var foregroundColor: Color = .white
     var verticalPadding: CGFloat = 14
-    var horizontalPadding: CGFloat = 20
+    var horizontalPadding: CGFloat = 5
+    var showIcon: Bool?
+    var icon: String?
     var action: () -> Void
+
+
+    
     
 
     // Body
@@ -23,15 +28,26 @@ struct GlobalButton: View {
         Button(action: {
             action()
         }) {
-            Text(title)
-                .foregroundColor(foregroundColor)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .padding(.vertical, verticalPadding)
-                .frame(maxWidth: .infinity)
-                .background(backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 25))
+            
+            HStack{
+                if (showIcon ?? false){
+                    
+                    Image(systemName: icon ?? "chevron.right")
+                        
+                }
                 
+                
+                Text(title)
+                
+            }
+                
+            .foregroundColor(foregroundColor)
+            .font(.headline)
+            .fontWeight(.semibold)
+            .padding(.vertical, verticalPadding)
+            .frame(maxWidth: .infinity)
+            .background(backgroundColor.gradient)
+            .clipShape(RoundedRectangle(cornerRadius: 25))
         }
         .frame(height: 50)
         .padding(horizontalPadding)

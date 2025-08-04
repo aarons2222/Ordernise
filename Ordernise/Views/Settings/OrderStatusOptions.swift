@@ -53,15 +53,19 @@ struct OrderStatusOptions: View {
     var body: some View {
         
         VStack{
+          
             
             HeaderWithButton(
-                title: "Order status options",
-                buttonImage: "plus.circle",
-                showTrailingButton: false,
-                showLeadingButton: true
-            ) {
-              
-            }
+                title: "Order status option",
+                buttonContent: "plus.circle",
+                isButtonImage: true,
+                showTrailingButton: true,
+                showLeadingButton: true,
+                onButtonTap: {
+               
+                    
+                }
+            )
       
             ScrollView{
                 
@@ -102,7 +106,7 @@ struct OrderStatusOptions: View {
                                             .foregroundColor(.secondary)
                                     }
                                 }
-                                .tint(.color1)
+                                .tint(Color.appTint)
                                 .disabled(enabledOrderStatuses.count == 1 && isStatusEnabled(status))
                                 .padding(.horizontal, 0)
                                 .padding(.vertical)

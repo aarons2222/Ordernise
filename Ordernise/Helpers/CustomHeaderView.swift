@@ -11,6 +11,8 @@ import SwiftUI
 struct CustomHeaderVIew: View {
     @Environment(\.presentationMode) var presentationMode
     
+
+    
       var title: String
       var showFilterButton: Bool?
       @Binding var showFilters: Bool
@@ -25,11 +27,11 @@ struct CustomHeaderVIew: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(.color1)
+                .fill(Color.appTint)
                 .frame(height: 150)
                 .overlay(alignment: .leading) {
                     Circle()
-                        .fill(.color1)
+                        .fill(Color.appTint)
                         .overlay {
                             Circle()
                                 .fill(.white.opacity(0.2))

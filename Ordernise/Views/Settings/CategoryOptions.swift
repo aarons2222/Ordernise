@@ -28,15 +28,19 @@ struct CategoryOptions: View {
         
         VStack{
             
+       
+            
             HeaderWithButton(
                 title: "Categories",
-                buttonImage: "plus.circle",
+                buttonContent: "plus.circle",
+                isButtonImage: true,
                 showTrailingButton: true,
-                showLeadingButton: true
-            ) {
-                showingAddCategory = true
-            }
-            
+                showLeadingButton: true,
+                onButtonTap: {
+                    showingAddCategory = true
+                    
+                }
+            )
             
             ScrollView {
                 LazyVStack(spacing: 12) {
@@ -98,7 +102,7 @@ struct CategoryOptions: View {
                         Text("Color")
                         Spacer()
                         ColorPicker("", selection: Binding(
-                            get: { Color(hex: newCategoryColor) ?? .blue },
+                            get: { Color(hex: newCategoryColor) ?? Color.appTint },
                             set: { color in
                                 newCategoryColor = color.toHex()
                             }

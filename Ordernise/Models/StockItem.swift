@@ -41,7 +41,7 @@ class StockItem {
         quantityAvailable: Int,
         price: Double,
         cost: Double,
-        currency: Currency = .usd,
+        currency: Currency = .gbp,
         attributes: [String: String] = [:]
     ) {
         self.id = id

@@ -14,8 +14,11 @@ struct OrderDetailView: View {
     @Query private var stockItems: [StockItem]
     @Query private var orderTemplates: [OrderTemplate]
     
+    @StateObject private var localeManager = LocaleManager.shared
+ 
+    
     // AppStorage for remembering user preferences
-    @AppStorage("lastSelectedPlatform") private var lastSelectedPlatform: String = Platform.custom.rawValue
+    @AppStorage("lastSelectedPlatform") private var lastSelectedPlatform: String = Platform.amazon.rawValue
     @AppStorage("lastCustomPlatformText") private var lastCustomPlatformText: String = ""
     
     enum Mode {
@@ -42,15 +45,24 @@ struct OrderDetailView: View {
     let mode: Mode
     let order: Order?
     
+    // ViewModel for centralized state management
+    @StateObject private var viewModel = OrderDetailViewViewModel()
+    
     @State private var date = Date()
     @State private var customerName = ""
     @State private var status: OrderStatus = .received
     @State private var platform: Platform = .amazon
     @State private var customPlatformText = ""
-    @State private var orderItems: [OrderItemEntry] = []
     @State private var attributes: [AttributeField] = []
     @State private var isEditMode = false
     @State private var showingStockItemPicker = false
+    @State private var currentOrderItemIndex: Int?
+    @State private var showingTemplateSheet = false
+    @State private var showingSaveTemplateAlert = false
+    @State private var newTemplateName = ""
+    
+    // For template naming
+    @State private var templateName = ""
     
     // Cost-related state variables
     @State private var shippingCost = 0.0
@@ -59,37 +71,16 @@ struct OrderDetailView: View {
     @State private var trackingReference = ""
     @State private var additionalCostNotes = ""
     
-    // Template management
-    @State private var showingTemplateSheet = false
-    @State private var showingSaveTemplateAlert = false
-    @State private var templateName = ""
+
+
     
-    struct OrderItemEntry: Identifiable {
-        let id = UUID()
-        var stockItem: StockItem?
-        var quantity: Int = 1
-        
-        var isValid: Bool {
-            guard let item = stockItem else { return false }
-            return quantity > 0 && quantity <= item.quantityAvailable
-        }
-        
-        var hasInsufficientStock: Bool {
-            guard let item = stockItem else { return false }
-            return quantity > item.quantityAvailable
-        }
-        
-        var totalPrice: Double {
-            guard let item = stockItem else { return 0.0 }
-            return item.price * Double(quantity)
-        }
-    }
+    @State private var deliveryMethod: DeliveryMethod = .collected
     
-    struct AttributeField: Identifiable {
-        let id = UUID()
-        var key: String = ""
-        var value: String = ""
-    }
+    @FocusState private var focusedField: Bool?
+    
+    // Use type aliases to reference ViewModel types
+    typealias OrderItemEntry = OrderDetailViewViewModel.OrderItemEntry
+    typealias AttributeField = OrderDetailViewViewModel.AttributeField
     
     // Initializer for adding new order
     init(mode: Mode = .add) {
@@ -104,174 +95,170 @@ struct OrderDetailView: View {
     }
     
     var totalOrderValue: Double {
-        orderItems.reduce(0) { $0 + $1.totalPrice }
+        viewModel.orderItems.reduce(0) { $0 + $1.totalPrice }
     }
     
     // Break down complex view to help compiler
     private var orderInformationSection: some View {
-        Section("Order Information") {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Date")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    DatePicker("Order Date", selection: $date, displayedComponents: [.date])
-                        .datePickerStyle(.compact)
-                } else {
-                    Text(date, style: .date)
-                        .padding(.vertical, 8)
-                }
+        VStack(alignment: .leading, spacing: 16) {
+   
+            
+            
+            HStack() {
+                Text("Order Date")
+                Spacer()
+               
+                    
+                    
+                    MyDatePicker(selectedDate: $date)
+                    
+             
+            }
+    
+            
+            
+            
+            ListSection(title: "Customer Name") {
+                CustomTextField(
+                    text: $customerName,
+                    placeholder: "Customer Name",
+                    systemImage: "person",
+                    isSecure: false
+                )
+                .focused($focusedField, equals: true)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Customer Name")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    TextField("Enter customer name", text: $customerName)
-                        .textFieldStyle(.roundedBorder)
-                } else {
-                    Text(customerName.isEmpty ? "—" : customerName)
-                        .padding(.vertical, 8)
-                }
+            
+            
+            ListSection(title: "Order Status") {
+                StatusDropdownMenu(selection: $status)
+                
             }
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Status")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    Picker("Status", selection: $status) {
-                        ForEach(OrderStatus.enabledCases, id: \.self) { status in
-                            Text(status.rawValue.capitalized)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                } else {
-                    HStack {
-                        Circle()
-                            .fill(status.statusColor)
-                            .frame(width: 8, height: 8)
-                        Text(status.rawValue.capitalized)
-                            .foregroundColor(status.statusColor)
-                    }
-                    .padding(.vertical, 8)
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Platform")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    Picker("Platform", selection: $platform) {
-                        ForEach(Platform.allCases, id: \.self) { platform in
-                            Text(platform.rawValue)
-                        }
-                    }
-                    .pickerStyle(.menu)
+        
+                
+        
+            ListSection(title: "Platform") {
+                PlatformDropdownMenu(selection: $platform)
                     .onChange(of: platform) { oldValue, newValue in
                         // Save the selected platform for future orders
                         lastSelectedPlatform = newValue.rawValue
                     }
+                
+                // Show text field when Custom is selected
+                if platform == .custom {
                     
-                    // Show text field when Custom is selected
-                    if platform == .custom {
-                        TextField("Enter custom platform name", text: $customPlatformText)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.top, 4)
-                            .onChange(of: customPlatformText) { oldValue, newValue in
-                                // Save the custom platform text
-                                lastCustomPlatformText = newValue
-                            }
+                    Spacer(minLength: 10)
+                    CustomTextField(
+                        text: $customPlatformText,
+                        placeholder: "Enter platform name",
+                        systemImage: "square.stack.3d.down.forward",
+                        isSecure: false
+                    )
+                    .focused($focusedField, equals: true)
+                    .onChange(of: customPlatformText) { oldValue, newValue in
+                        // Save the custom platform text
+                        lastCustomPlatformText = newValue
                     }
-                } else {
-                    Text(platform == .custom && !customPlatformText.isEmpty ? customPlatformText : platform.rawValue)
-                        .padding(.vertical, 8)
+                    
+                    
+                    
+                    
                 }
             }
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+      
+        
         }
     }
     
-    private var shippingAndCostsSection: some View {
-        Section("Shipping & Additional Costs") {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Shipping Method")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    TextField("e.g. Standard, Express, Pickup", text: $shippingMethod)
-                        .textFieldStyle(.roundedBorder)
-                } else {
-                    Text(shippingMethod.isEmpty ? "—" : shippingMethod)
-                        .padding(.vertical, 8)
-                }
+    private var ShippingSection: some View {
+        
+        VStack{
+
+         
+            ListSection(title: "Shipping Method") {
+                
+                CustomTextField(
+                    text: $shippingMethod,
+                    placeholder: "e.g. Standard, Express, Pickup",
+                    systemImage: "envelope.front",
+                    isSecure: false
+                )
+                .focused($focusedField, equals: true)
+            }
+      
+            
+            
+            ListSection(title: "Tracking") {
+                
+                CustomTextField(
+                    text: $trackingReference,
+                    placeholder: "Tracking Reference",
+                    systemImage: "number",
+                    isSecure: false
+                )
+                .focused($focusedField, equals: true)
+            }
+      
+            
+            
+
+        
+            
+            CustomNumberField(
+                value: (mode.isEditable || isEditMode) ? $shippingCost : .constant(shippingCost),
+                placeholder: "Shipping Costs",
+                systemImage: localeManager.currencySymbolName
+            )
+            .focused($focusedField, equals: mode.isEditable || isEditMode)
+            
+            
+
+        }
+    }
+    
+    private var CostsSection: some View {
+        VStack{
+            
+            
+            
+            ListSection(title: "Additional Costs") {
+                
+                
+                CustomNumberField(
+                    value: (mode.isEditable || isEditMode) ? $additionalCosts : .constant(additionalCosts),
+                    placeholder: "Additional Costs",
+                    systemImage: localeManager.currencySymbolName
+                )
+                .focused($focusedField, equals: mode.isEditable || isEditMode)
             }
             
+     
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Tracking")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    TextField("Tracking Reference", text: $trackingReference)
-                        .textFieldStyle(.roundedBorder)
-                } else {
-                    Text(trackingReference.isEmpty ? "—" : trackingReference)
-                        .padding(.vertical, 8)
-                }
+            ListSection(title: "Notes") {
+                CustomTextEditor(text: $additionalCostNotes,
+                                 placeholder: "e.g. Handling fee, Tax, Insurance",
+                                 systemImage: "text.alignleft",
+                                 isFocused: $focusedField)
             }
-            
-            
-            
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Shipping Cost")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    TextField("0.00", value: $shippingCost, format: .currency(code: "GBP"))
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.decimalPad)
-                } else {
-                    Text(shippingCost, format: .currency(code: "GBP"))
-                        .padding(.vertical, 8)
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Additional Costs")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if mode.isEditable || isEditMode {
-                    TextField("0.00", value: $additionalCosts, format: .currency(code: "GBP"))
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.decimalPad)
-                } else {
-                    Text(additionalCosts, format: .currency(code: "GBP"))
-                        .padding(.vertical, 8)
-                }
-            }
-            
-            if mode.isEditable || isEditMode {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Additional Cost Notes")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    TextField("e.g. Handling fee, Tax, Insurance", text: $additionalCostNotes, axis: .vertical)
-                        .textFieldStyle(.roundedBorder)
-                        .lineLimit(2...4)
-                }
-            } else if !additionalCostNotes.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Additional Cost Notes")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text(additionalCostNotes)
-                        .padding(.vertical, 8)
-                }
-            }
-            
+      
+       
+
+//            
             // Total Cost Summary
             if shippingCost > 0 || additionalCosts > 0 {
                 Divider()
@@ -280,7 +267,7 @@ struct OrderDetailView: View {
                         Text("Items Total:")
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text(totalOrderValue, format: .currency(code: "GBP"))
+                        Text(totalOrderValue, format: localeManager.currencyFormatStyle)
                     }
                     
                     if shippingCost > 0 {
@@ -288,7 +275,7 @@ struct OrderDetailView: View {
                             Text("Shipping:")
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text(shippingCost, format: .currency(code: "GBP"))
+                            Text(shippingCost, format: localeManager.currencyFormatStyle)
                         }
                     }
                     
@@ -297,261 +284,158 @@ struct OrderDetailView: View {
                             Text("Additional Costs:")
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text(additionalCosts, format: .currency(code: "GBP"))
+                            Text(additionalCosts, format: localeManager.currencyFormatStyle)
                         }
                     }
                     
-                    Divider()
-                    HStack {
-                        Text("Grand Total:")
-                            .fontWeight(.semibold)
-                        Spacer()
-                        Text(totalOrderValue + shippingCost + additionalCosts, format: .currency(code: "GBP"))
-                            .fontWeight(.semibold)
-                    }
+                    
+                    
+                  
                 }
                 .font(.subheadline)
             }
         }
     }
     
+    
+
+ 
+    
+    
+    
     var body: some View {
         NavigationStack {
             
-            
-            Form {
-                orderInformationSection
+            VStack{
                 
-                shippingAndCostsSection
-                
-//                Section {
-//                    ForEach($orderItems) { $orderItem in
-//                        VStack(alignment: .leading, spacing: 8) {
-////                            HStack {
-////                                VStack(alignment: .leading) {
-////                                    Text("Item")
-////                                        .font(.caption)
-////                                        .foregroundColor(.secondary)
-////                                    if mode.isEditable || isEditMode {
-////                                        Button(action: {
-////                                            // This would open a stock item picker
-////                                            showingStockItemPicker = true
-////                                        }) {
-////                                            HStack {
-////                                                Text(orderItem.stockItem?.name ?? "Select Item")
-////                                                    .foregroundColor(orderItem.stockItem == nil ? .secondary : .primary)
-////                                                Spacer()
-////                                                Image(systemName: "chevron.right")
-////                                                    .foregroundColor(.secondary)
-////                                                    .font(.caption)
-////                                            }
-////                                        }
-////                                        .buttonStyle(.plain)
-////                                    } else {
-////                                        VStack(alignment: .leading, spacing: 2) {
-////                                            Text(orderItem.stockItem?.name ?? "—")
-////                                            
-////                                            // Display category if available
-////                                            if let category = orderItem.stockItem?.category {
-////                                                HStack {
-////                                                    Image(systemName: "largecircle.fill.circle")
-////                                                        .font(.caption2)
-////                                                        .foregroundStyle(category.color)
-////                                                    Text(category.name)
-////                                                        .font(.caption2)
-////                                                        .foregroundColor(.secondary)
-////                                                }
-////                                            }
-////                                        }
-////                                    }
-////                                }
-////                                
-////                                VStack(alignment: .leading) {
-////                                    Text("Quantity")
-////                                        .font(.caption)
-////                                        .foregroundColor(.secondary)
-////                                    if mode.isEditable || isEditMode {
-////                                        VStack(alignment: .leading, spacing: 2) {
-////                                            TextField("Qty", value: $orderItem.quantity, format: .number)
-////                                                .textFieldStyle(.roundedBorder)
-////                                                .keyboardType(.numberPad)
-////                                                .frame(width: 60)
-////                                                .overlay(
-////                                                    RoundedRectangle(cornerRadius: 6)
-////                                                        .stroke(orderItem.hasInsufficientStock ? Color.red : Color.clear, lineWidth: 1)
-////                                                )
-////                                            
-////                                            if let stockItem = orderItem.stockItem {
-////                                                Text("Available: \(stockItem.quantityAvailable)")
-////                                                    .font(.caption2)
-////                                                    .foregroundColor(orderItem.hasInsufficientStock ? .red : .secondary)
-////                                            }
-////                                            
-////                                            if orderItem.hasInsufficientStock {
-////                                                Text("Insufficient stock")
-////                                                    .font(.caption2)
-////                                                    .foregroundColor(.red)
-////                                            }
-////                                        }
-////                                    } else {
-////                                        Text("\(orderItem.quantity)")
-////                                    }
-////                                }
-////                                
-////                                if mode.isEditable || isEditMode {
-////                                    Button(action: {
-////                                        removeOrderItem(orderItem)
-////                                    }) {
-////                                        Image(systemName: "minus.circle.fill")
-////                                            .foregroundColor(.red)
-////                                    }
-////                                }
-////                            }
-//                            
-//                      
-//                      
-//                            
-//                         
-//                        }
-//                        .padding(.vertical, 4)
-//                    }
-//                    
-//                    if mode.isEditable || isEditMode {
-//                        Button(action: addOrderItemWithPicker) {
-//                            Label("Add Item", systemImage: "plus.circle")
-//                        }
-//                    }
-//                } header: {
-//                    HStack {
-//                        Text("Order Items")
-//                        Spacer()
-//                        if !orderItems.isEmpty {
-//                            Text("Total: \(totalOrderValue, format: .currency(code: "GBP"))")
-//                                .font(.caption)
-//                                .fontWeight(.semibold)
-//                        }
-//                    }
-//                }
-//                
-                
-                let validOrderItems = orderItems.filter { $0.isValid }
+             
                 
                 
-                if (!validOrderItems.isEmpty){
-                    
-                    
-                    VStack{
-                    
-                    ForEach($orderItems) { $orderItem in
+                HeaderWithButton(
+                    title: mode == .view && !isEditMode ? "Order" : "New Order",
+                    buttonContent: "Save",
+                    isButtonImage: false,
+                    showTrailingButton: true,
+                    showLeadingButton: true,
+                    onButtonTap: {
+                        saveOrder()
                         
-                        if let stockItem = orderItem.stockItem {
-                            
-                            
-                            
-                            
-                            
-                            HStack {
+                    }
+                )
+
+                    
+              
+            
+                ScrollView(showsIndicators: false) {
+                    
+                    
+                    Spacer(minLength: 10)
+                    
+                    
+                    orderInformationSection
+                        .padding(.horizontal)
+                    
+                    
+                    DeliveryPicker(selection: $deliveryMethod)
+                        .padding(.horizontal)
+                    
+                    
+                    if deliveryMethod == .delivered{
+                        ShippingSection
+                            .padding(.horizontal)
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    let validOrderItems = viewModel.orderItems.filter { $0.isValid }
+              
+                        
+                    ListSection(title: $viewModel.orderItems.count > 0 ? "Items" : "") {
+                            VStack{
                                 
-                                
-                                Text("\(orderItem.quantity) x \(orderItem.stockItem?.name ?? "—")")
-                                
-                                Spacer()
-                                
-                                Text("Total: \(orderItem.totalPrice, format: .currency(code: stockItem.currency.rawValue.uppercased()))")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
+                                ForEach($viewModel.orderItems) { $orderItem in
+                                    
+                                    if let stockItem = orderItem.stockItem {
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            HStack(alignment: .top) {
+                                                Text("\(orderItem.quantity) × \(orderItem.stockItem?.name ?? "—")")
+                                                    .font(.body)
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Spacer()
+                                                
+                                                Text(orderItem.totalPrice, format: .currency(code: stockItem.currency.rawValue.uppercased()))
+                                                    .font(.subheadline)
+                                                    .fontWeight(.semibold)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            
+                                            if !orderItem.attributes.isEmpty {
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    ForEach(orderItem.attributes) { attribute in
+                                                        HStack(alignment: .center, spacing: 4) {
+                                                            Image(systemName: "tag.fill")
+                                                                .foregroundColor(Color.appTint)
+                                                                .font(.caption2)
+                                                            
+                                                            Text("\(attribute.key): \(attribute.value)")
+                                                                .font(.caption)
+                                                                .foregroundColor(.secondary)
+                                                            
+                                                            Spacer()
+                                                        }
+                                                    }
+                                                }
+                                                .padding(.leading, 4)
+                                            }
+                                        }
+                                        .padding(.vertical, 6)
+
+                                        
+                                    }
+                                    
                                 
                                 
                             }
-                            
-                        }
-                           
+                    }
+                }
+                 .padding(.horizontal, 20)
+    
+                  
                          
-                    
+                        GlobalButton(title: validOrderItems.isEmpty ? "Add items"  :  "Edit items", showIcon: true, icon: validOrderItems.isEmpty ? "plus.circle" : "pencil.circle",  action: {
+                            addOrderItemWithPicker()
+                        })
+                        .padding(.horizontal, 10)
+
                         
-                        }
-                        if mode.isEditable || isEditMode {
+                        CostsSection
+                        .padding(.horizontal)
+                      
+                    
+                HStack{
+                    
+                    Spacer()
+                    
+                    Text("Order Total: \(Double(totalOrderValue + shippingCost + additionalCosts), format: localeManager.currencyFormatStyle)")
+
+                }
+                .padding(.horizontal)
+                
                 
                    
-                                let total = formatAsCurrency(validOrderItems.reduce(0) { $0 + $1.totalPrice })
-                                
-                                
-                                HStack{
-                                    
-                                    Spacer()
-                                    Text("Order Total: \(total)")
-                                }
-                            }
-                        
-                    }
-                    
-                }
-                if mode.isEditable || isEditMode {
-                    
-            
-                        
-                        
-                       
-                        Button(action: addOrderItemWithPicker) {
-                            Label(validOrderItems.isEmpty ? "Add items"  :  "Edit items", systemImage: validOrderItems.isEmpty ? "plus.circle" : "pencil.circle" )
-                        }
-                    
-                  
-                }
-                
-                
-                
-                // Always show Custom Attributes section when editing to allow template access
-                if !attributes.isEmpty || mode.isEditable || isEditMode {
-                    Section(attributes.isEmpty  ? "" : "Custom Attributes") {
-                        ForEach($attributes) { $attribute in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("Key")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    if mode.isEditable || isEditMode {
-                                        TextField("Key", text: $attribute.key)
-                                            .textFieldStyle(.roundedBorder)
-                                    } else {
-                                        Text(attribute.key.isEmpty ? "—" : attribute.key)
-                                    }
-                                }
-                                
-                                VStack(alignment: .leading) {
-                                    Text("Value")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    if mode.isEditable || isEditMode {
-                                        TextField("Value", text: $attribute.value)
-                                            .textFieldStyle(.roundedBorder)
-                                    } else {
-                                        Text(attribute.value.isEmpty ? "—" : attribute.value)
-                                    }
-                                }
-                                
-                                if mode.isEditable || isEditMode {
-                                    Button(action: {
-                                        removeAttribute(attribute)
-                                    }) {
-                                        Image(systemName: "minus.circle.fill")
-                                            .foregroundColor(.red)
-                                    }
-                                }
-                            }
-                        }
-                        
-                  
-                    }
-                }
-                
-                
-                if mode.isEditable || isEditMode {
-                    Button(action: addAttribute) {
-                        Label("Add Attribute", systemImage: "plus.circle")
-                    }
-                }
-                
+   
+
                 
                 // Template Management - Always visible when editing
                 if mode.isEditable || isEditMode {
@@ -564,66 +448,36 @@ struct OrderDetailView: View {
                             Label("Save Order as Template", systemImage: "tray.and.arrow.up")
                         }
                         
-                      
+                        
                     }
                 }
                 
-       
             }
-            .navigationTitle(mode.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if mode == .view && !isEditMode {
-                        Button("Edit") {
-                            isEditMode = true
-                        }
-                    } else if mode.isEditable || isEditMode {
-                        Button("Save") {
-                            saveOrder()
-                        }
-                        .disabled(!isValidOrder)
-                    }
-                }
+           
+            
             }
+            
+     
+
+            .navigationBarHidden(true)
+            
+            
+
+
         }
+        
+        
         .onAppear {
             loadOrderData()
         }
-        .sheet(isPresented: $showingStockItemPicker) {
-            let existingQuantities: [StockItem.ID: Int] = {
-                var quantities: [StockItem.ID: Int] = [:]
-                for orderItem in orderItems {
-                    if let stockItem = orderItem.stockItem {
-                        quantities[stockItem.id] = orderItem.quantity
-                    }
-                }
-                return quantities
-            }()
-            
-            StockItemPickerView(stockItems: stockItems, existingQuantities: existingQuantities) { selectedItem, quantity in
-                // Check if this item already exists in the order
-                if let existingIndex = orderItems.firstIndex(where: { $0.stockItem?.id == selectedItem.id }) {
-                    if quantity == 0 {
-                        // Remove item if quantity is 0
-                        orderItems.remove(at: existingIndex)
-                    } else {
-                        // Update existing item
-                        orderItems[existingIndex].quantity = quantity
-                    }
-                } else if quantity > 0 {
-                    // Add new item (only if quantity > 0)
-                    var newOrderItem = OrderItemEntry()
-                    newOrderItem.stockItem = selectedItem
-                    newOrderItem.quantity = quantity
-                    orderItems.append(newOrderItem)
-                }
+        .fullScreenCover(isPresented: $showingStockItemPicker) {
+            OrderItemPickerView(
+                stockItems: stockItems, 
+                existingQuantities: viewModel.getExistingQuantities(), 
+                existingAttributes: viewModel.getExistingAttributes()
+            ) { selectedItem, quantity, attributes in
+                // Use ViewModel to handle the update
+                viewModel.updateStockItem(selectedItem, quantity: quantity, attributes: attributes)
             }
         }
         .sheet(isPresented: $showingTemplateSheet) {
@@ -643,10 +497,11 @@ struct OrderDetailView: View {
         } message: {
             Text("Enter a name for this attribute template")
         }
+
     }
     
     private var isValidOrder: Bool {
-        !orderItems.isEmpty && orderItems.allSatisfy { $0.isValid }
+        !viewModel.orderItems.isEmpty && viewModel.orderItems.allSatisfy { $0.isValid }
     }
     
     private func shouldReturnStockToInventory(_ status: OrderStatus) -> Bool {
@@ -669,9 +524,8 @@ struct OrderDetailView: View {
             trackingReference = existingOrder.trackingReference ?? ""
             additionalCostNotes = existingOrder.additionalCostNotes ?? ""
             
-            orderItems = existingOrder.items.map { orderItem in
-                OrderItemEntry(stockItem: orderItem.stockItem, quantity: orderItem.quantity)
-            }
+            // Load order items with attributes using ViewModel
+            viewModel.loadOrderData(from: existingOrder)
             
             // Load attributes and handle custom platform text
             var loadedAttributes: [AttributeField] = []
@@ -692,7 +546,7 @@ struct OrderDetailView: View {
             if let savedPlatform = Platform.allCases.first(where: { $0.rawValue == lastSelectedPlatform }) {
                 platform = savedPlatform
                 // If the saved platform is custom, load the saved custom text
-                if savedPlatform == .custom {
+                if savedPlatform == .amazon {
                     customPlatformText = lastCustomPlatformText
                 }
             }
@@ -715,26 +569,19 @@ struct OrderDetailView: View {
 
     
     private func addOrderItem() {
-        orderItems.append(OrderItemEntry())
+        viewModel.orderItems.append(OrderItemEntry())
     }
     
     private func addOrderItemWithPicker() {
-        orderItems.append(OrderItemEntry())
+        viewModel.orderItems.append(OrderItemEntry())
         showingStockItemPicker = true
     }
     
     private func removeOrderItem(_ orderItem: OrderItemEntry) {
-        orderItems.removeAll { $0.id == orderItem.id }
+        viewModel.orderItems.removeAll { $0.id == orderItem.id }
     }
     
-    private func addAttribute() {
-        attributes.append(AttributeField())
-    }
-    
-    private func removeAttribute(_ attribute: AttributeField) {
-        attributes.removeAll { $0.id == attribute.id }
-    }
-    
+
     private func loadOrderTemplate(_ template: OrderTemplate) {
         // Load platform and status
         status = template.status
@@ -797,7 +644,7 @@ struct OrderDetailView: View {
     }
     
     private func saveOrder() {
-        let validOrderItems = orderItems.filter { $0.isValid }
+        let validOrderItems = viewModel.orderItems.filter { $0.isValid }
         
         // Create attributes dictionary from valid attributes
         var attributesDict = Dictionary(
@@ -856,7 +703,9 @@ struct OrderDetailView: View {
             
             // Add new order items
             for orderItemEntry in validOrderItems {
-                let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem)
+                // Convert AttributeField array to [String: String] dictionary
+                let attributesDict = Dictionary(uniqueKeysWithValues: orderItemEntry.attributes.map { ($0.key, $0.value) })
+                let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem, attributes: attributesDict)
                 orderItem.order = existingOrder
             }
         } else {
@@ -871,7 +720,9 @@ struct OrderDetailView: View {
             
             // Add order items and reduce stock quantities
             for orderItemEntry in validOrderItems {
-                let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem)
+                // Convert AttributeField array to [String: String] dictionary
+                let attributesDict = Dictionary(uniqueKeysWithValues: orderItemEntry.attributes.map { ($0.key, $0.value) })
+                let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem, attributes: attributesDict)
                 orderItem.order = newOrder
                 newOrder.items.append(orderItem)
                 
@@ -899,3 +750,8 @@ struct OrderDetailView: View {
 #Preview {
     OrderDetailView(mode: .add)
 }
+
+
+
+
+

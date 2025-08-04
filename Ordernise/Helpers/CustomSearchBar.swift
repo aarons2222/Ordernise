@@ -101,7 +101,7 @@ struct CustomSearchBar: View {
     }
     
     var accentColor: Color {
-        return .blue
+        return .color1
     }
 }
 

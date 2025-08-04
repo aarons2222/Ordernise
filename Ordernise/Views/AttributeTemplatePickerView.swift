@@ -41,7 +41,7 @@ struct AttributeTemplatePickerView: View {
                                                 .font(.caption2)
                                                 .padding(.horizontal, 6)
                                                 .padding(.vertical, 2)
-                                                .background(Color.blue)
+                                                .background(Color.appTint)
                                                 .foregroundColor(.white)
                                                 .cornerRadius(4)
                                         }
@@ -64,7 +64,7 @@ struct AttributeTemplatePickerView: View {
                                     }
                                     .font(.caption)
                                     .buttonStyle(.plain)
-                                    .foregroundColor(template.isDefault ? .red : .blue)
+                                    .foregroundColor(template.isDefault ? .red : Color.appTint)
                                 }
                             }
                             

@@ -31,7 +31,7 @@ struct StockItemCard: View {
                 .foregroundStyle(.clear)
                 .frame(width: 20, height: height)
                 .padding(.vertical)
-                .background(item.category?.color.gradient ?? Color("Color1").gradient)
+                .background(item.category?.color.gradient ?? Color.appTint.gradient)
             .cornerRadius(50, corners: [.topLeft, .bottomLeft])
 
             HStack {

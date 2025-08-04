@@ -33,7 +33,7 @@ import SwiftUI
 
 extension Category {
     var color: Color {
-        Color(hex: colorHex) ?? .blue
+        Color(hex: colorHex) ?? .color1
     }
 }
 

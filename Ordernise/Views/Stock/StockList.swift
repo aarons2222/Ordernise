@@ -63,14 +63,20 @@ struct StockList: View {
     }
     
     private var headerSection: some View {
+   
+        
+        
         HeaderWithButton(
             title: "Stock",
-            buttonImage: "plus.circle",
+            buttonContent: "plus.circle",
+            isButtonImage: true,
             showTrailingButton: true,
-            showLeadingButton: false
-        ) {
-            showingAddStock = true
-        }
+            showLeadingButton: false,
+            onButtonTap: {
+           
+                showingAddStock = true
+            }
+        )
     }
     
     private var searchSection: some View {

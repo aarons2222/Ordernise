@@ -123,7 +123,7 @@ struct OrderTemplateRow: View {
                         .fontWeight(.bold)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color.blue)
+                        .background(Color.appTint)
                         .foregroundColor(.white)
                         .cornerRadius(4)
                 }
@@ -157,7 +157,7 @@ struct OrderTemplateRow: View {
                         Image(systemName: "tray.and.arrow.down")
                         Text("Use Template")
                     }
-                    .foregroundColor(.blue)
+                    .foregroundColor(Color.appTint)
                 }
                 
                 Spacer()

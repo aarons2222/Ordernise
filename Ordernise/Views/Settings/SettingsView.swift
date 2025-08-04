@@ -10,21 +10,9 @@ import SwiftData
 
 struct SettingsView: View {
     
-    @AppStorage("selectedCurrency") private var selectedCurrency: String = {
-        let localeCurrencyID = Locale.current.currency?.identifier ?? "GBP"
-        return localeCurrencyID.uppercased()
-    }()
-    
-
-    
-    
-    
-    
-
-    
-    var selectedCurrencyEnum: Currency {
-        Currency(rawValue: selectedCurrency) ?? .gbp
-    }
+    @StateObject private var localeManager = LocaleManager.shared
+    @AppStorage("userTintHex") private var tintHex: String = "#007AFF" // default blue
+    @State private var selectedColor: Color = .color1
     
  
     
@@ -34,15 +22,20 @@ struct SettingsView: View {
             
             
             VStack {
+              
+                
+                
                 HeaderWithButton(
                     title: "Settings",
-                    buttonImage: "line.3.horizontal.decrease.circle",
+                    buttonContent: "line.3.horizontal.decrease.circle",
+                    isButtonImage: true,
                     showTrailingButton: false,
-                    showLeadingButton: false
-                ) {
-                    print("Settings action")
-                }
-                
+                    showLeadingButton: false,
+                    onButtonTap: {
+                  
+                        
+                    }
+                )
                 
                 
                 ScrollView() {
@@ -50,107 +43,136 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 15) {
                         
                         
-                    CustomCardView("General") {
-                        
-                
-                        HStack{
+                        CustomCardView("General") {
                             
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Default Currency")
-                                    .font(.headline)
-                                    .foregroundColor(.text)
-                                
-                                Text("This currency will be used for new stock items")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                
-                            }
-                            Spacer()
-                            
-                            Picker("Currency", selection: $selectedCurrency) {
-                                ForEach(Currency.allCases, id: \.rawValue) { currency in
-                                    HStack {
-                                        Text(currency.rawValue)
-                                        Text(currencyDisplayName(for: currency))
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .tag(currency.rawValue)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                            
-                            
-                            
-                         
-                        }
-                            
-                         
-                       
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    NavigationLink(destination: OrderStatusOptions()) {
-                        
-                        CustomCardView("Order Settings") {
-                            
-                            HStack{
-                              
-                       
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Order Status Options")
-                                    .font(.headline)
-                                    .foregroundColor(.text)
-                            
-                                
-                                Text("Select which statuses are available in your order workflow.")
-                                
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.leading)
-                               
-                            }
-                            
-                                Spacer()
-                            }
-                            
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    
-                    NavigationLink(destination: CategoryOptions()) {
-                        CustomCardView{
                             
                             HStack{
                                 
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("Categories")
+                                    Text("Default Currency")
                                         .font(.headline)
                                         .foregroundColor(.text)
                                     
-                                    Text("Organise your stock items by category to keep things easy to find.")
+                                    Text("This currency will be used for new stock items")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    
+                                    
+                                }
+                                Spacer()
+                                
+                                Picker("Currency", selection: Binding(
+                                    get: { localeManager.currentCurrency.rawValue },
+                                    set: { newValue in
+                                        if let currency = Currency(rawValue: newValue) {
+                                            localeManager.setCurrency(currency)
+                                        }
+                                    }
+                                )) {
+                                    ForEach(Currency.allCases, id: \.rawValue) { currency in
+                                        Text("\(localeManager.getCurrencySymbol(for: currency)) \(localeManager.getCurrencyDisplayName(for: currency))")
+                                            .tag(currency.rawValue)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(Color.appTint)
+                                
+                                
+                                
+                                
+                            }
+                            
+                            
+                            
+                        }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        NavigationLink(destination: OrderStatusOptions()) {
+                            
+                            CustomCardView("Order Settings") {
+                                
+                                HStack{
+                                    
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Order Status Options")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        
+                                        Text("Select which statuses are available in your order workflow.")
+                                        
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                        
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                
+                            }
+                        }
+                        
+                        
+                        
+                        
+                        
+                        NavigationLink(destination: CategoryOptions()) {
+                            CustomCardView{
+                                
+                                HStack{
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Categories")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text("Organise your stock items by category to keep things easy to find.")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    
+                                    
+                                    Spacer()
+                                }
+                            }
+                        }
+                        
+                        
+                        
+                        
+                        CustomCardView("App Settings") {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("App Tint")
+                                        .font(.headline)
+                                        .foregroundColor(.text)
+                                    
+                                    Text("Pick a color to customise the app’s look.")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
                                 }
-                                
-                                
                                 Spacer()
+                                ColorPicker("", selection: Binding(
+                                    get: { Color(hex: tintHex) ?? .color1 },
+                                    set: { color in
+                                        tintHex = color.toHex()
+                                    }
+                                ))
+                                .labelsHidden()
                             }
                         }
                     }
-                    
-                }
                     
                 
             }
@@ -159,24 +181,15 @@ struct SettingsView: View {
         }
             
            .navigationBarHidden(true)
+           .onAppear {
+                       selectedColor = Color(hex: tintHex) ?? .color1
+                   }
       
     }
     }
     
 
-    private func currencyDisplayName(for currency: Currency) -> String {
-        switch currency {
-        case .gbp: return "British Pound"
-        case .usd: return "US Dollar"
-        case .eur: return "Euro"
-        case .jpy: return "Japanese Yen"
-        case .aud: return "Australian Dollar"
-        case .cad: return "Canadian Dollar"
-        case .chf: return "Swiss Franc"
-        case .cny: return "Chinese Yuan"
-        case .inr: return "Indian Rupee"
-        }
-    }
+
     
 
 }
@@ -184,3 +197,14 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
 }
+
+
+
+
+
+
+
+
+
+
+

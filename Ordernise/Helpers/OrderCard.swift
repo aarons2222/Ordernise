@@ -12,7 +12,8 @@ struct OrderCardView: View {
   
     let height: CGFloat
     
-    
+    @StateObject private var localeManager = LocaleManager.shared
+
     var order: Order
 
     var body: some View {
@@ -86,7 +87,7 @@ struct OrderCardView: View {
                         }
 
                         if !order.items.isEmpty {
-                            Text("Order Total: \(totalValue.asCurrency())")
+                            Text("Order Total: \(totalValue, format: localeManager.currencyFormatStyle)")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }

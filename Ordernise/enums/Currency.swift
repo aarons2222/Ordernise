@@ -19,5 +19,6 @@ enum Currency: String, Codable, Identifiable, CaseIterable {
     case cad = "CAD"
     case chf = "CHF"
     case cny = "CNY"
+    case pln = "PLN"
     case inr = "INR"
 }

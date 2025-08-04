@@ -41,6 +41,8 @@ struct OrderList: View {
     @State private var orderToDelete: Order?
     @State private var searchText = ""
     @State private var selectedFilter: OrderFilter = .received
+
+    
     
     var filteredOrders: [Order] {
         orders.filter { order in
@@ -77,26 +79,55 @@ struct OrderList: View {
         
         
         NavigationStack {
+            
             VStack {
+              
+                
                 HeaderWithButton(
                     title: "Orders",
-                    buttonImage: "plus.circle",
+                    buttonContent: "plus.circle",
+                    isButtonImage: true,
                     showTrailingButton: true,
-                    showLeadingButton: false
-                ) {
-                    showingAddOrder = true
-                }
-                
-                // Tab switcher for order filters
-                Picker("Order Filter", selection: $selectedFilter) {
-                    ForEach(OrderFilter.allCases, id: \.self) { filter in
-                        Text(filter.rawValue)
-                            .tag(filter)
+                    showLeadingButton: false,
+                    onButtonTap: {
+                   
+                        showingAddOrder = true
                     }
+                )
+                
+                
+
+                
+                
+                SegmentedControl(
+                    tabs: OrderFilter.allCases,
+                    activeTab: $selectedFilter,
+                    height: 35,
+                    extraText: nil,
+                    font: .callout,
+                    activeTint: Color(UIColor.systemBackground),
+                    inActiveTint: .gray.opacity(0.8)
+                ) { size in
+                    Capsule()
+                        .fill(Color.appTint.gradient)
+                        .padding(.horizontal, 10)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 8)
+                .padding(.horizontal)
+              
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
           
                 if orders.isEmpty {
                     Spacer()
@@ -160,10 +191,19 @@ struct OrderList: View {
             
 
             .fullScreenCover(isPresented: $showingAddOrder) {
-                OrderDetailView(mode: .add)
+                
+                ZStack{
+                    Color(.systemBackground)
+                           .ignoresSafeArea()
+                    OrderDetailView(mode: .add)
+                }
             }
             .fullScreenCover(item: $selectedOrder) { selectedOrder in
-                OrderDetailView(order: selectedOrder, mode: .view)
+                ZStack{
+                    Color(.systemBackground)
+                           .ignoresSafeArea()
+                    OrderDetailView(order: selectedOrder, mode: .view)
+                }
             }
 
             

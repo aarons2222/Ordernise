@@ -49,16 +49,13 @@ struct StockItemDetailView: View {
     let mode: Mode
     let stockItem: StockItem?
     
+    @StateObject private var localeManager = LocaleManager.shared
+    
+    
     @State private var name = ""
     @State private var quantity = 0
     @State private var price = 0.0
     @State private var cost = 0.0
-    @AppStorage("selectedCurrency") private var selectedCurrency: String = {
-        let localeCurrencyID = Locale.current.currency?.identifier ?? "GBP"
-        return localeCurrencyID.uppercased()
-    }()
-    
-    @State private var currency: Currency = .gbp
     @State private var selectedCategory: Category?
     
     // Dynamic attributes storage
@@ -70,11 +67,19 @@ struct StockItemDetailView: View {
     @State private var showingSaveTemplateAlert = false
     @State private var templateName = ""
     
-    struct AttributeField: Identifiable {
-        let id = UUID()
-        var key: String = ""
-        var value: String = ""
-    }
+    // Standalone attribute sheet
+    @State private var showingAttributeSheet = false
+    @State private var newAttributeKey = ""
+    @State private var newAttributeValue = ""
+    @State private var editingAttribute: AttributeField?
+    @State private var isEditingAttribute = false
+    @FocusState private var attributeKeyboardFocused: Bool
+    
+    // Navigation to CategoryOptions
+    @State private var showingCategoryOptions = false
+    
+    // Use the same AttributeField type as other views
+    typealias AttributeField = OrderDetailView.AttributeField
     
     // Initializer for adding new item
     init(mode: Mode = .add) {
@@ -90,215 +95,229 @@ struct StockItemDetailView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Basic Info") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Name")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if mode.isEditable || isEditMode {
-                            TextField("Enter item name", text: $name)
-                                .textFieldStyle(.roundedBorder)
-                        } else {
-                            Text(name.isEmpty ? "—" : name)
-                                .padding(.vertical, 8)
-                        }
+            
+
+            
+            
+            VStack{
+                
+             
+                
+                
+                HeaderWithButton(
+                    title: mode.title,
+                    buttonContent: "Save",
+                    isButtonImage: false,
+                    showTrailingButton: true,
+                    showLeadingButton: true,
+                    onButtonTap: {
+                        saveItem()
+                        
                     }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Quantity")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if mode.isEditable || isEditMode {
-                            TextField("0", value: $quantity, format: .number)
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.numberPad)
-                        } else {
-                            Text("\(quantity)")
-                                .padding(.vertical, 8)
+                )
+
+            
+            
+                ScrollView {
+            
+                     
+                        
+                        ListSection(title: "Item Name") {
+                            
+                            CustomTextField(
+                                text: $name,
+                                placeholder: "Enter item name",
+                                systemImage: "person",
+                                isSecure: false
+                            )
                         }
-                    }
-                    
-                    
-                    // Only show category section if editing or if a category is set
-                    if (mode.isEditable || isEditMode) || selectedCategory != nil {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Category")
+                        .padding(.horizontal, 20)
+                  
+                 
+                        
+                        
+                        
+                        HStack{
+                            
+                            Text("Quantity")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
-                            if mode.isEditable || isEditMode {
-                                Menu {
-                                    Button("None") {
-                                        selectedCategory = nil
-                                    }
-                                    
-                                    ForEach(categories) { category in
-                                        Button {
-                                            selectedCategory = category
-                                        } label: {
-                                            HStack {
-                                                Image(systemName: "largecircle.fill.circle")
-                                                    .font(.body)
-                                                    .tint(category.color)
-                                                
-                                                Text(category.name)
-                                            }
-                                        }
-                                        
-                                        Divider()
+                            Spacer()
+                            
+                            HStack(spacing: 12) {
+                                // Decrement Button
+                                Button {
+                                    if quantity > 0 {
+                                        quantity -= 1
                                     }
                                 } label: {
-                                    HStack {
-                                        if let selectedCategory = selectedCategory {
-                                            Circle()
-                                                .fill(selectedCategory.color)
-                                                .frame(width: 12, height: 12)
-                                            Text(selectedCategory.name)
-                                        } else {
-                                            Text("Select Category")
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
-                                        Image(systemName: "chevron.down")
-                                            .foregroundColor(.secondary)
-                                            .font(.caption)
-                                    }
-                                    .padding()
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(8)
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(quantity > 0 ? Color.appTint.opacity(0.8) : .gray)
                                 }
-                            } else {
-                                if let selectedCategory = selectedCategory {
-                                    HStack {
-                                  
-                                        
-                                        Image(systemName: "largecircle.fill.circle")
-                                            .font(.body)
-                                            .foregroundStyle(selectedCategory.color)
-                                        Text(selectedCategory.name)
-                                    }
-                                    .padding(.vertical, 8)
-                                }
-                            }
-                        }
-                    }
-                    }
-                
-                
-                
-                Section("Pricing") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Selling Price")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if mode.isEditable || isEditMode {
-                            TextField("0.00", value: $price, format: .currency(code: currency.rawValue))
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.decimalPad)
-                        } else {
-                            Text(price, format: .currency(code: currency.rawValue))
-                                .padding(.vertical, 8)
-                        }
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Cost Price")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if mode.isEditable || isEditMode {
-                            TextField("0.00", value: $cost, format: .currency(code: currency.rawValue))
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.decimalPad)
-                        } else {
-                            Text(cost, format: .currency(code: currency.rawValue))
-                                .padding(.vertical, 8)
-                        }
-                    }
-                    
-                
-                }
-                
-                if !attributes.isEmpty || mode.isEditable || isEditMode {
-                    Section("Custom Attributes") {
-                        ForEach($attributes) { $attribute in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("Key")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    if mode.isEditable || isEditMode {
-                                        TextField("Key", text: $attribute.key)
-                                            .textFieldStyle(.roundedBorder)
-                                    } else {
-                                        Text(attribute.key.isEmpty ? "—" : attribute.key)
-                                    }
-                                }
+                                .buttonStyle(.plain)
+                                .disabled(quantity <= 0)
                                 
-                                VStack(alignment: .leading) {
-                                    Text("Value")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    if mode.isEditable || isEditMode {
-                                        TextField("Value", text: $attribute.value)
-                                            .textFieldStyle(.roundedBorder)
-                                    } else {
-                                        Text(attribute.value.isEmpty ? "—" : attribute.value)
-                                    }
-                                }
+                                Text("\(quantity)")
+                                    .font(.headline)
+                                    .frame(minWidth: 30)
                                 
-                                if mode.isEditable || isEditMode {
-                                    Button(action: {
-                                        removeAttribute(attribute)
-                                    }) {
-                                        Image(systemName: "minus.circle.fill")
-                                            .foregroundColor(.red)
-                                    }
+                                // Increment Button
+                                Button {
+                                    quantity += 1
+                                } label: {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(Color.appTint)
                                 }
+                                .buttonStyle(.plain)
                             }
+                            
+                            
+                            
+                            
+                            
                         }
+                        .padding(.horizontal, 20)
                         
-                        if mode.isEditable || isEditMode {
-                            Button(action: addAttribute) {
-                                Label("Add Attribute", systemImage: "plus.circle")
-                            }
-                            
-                            if !attributeTemplates.isEmpty {
-                                Button(action: { showingTemplateSheet = true }) {
-                                    Label("Load Template", systemImage: "tray.and.arrow.down")
-                                }
-                            }
-                            
-                            if !attributes.isEmpty && attributes.contains(where: { !$0.key.isEmpty }) {
-                                Button(action: { showingSaveTemplateAlert = true }) {
-                                    Label("Save as Template", systemImage: "tray.and.arrow.up")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle(mode.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
+                        
+                        
+                        
+                        
+                        
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if mode == .view && !isEditMode {
-                        Button("Edit") {
-                            isEditMode = true
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Category")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                               
+                                    if categories.isEmpty {
+                                      
+                                        
+                                        
+                                        GlobalButton(title: "Create Categories", showIcon: true, icon: "plus.circle" ,  action: {
+                                            showingCategoryOptions = true
+                                        })
+                                    
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                    } else {
+                                        // Use the new CategoryPicker component
+                                        CategoryPicker(
+                                            selection: $selectedCategory,
+                                            categories: categories
+                                        )
+                                   
+                                    }
+                                
+                            }.padding(.horizontal, 15)
+                        
+                  
+                   
+                    
+
+                        
+                        
+                        
+                        ListSection(title: "Item Price") {
+                            
+                            
+                            CustomNumberField(
+                                value: $price,
+                                placeholder: "Item Price",
+                                systemImage: localeManager.currencySymbolName,
+                                format: localeManager.currencyFormatStyle
+                            )
+                            
+                            
+                        }.padding(.horizontal, 20)
+                        
+                        
+                        
+                        ListSection(title: "Item Cost") {
+                            
+                            CustomNumberField(
+                                value: $cost,
+                                placeholder: "Item Cost",
+                                systemImage: localeManager.currencySymbolName,
+                                format: localeManager.currencyFormatStyle
+                            )
+                            
+                        }.padding(.horizontal, 20)
+
+                        
+                        
+                        
+                    
+                        
+                     
+                        
+                    
+                    
+   
+                            
+                            ListSection(title: "Custom Attributes") {
+                            // Display existing attributes
+                            ForEach(attributes) { attribute in
+                                HStack {
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(attribute.key)
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        Text(attribute.value)
+                                            .font(.body)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    if mode.isEditable || isEditMode {
+                                        Button(action: {
+                                            removeAttribute(attribute)
+                                        }) {
+                                            Image(systemName: "minus.circle.fill")
+                                                .foregroundColor(.red)
+                                        }
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                            
+                       
+                                Button(action: { showingAttributeSheet = true }) {
+                                    Label("Add Attribute", systemImage: "plus.circle")
+                                }
+                                
+                                if !attributeTemplates.isEmpty {
+                                    Button(action: { showingTemplateSheet = true }) {
+                                        Label("Load Template", systemImage: "tray.and.arrow.down")
+                                    }
+                                }
+                                
+                                if !attributes.isEmpty && attributes.contains(where: { !$0.key.isEmpty }) {
+                                    Button(action: { showingSaveTemplateAlert = true }) {
+                                        Label("Save as Template", systemImage: "tray.and.arrow.up")
+                                    }
+                                }
+                            
                         }
-                    } else if mode.isEditable || isEditMode {
-                        Button("Save") {
-                            saveItem()
-                        }
-                        .disabled(name.isEmpty)
-                    }
+                        .padding(.horizontal, 20)
+                    
                 }
+              
             }
         }
         .onAppear {
@@ -311,6 +330,93 @@ struct StockItemDetailView: View {
                 templates: attributeTemplates,
                 onTemplateSelected: loadTemplate
             )
+        }
+        
+        
+        
+        
+        
+        .sheet(isPresented: $showingAttributeSheet) {
+            NavigationStack {
+                VStack(spacing: 24) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(isEditingAttribute ? "Edit Attribute" : "Add Attribute")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text(isEditingAttribute ? "Update the attribute information" : "Add custom information to this item")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Attribute Name")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            CustomTextField(
+                                text: $newAttributeKey,
+                                placeholder: "e.g., Color, Size, Material",
+                                systemImage: "tag",
+                                isSecure: false
+                            )
+                            .focused($attributeKeyboardFocused)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Value")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            CustomTextField(
+                                text: $newAttributeValue,
+                                placeholder: "Enter the value for this attribute",
+                                systemImage: "textformat",
+                                isSecure: false
+                            )
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 12) {
+                        Button("Cancel") {
+                            dismissAttributeSheet()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.gray.opacity(0.5).gradient)
+                        .foregroundColor(.primary)
+                        .cornerRadius(40)
+                        
+                        Button(isEditingAttribute ? "Save Changes" : "Add Attribute") {
+                            saveAttribute()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.appTint.gradient)
+                        .foregroundColor(.white)
+                        .cornerRadius(40)
+                        .disabled(newAttributeKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || newAttributeValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+                .padding(24)
+                .presentationDetents([.height(400)])
+                .presentationDragIndicator(.visible)
+                .onAppear {
+                    if isEditingAttribute, let editingAttribute = editingAttribute {
+                        newAttributeKey = editingAttribute.key
+                        newAttributeValue = editingAttribute.value
+                    }
+                    attributeKeyboardFocused = true
+                }
+            }
+        }
+        .sheet(isPresented: $showingCategoryOptions) {
+            CategoryOptions()
         }
         .alert("Save Template", isPresented: $showingSaveTemplateAlert) {
             TextField("Template Name", text: $templateName)
@@ -330,7 +436,6 @@ struct StockItemDetailView: View {
             quantity = item.quantityAvailable
             price = item.price
             cost = item.cost
-            currency = item.currency
             selectedCategory = item.category
             
             // Load attributes
@@ -338,22 +443,50 @@ struct StockItemDetailView: View {
                 AttributeField(key: key, value: value)
             }
         } else {
-            // For new items, use the selected currency from settings
-            currency = Currency(rawValue: selectedCurrency) ?? .gbp
-            
+            // For new items, currency is already managed by LocaleManager
             // Load default template if available
             loadDefaultTemplate()
         }
     }
     
-    private func addAttribute() {
-        attributes.append(AttributeField())
-    }
-    
+//    private func addAttribute() {
+//        attributes.append(AttributeField())
+//    }
+//    
     private func removeAttribute(_ attribute: AttributeField) {
         attributes.removeAll { $0.id == attribute.id }
     }
     
+    private func saveAttribute() {
+        let trimmedKey = newAttributeKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedValue = newAttributeValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmedKey.isEmpty && !trimmedValue.isEmpty else { return }
+        
+        if isEditingAttribute, let editingAttribute = editingAttribute {
+            // Update existing attribute
+            if let index = attributes.firstIndex(where: { $0.id == editingAttribute.id }) {
+                attributes[index].key = trimmedKey
+                attributes[index].value = trimmedValue
+            }
+        } else {
+            // Add new attribute
+            let newAttribute = AttributeField(key: trimmedKey, value: trimmedValue)
+            attributes.append(newAttribute)
+        }
+        
+        dismissAttributeSheet()
+    }
+    
+    private func dismissAttributeSheet() {
+        showingAttributeSheet = false
+        newAttributeKey = ""
+        newAttributeValue = ""
+        editingAttribute = nil
+        isEditingAttribute = false
+    }
+    
+
     private func loadDefaultTemplate() {
         // Find the default template for stock items
         if let defaultTemplate = attributeTemplates.first(where: { $0.isDefault }) {
@@ -409,7 +542,7 @@ struct StockItemDetailView: View {
             existingItem.quantityAvailable = quantity
             existingItem.price = price
             existingItem.cost = cost
-            existingItem.currency = currency
+            existingItem.currency = localeManager.currentCurrency
             existingItem.category = selectedCategory
             existingItem.attributes = attributesDict
         } else {
@@ -419,7 +552,7 @@ struct StockItemDetailView: View {
                 quantityAvailable: quantity,
                 price: price,
                 cost: cost,
-                currency: currency,
+                currency: localeManager.currentCurrency,
                 attributes: attributesDict
             )
             newItem.category = selectedCategory

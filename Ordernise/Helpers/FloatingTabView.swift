@@ -45,6 +45,8 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
     @Binding var selection: Value
     var content: (Value, CGFloat) -> Content
     
+    @AppStorage("userTintHex") private var tintHex: String = "#007AFF"
+    
     init(config: FloatingTabConfig = .init(), selection: Binding<Value>, @ViewBuilder content: @escaping (Value, CGFloat) -> Content) {
         self.config = config
         self._selection = selection
@@ -52,6 +54,13 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
     }
     
     @StateObject private var helper: FloatingTabViewHelper = .init()
+    
+    private var dynamicConfig: FloatingTabConfig {
+        var updatedConfig = config
+        updatedConfig.activeBackgroundTint = Color(hex: tintHex) ?? .color1
+        return updatedConfig
+    }
+    
     
     var body: some View {
       
@@ -85,7 +94,7 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
             }
             
             
-            FloatingTabBar(config: config, activeTab: $selection)
+            FloatingTabBar(config: dynamicConfig, activeTab: $selection)
                 .padding(.horizontal, config.hPadding)
                 .padding(.bottom, config.bPadding)
         }
@@ -97,7 +106,7 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
 
 struct FloatingTabConfig {
     var activeTint: Color = .white                      // Color of the active tab icon/text
-    var activeBackgroundTint: Color = .color1             // Background color of the active tab
+    var activeBackgroundTint: Color = Color.appTint     // Background color of the active tab
     var inactiveTint: Color = .gray                     // Color of inactive tab icon/text
     var tabAnimation: Animation = .smooth(duration: 0.35, extraBounce: 0) // Animation config for tab switching
     var backgroundColor: Color = .gray.opacity(0.1)     // Background color of the tab bar
