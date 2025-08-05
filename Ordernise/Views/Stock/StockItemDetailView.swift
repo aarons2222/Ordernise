@@ -211,7 +211,10 @@ struct StockItemDetailView: View {
                                         // Use the new CategoryPicker component
                                         CategoryPicker(
                                             selection: $selectedCategory,
-                                            categories: categories
+                                            categories: categories,
+                                            onManageCategories: {
+                                                showingCategoryOptions = true
+                                            }
                                         )
                                    
                                     }
@@ -265,35 +268,13 @@ struct StockItemDetailView: View {
                             ListSection(title: "Custom Attributes") {
                             // Display existing attributes
                             ForEach(attributes) { attribute in
-                                HStack {
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(attribute.key)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                        Text(attribute.value)
-                                            .font(.body)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    if mode.isEditable || isEditMode {
-                                        Button(action: {
+                                AttributeRow(attribute: attribute)
+                                    .swipeActions {
+                                        Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
                                             removeAttribute(attribute)
-                                        }) {
-                                            Image(systemName: "minus.circle.fill")
-                                                .foregroundColor(.red)
+                                            resetPosition = true
                                         }
                                     }
-                                }
-                                .padding(.vertical, 4)
                             }
                             
                        
@@ -565,6 +546,32 @@ struct StockItemDetailView: View {
         } catch {
             print("Failed to save stock item: \(error)")
         }
+    }
+}
+
+struct AttributeRow: View {
+    let attribute: StockItemDetailView.AttributeField
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "tag.fill")
+                .font(.body)
+                .foregroundStyle(Color.appTint)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(attribute.key)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Text(attribute.value)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .cardBackground()
+        .padding(.horizontal)
     }
 }
 

@@ -60,7 +60,7 @@ struct OrderDetailView: View {
     @State private var showingTemplateSheet = false
     @State private var showingSaveTemplateAlert = false
     @State private var newTemplateName = ""
-    
+    @State private var showSheet = false
     // For template naming
     @State private var templateName = ""
     
@@ -354,17 +354,11 @@ struct OrderDetailView: View {
                     let validOrderItems = viewModel.orderItems.filter { $0.isValid }
               
                         
-                    ListSection(title: $viewModel.orderItems.count > 0 ? "Items" : "") {
+                    if !validOrderItems.isEmpty {
+                        ListSection(title: "Items") {
                             VStack{
-                                
                                 ForEach($viewModel.orderItems) { $orderItem in
-                                    
                                     if let stockItem = orderItem.stockItem {
-                                        
-                                        
-                                        
-                                        
-                                        
                                         VStack(alignment: .leading, spacing: 8) {
                                             HStack(alignment: .top) {
                                                 Text("\(orderItem.quantity) × \(orderItem.stockItem?.name ?? "—")")
@@ -400,20 +394,18 @@ struct OrderDetailView: View {
                                             }
                                         }
                                         .padding(.vertical, 6)
-
-                                        
                                     }
-                                    
-                                
-                                
+                                }
                             }
+                        }
+                        .padding(.horizontal)
                     }
-                }
-                 .padding(.horizontal, 20)
+             
+           
     
                   
                          
-                        GlobalButton(title: validOrderItems.isEmpty ? "Add items"  :  "Edit items", showIcon: true, icon: validOrderItems.isEmpty ? "plus.circle" : "pencil.circle",  action: {
+                        GlobalButton(title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "Add items"  :  "Edit items", showIcon: true, icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",  action: {
                             addOrderItemWithPicker()
                         })
                         .padding(.horizontal, 10)
@@ -435,22 +427,45 @@ struct OrderDetailView: View {
                 
                    
    
-
+                    Color.clear.frame(height: 40)
+                    
+               
                 
-                // Template Management - Always visible when editing
-                if mode.isEditable || isEditMode {
-                    Section("Templates") {
-                        Button(action: { showingTemplateSheet = true }) {
-                            Label("Load Order Template (\(orderTemplates.count) available)", systemImage: "tray.and.arrow.down")
-                        }
-                        
-                        Button(action: { showingSaveTemplateAlert = true }) {
-                            Label("Save Order as Template", systemImage: "tray.and.arrow.up")
-                        }
-                        
-                        
-                    }
-                }
+           
+
+//                    ListSection(title: "Templates") {
+//                        
+//                        
+//                        HStack(spacing: 10){
+//                            
+//                            
+//                            GlobalButton(title: "Save Order as Template", showIcon: true, icon: "document.badge.plus",  action: {
+//                                showingSaveTemplateAlert = true
+//                            })
+//                            
+//                            
+//                            
+//                            GlobalButton(title: "Load Order Template (\(orderTemplates.count) available)", showIcon: true, icon: "document.badge.clock.fill",  action: {
+//                                showingTemplateSheet = true
+//                            })
+//                          
+//                            
+//                        }
+//                        
+////                        
+////                        
+////                        Button(action: { showingTemplateSheet = true }) {
+////                            Label("Load Order Template (\(orderTemplates.count) available)", systemImage: "document.badge.clock.fill")
+////                        }
+////                        
+////                        Button(action: { showingSaveTemplateAlert = true }) {
+////                            Label("Save Order as Template", systemImage: "document.badge.plus")
+////                        }
+////                        
+//                        
+//                    }
+//                    .padding()
+                
                 
             }
            
@@ -463,8 +478,8 @@ struct OrderDetailView: View {
             
             
 
-
         }
+        
         
         
         .onAppear {
@@ -498,7 +513,118 @@ struct OrderDetailView: View {
             Text("Enter a name for this attribute template")
         }
 
+        
+  
+        
+        
+        .overlay(alignment: .bottomTrailing) {
+            
+            
+            
+            Button{
+                self.showSheet = true
+            }label: {
+                
+                Image(systemName: "plus")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white) // icon color
+                    .frame(width: 45, height: 45)
+                    .background(
+                        Circle()
+                            .fill(Color.appTint.gradient) // circle background color
+                    )
+                
+           
+            }
+            .padding(.trailing, 20)
+        }
+        .GenericSheet(
+            isPresented: $showSheet,
+            title: "Templates",
+            action: {
+                print("Continue tapped")
+            }
+        ) {
+            VStack(spacing: 30) {
+               
+                
+                
+                        RowView(
+                            "text.document",
+                            "Save Order as Template",
+                                     "Save this order as a template to use in the future"
+                                 ) {
+                                     showSheet = false
+                                     showingSaveTemplateAlert = true
+                                 }
+                
+                
+                        RowView(
+                            "document.badge.clock.fill",
+                            "Load Order Template (\(orderTemplates.count) available)",
+                                     "Save time, use a previously created template"
+                                 ) {
+                                     
+                                     showSheet = false
+                                     showingTemplateSheet = true
+                                 }
+            }
+          
+        }
+        
+//        
+
+        
+        
+   
+
     }
+    
+    
+    @ViewBuilder
+    func RowView(
+        _ image: String,
+        _ title: String,
+        _ description: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        
+        
+        CustomCardView{
+            
+            HStack(spacing: 10) {
+                Image(systemName: image)
+                    .font(.title2)
+                    .foregroundStyle(Color.appTint)
+                    .frame(width: 45, height: 45)
+                
+                
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.text)
+                    
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+            }
+     
+            .contentShape(.rect)
+            .onTapGesture {
+                action()
+            }
+        }
+    }
+    
+    
+    
+
     
     private var isValidOrder: Bool {
         !viewModel.orderItems.isEmpty && viewModel.orderItems.allSatisfy { $0.isValid }
@@ -750,7 +876,6 @@ struct OrderDetailView: View {
 #Preview {
     OrderDetailView(mode: .add)
 }
-
 
 
 

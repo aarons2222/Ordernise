@@ -11,15 +11,25 @@ import SwiftUI
 struct CategoryPicker: View {
     @Binding var selection: Category?
     let categories: [Category]
+    let onManageCategories: (() -> Void)?
     
     // Create a "None" category for the dropdown
     private var noneCategory: Category {
         Category(name: "None", colorHex: "#808080") // Gray color in hex
     }
     
-    // All options including None
+    // Create a "Manage Categories" option for the dropdown
+    private var manageCategoriesOption: Category {
+        Category(name: "Manage Categories...", colorHex: "#007AFF") // Blue color in hex
+    }
+    
+    // All options including None and Manage Categories
     private var allOptions: [Category] {
-        [noneCategory] + categories
+        if let _ = onManageCategories {
+            return [noneCategory] + categories + [manageCategoriesOption]
+        } else {
+            return [noneCategory] + categories
+        }
     }
     
     // Current selection (convert nil to noneCategory)
@@ -37,6 +47,9 @@ struct CategoryPicker: View {
                     // If "None" is selected, set selection to nil
                     if newValue.name == "None" {
                         selection = nil
+                    } else if newValue.name == "Manage Categories..." {
+                        // Trigger the manage categories action
+                        onManageCategories?()
                     } else {
                         selection = newValue
                     }

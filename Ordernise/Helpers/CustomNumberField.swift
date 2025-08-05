@@ -13,6 +13,7 @@ struct CustomNumberField: View {
     let format: FloatingPointFormatStyle<Double>.Currency?
 
     @State private var textValue: String = ""
+    @State private var isEditing: Bool = false
     
     // Initializer without format (backward compatibility)
     init(value: Binding<Double>?, placeholder: String, systemImage: String) {
@@ -41,7 +42,11 @@ struct CustomNumberField: View {
                     .textContentType(.none)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
+                    .onTapGesture {
+                        isEditing = true
+                    }
                     .onChange(of: textValue) {
+                        isEditing = true
                         updateValue(from: textValue, binding: binding)
                     }
             } else {
@@ -61,8 +66,19 @@ struct CustomNumberField: View {
             textValue = displayValue == 0 ? "" : formattedValue(displayValue)
         }
         .onChange(of: value?.wrappedValue) { newValue in
-            let displayValue = newValue ?? 0
-            textValue = displayValue == 0 ? "" : formattedValue(displayValue)
+            // Only update the text field if the user is not currently editing
+            if !isEditing {
+                let displayValue = newValue ?? 0
+                textValue = displayValue == 0 ? "" : formattedValue(displayValue)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
+            // When user finishes editing, format the value and stop editing mode
+            isEditing = false
+            if let binding = value {
+                let displayValue = binding.wrappedValue
+                textValue = displayValue == 0 ? "" : formattedValue(displayValue)
+            }
         }
     }
 

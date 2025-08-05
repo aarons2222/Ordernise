@@ -51,8 +51,9 @@ struct CustomDropdownMenu<T: Hashable>: View {
                     }
                     
                     if let optionToColor = optionToColor {
-                        Image(systemName: "largecircle.fill.circle")
-                            .foregroundColor(optionToColor(selection))
+                        let iconName = optionToString(selection) == "Manage Categories..." ? "plus.circle" : "largecircle.fill.circle"
+                        Image(systemName: iconName)
+                            .foregroundColor( optionToString(selection) == "Manage Categories..." ? Color.appTint : optionToColor(selection))
                              .frame(width: 28, height: 28)
                     }
                     
@@ -96,10 +97,13 @@ struct CustomDropdownMenu<T: Hashable>: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 32, height: 32)
+                                        .foregroundColor((option as? Platform) == .custom ? Color.appTint : nil)
                                 }
                                 
+                                
                                 if let optionToColor = optionToColor {
-                                    Image(systemName: "largecircle.fill.circle")
+                                    let iconName = optionToString(option) == "Manage Categories..." ? "plus.circle" : "largecircle.fill.circle"
+                                    Image(systemName: iconName)
                                         .foregroundStyle(optionToColor(option))
                                         .frame(width: 28, height: 28)
                                 }
@@ -179,7 +183,7 @@ struct PlatformDropdownMenu: View {
         case .etsy:
             return Image("etsy")
         case .custom:
-            return Image("facebook")
+            return Image(systemName: "wrench.adjustable")
         case .vinted:
             return Image("vinted")
         case .poshmark:

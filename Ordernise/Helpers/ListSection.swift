@@ -14,9 +14,12 @@ struct ListSection<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            HStack{
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
             content()
         }
     }
