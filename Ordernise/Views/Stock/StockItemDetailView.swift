@@ -87,6 +87,10 @@ struct StockItemDetailView: View {
         self.stockItem = nil
     }
     
+    @State private var anchor: InlineToastConfig.InlineToastAnchor = .top
+    @State private var showErrorToast: Bool = false
+
+    
     // Initializer for viewing/editing existing item
     init(stockItem: StockItem, mode: Mode = .view) {
         self.mode = mode
@@ -96,6 +100,29 @@ struct StockItemDetailView: View {
     var body: some View {
         NavigationStack {
             
+            
+            
+            
+            
+            
+            
+      
+            
+                      /// Sample Toasts
+                      let errorToast = InlineToastConfig(
+                          icon: "exclamationmark.circle.fill",
+                          title: "Incomplete form",
+                          subTitle: "Oops! Thats not enouge information. Give it another shot.",
+                          tint: .red,
+                          anchor: anchor,
+                          animationAnchor: anchor,
+                          actionIcon: "xmark"
+                      ) {
+                          showErrorToast = false
+                      }
+                      
+                   
+
 
             
             
@@ -111,10 +138,17 @@ struct StockItemDetailView: View {
                     showTrailingButton: true,
                     showLeadingButton: true,
                     onButtonTap: {
+                        
                         saveItem()
                         
                     }
                 )
+          
+             
+                       
+                    
+           
+   
 
             
             
@@ -142,6 +176,7 @@ struct StockItemDetailView: View {
                             Text("Quantity")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
+                            
                             
                             Spacer()
                             
@@ -253,6 +288,7 @@ struct StockItemDetailView: View {
                             )
                             
                         }.padding(.horizontal, 20)
+                      
 
                         
                         
@@ -260,7 +296,7 @@ struct StockItemDetailView: View {
                     
                         
                      
-                        
+                 
                     
                     
    
@@ -278,9 +314,22 @@ struct StockItemDetailView: View {
                             }
                             
                        
-                                Button(action: { showingAttributeSheet = true }) {
-                                    Label("Add Attribute", systemImage: "plus.circle")
+                                Button {
+                                    showingAttributeSheet = true
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "plus.circle")
+                                            .foregroundColor(Color.appTint)
+                                            .font(.title2)
+                                        Text("Add Attribute")
+                                            .font(.title2)
+                                            .foregroundColor(Color.appTint)
+                                    }
                                 }
+                                .buttonStyle(.plain)
+                                
+                                
+                              
                                 
                                 if !attributeTemplates.isEmpty {
                                     Button(action: { showingTemplateSheet = true }) {
@@ -298,8 +347,18 @@ struct StockItemDetailView: View {
                         .padding(.horizontal, 20)
                     
                 }
+                .inlineToast(alignment: .center, config: errorToast, isPresented: showErrorToast)
+                .animation(.smooth(duration: 0.35, extraBounce: 0), value: showErrorToast)
+            
               
             }
+            
+            
+        
+            
+            
+            
+    
         }
         .onAppear {
             loadItemData()
@@ -511,12 +570,20 @@ struct StockItemDetailView: View {
     }
     
     private func saveItem() {
+        // Validation: Only for new items
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+            price == 0 ||
+            (stockItem == nil && quantity <= 0) {
+            showErrorToast.toggle()
+            return
+        }
+
         let attributesDict = Dictionary(
             uniqueKeysWithValues: attributes
                 .filter { !$0.key.isEmpty }
                 .map { ($0.key, $0.value) }
         )
-        
+
         if let existingItem = stockItem {
             // Edit existing item
             existingItem.name = name
@@ -539,7 +606,7 @@ struct StockItemDetailView: View {
             newItem.category = selectedCategory
             modelContext.insert(newItem)
         }
-        
+
         do {
             try modelContext.save()
             dismiss()
@@ -548,6 +615,8 @@ struct StockItemDetailView: View {
         }
     }
 }
+
+
 
 struct AttributeRow: View {
     let attribute: StockItemDetailView.AttributeField

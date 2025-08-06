@@ -61,4 +61,28 @@ extension View {
 }
 
 
-
+//
+//CustomCardView("Order Settings") {
+//    
+//    HStack{
+//        
+//        
+//        VStack(alignment: .leading, spacing: 8) {
+//            Text("Order Status Options")
+//                .font(.headline)
+//                .foregroundColor(.text)
+//            
+//            
+//            
+//            Text("Select which statuses are available in your order workflow.")
+//            
+//                .font(.subheadline)
+//                .foregroundColor(.secondary)
+//                .multilineTextAlignment(.leading)
+//            
+//        }
+//        
+//        Spacer()
+//    }
+//    
+//}

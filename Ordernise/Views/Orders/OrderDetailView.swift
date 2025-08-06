@@ -431,40 +431,7 @@ struct OrderDetailView: View {
                     
                
                 
-           
 
-//                    ListSection(title: "Templates") {
-//                        
-//                        
-//                        HStack(spacing: 10){
-//                            
-//                            
-//                            GlobalButton(title: "Save Order as Template", showIcon: true, icon: "document.badge.plus",  action: {
-//                                showingSaveTemplateAlert = true
-//                            })
-//                            
-//                            
-//                            
-//                            GlobalButton(title: "Load Order Template (\(orderTemplates.count) available)", showIcon: true, icon: "document.badge.clock.fill",  action: {
-//                                showingTemplateSheet = true
-//                            })
-//                          
-//                            
-//                        }
-//                        
-////                        
-////                        
-////                        Button(action: { showingTemplateSheet = true }) {
-////                            Label("Load Order Template (\(orderTemplates.count) available)", systemImage: "document.badge.clock.fill")
-////                        }
-////                        
-////                        Button(action: { showingSaveTemplateAlert = true }) {
-////                            Label("Save Order as Template", systemImage: "document.badge.plus")
-////                        }
-////                        
-//                        
-//                    }
-//                    .padding()
                 
                 
             }

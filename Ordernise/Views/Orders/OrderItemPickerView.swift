@@ -200,205 +200,238 @@ struct OrderItemPickerView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            List(stockItems) { item in
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.name)
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            HStack {
-                                Text("Available: \(item.quantityAvailable - getQuantity(for: item))")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                
-                                Text(item.price, format: localeManager.currencyFormatStyle)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        Spacer()
-                    }
+        VStack {
+            
+            
+            
+            HeaderWithButton(
+                title: "Add Items",
+                buttonContent: "Save",
+                isButtonImage: false,
+                showTrailingButton: true,
+                showLeadingButton: true,
+                onButtonTap: {
+                    addSelectedItems()
                     
-                    HStack {
-                        Spacer()
+                }
+            )
+            
+            
+            ScrollView{
+                
+                VStack{
+            
+            
+                    ForEach(stockItems) { item in
                         
-                        HStack(spacing: 12) {
-                            // Decrement Button
-                            Button {
-                                let currentQty = getQuantity(for: item)
-                                setQuantity(for: item, quantity: currentQty - 1)
-                            } label: {
-                                Image(systemName: "minus.circle.fill")
-                                    .font(.title2)
-                                    .foregroundColor(canDecrement(for: item) ? Color.appTint.opacity(0.8) : .gray)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(!canDecrement(for: item))
-                            
-                            Text("\(getQuantity(for: item))")
-                                .font(.headline)
-                                .frame(minWidth: 30)
-                            
-                            // Increment Button  
-                            Button {
-                                let currentQty = getQuantity(for: item)
-                                setQuantity(for: item, quantity: currentQty + 1)
-                            } label: {
-                                Image(systemName: "plus.circle.fill")
-                                    .font(.title2)
-                                    .foregroundColor(canIncrement(for: item) ? Color.appTint : .gray)
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(!canIncrement(for: item))
-                        }
-                    }
-                    
-                    if getQuantity(for: item) > 0 {
-                        HStack {
-                            Text("Total: ")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text((item.price * Double(getQuantity(for: item))), format: localeManager.currencyFormatStyle)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
-                            Spacer()
-                        }
+                        CustomCardView{
                         
-                        // Attributes section
+                        
                         VStack(alignment: .leading, spacing: 8) {
-                            // Show stock item base attributes (can be overridden for this order)
-                            ForEach(Array(item.attributes.keys.sorted()), id: \.self) { key in
-                                if let defaultValue = item.attributes[key] {
-                                    let currentAttributes = getAttributes(for: item)
-                                    let isOverridden = currentAttributes.contains { $0.key == key }
-                                    let displayValue = currentAttributes.first { $0.key == key }?.value ?? defaultValue
-                                    
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.name)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
                                     HStack {
-                                        Image(systemName: isOverridden ? "tag.fill" : "tag")
-                                            .foregroundColor(isOverridden ? Color.appTint : .secondary)
-                                            .font(.title2)
-                                        Text("\(key): \(displayValue)")
-                                            .font(.title2)
-                                            .foregroundColor(isOverridden ? .primary : .secondary)
+                                        Text("Available: \(item.quantityAvailable - getQuantity(for: item))")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
                                         Spacer()
                                         
-                                        if isOverridden {
-                                            // Show "Overridden" badge and allow removing override
-                                            Button {
-                                                removeAttributeOverride(for: item, key: key)
-                                            } label: {
-                                                HStack(spacing: 4) {
-                                                    Text("Override")
-                                                        .font(.caption)
-                                                        .foregroundColor(.white)
-                                                    Image(systemName: "xmark")
-                                                        .font(.caption)
-                                                        .foregroundColor(.white)
-                                                }
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(Color.appTint)
-                                                .cornerRadius(4)
-                                            }
-                                            .buttonStyle(.plain)
-                                        } else {
-                                            // Show "Base" badge and allow overriding
-                                            Button {
-                                                overrideBaseAttribute(for: item, key: key, defaultValue: defaultValue)
-                                            } label: {
-                                                Text("Edit")
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
-                                                    .padding(.horizontal, 6)
-                                                    .padding(.vertical, 2)
-                                                    .background(Color.secondary.opacity(0.1))
-                                                    .cornerRadius(4)
-                                            }
-                                            .buttonStyle(.plain)
-                                        }
+                                        Text(item.price, format: localeManager.currencyFormatStyle)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
                                     }
-                                    .padding(.vertical, 2)
-                                    .onTapGesture {
-                                        if isOverridden {
-                                            // Edit the overridden value
-                                            if let attribute = currentAttributes.first(where: { $0.key == key }) {
-                                                editAttribute(for: item, attribute: attribute)
-                                            }
-                                        } else {
-                                            // Create override
-                                            overrideBaseAttribute(for: item, key: key, defaultValue: defaultValue)
-                                        }
+                                }
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                Spacer()
+                                
+                                HStack(spacing: 12) {
+                                    // Decrement Button
+                                    Button {
+                                        let currentQty = getQuantity(for: item)
+                                        setQuantity(for: item, quantity: currentQty - 1)
+                                    } label: {
+                                        Image(systemName: "minus.circle.fill")
+                                            .font(.title2)
+                                            .foregroundColor(canDecrement(for: item) ? Color.appTint.opacity(0.8) : .gray)
                                     }
+                                    .buttonStyle(.plain)
+                                    .disabled(!canDecrement(for: item))
+                                    
+                                    Text("\(getQuantity(for: item))")
+                                        .font(.headline)
+                                        .frame(minWidth: 30)
+                                    
+                                    // Increment Button
+                                    Button {
+                                        let currentQty = getQuantity(for: item)
+                                        setQuantity(for: item, quantity: currentQty + 1)
+                                    } label: {
+                                        Image(systemName: "plus.circle.fill")
+                                            .font(.title2)
+                                            .foregroundColor(canIncrement(for: item) ? Color.appTint : .gray)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(!canIncrement(for: item))
                                 }
                             }
                             
-                            // Show order-specific attributes (editable)
-                            let currentAttributes = getAttributes(for: item)
-                            let _ = print("📄 UI: Displaying \(currentAttributes.count) order attributes for \(item.name)")
-                            ForEach(currentAttributes) { attribute in
+                            if getQuantity(for: item) > 0 {
                                 HStack {
-                                    Image(systemName: "tag.fill")
-                                        .foregroundColor(Color.appTint)
-                                        .font(.title2)
-                                    Text("\(attribute.key): \(attribute.value)")
-                                        .font(.title2)
+                                    Text("Total: ")
+                                        .font(.caption)
                                         .foregroundColor(.secondary)
+                                    Text((item.price * Double(getQuantity(for: item))), format: localeManager.currencyFormatStyle)
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
                                     Spacer()
+                                }
+                                
+                                // Attributes section
+                                VStack(alignment: .leading, spacing: 8) {
+                                    // Show stock item base attributes (can be overridden for this order)
+                                    ForEach(Array(item.attributes.keys.sorted()), id: \.self) { key in
+                                        if let defaultValue = item.attributes[key] {
+                                            let currentAttributes = getAttributes(for: item)
+                                            let isOverridden = currentAttributes.contains { $0.key == key }
+                                            let displayValue = currentAttributes.first { $0.key == key }?.value ?? defaultValue
+                                            
+                                            HStack {
+                                                Image(systemName: isOverridden ? "tag.fill" : "tag")
+                                                    .foregroundColor(isOverridden ? Color.appTint : .secondary)
+                                                    .font(.title2)
+                                                Text("\(key): \(displayValue)")
+                                                    .font(.title2)
+                                                    .foregroundColor(isOverridden ? .primary : .secondary)
+                                                Spacer()
+                                                
+                                                if isOverridden {
+                                                    // Show "Overridden" badge and allow removing override
+                                                    Button {
+                                                        removeAttributeOverride(for: item, key: key)
+                                                    } label: {
+                                                        HStack(spacing: 4) {
+                                                            Text("Override")
+                                                                .font(.caption)
+                                                                .foregroundColor(.white)
+                                                            Image(systemName: "xmark")
+                                                                .font(.caption)
+                                                                .foregroundColor(.white)
+                                                        }
+                                                        .padding(.horizontal, 6)
+                                                        .padding(.vertical, 2)
+                                                        .background(Color.appTint)
+                                                        .cornerRadius(4)
+                                                    }
+                                                    .buttonStyle(.plain)
+                                                } else {
+                                                    // Show "Base" badge and allow overriding
+                                                    Button {
+                                                        overrideBaseAttribute(for: item, key: key, defaultValue: defaultValue)
+                                                    } label: {
+                                                        Text("Edit")
+                                                            .font(.caption)
+                                                            .foregroundColor(.secondary)
+                                                            .padding(.horizontal, 6)
+                                                            .padding(.vertical, 2)
+                                                            .background(Color.secondary.opacity(0.1))
+                                                            .cornerRadius(4)
+                                                    }
+                                                    .buttonStyle(.plain)
+                                                }
+                                            }
+                                            .padding(.vertical, 2)
+                                            .onTapGesture {
+                                                if isOverridden {
+                                                    // Edit the overridden value
+                                                    if let attribute = currentAttributes.first(where: { $0.key == key }) {
+                                                        editAttribute(for: item, attribute: attribute)
+                                                    }
+                                                } else {
+                                                    // Create override
+                                                    overrideBaseAttribute(for: item, key: key, defaultValue: defaultValue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Show order-specific attributes (editable)
+                                    let currentAttributes = getAttributes(for: item)
+                                    let _ = print("📄 UI: Displaying \(currentAttributes.count) order attributes for \(item.name)")
+                                    ForEach(currentAttributes) { attribute in
+                                        HStack {
+                                            Image(systemName: "tag.fill")
+                                                .foregroundColor(Color.appTint)
+                                                .font(.title2)
+                                            Text("\(attribute.key): \(attribute.value)")
+                                                .font(.title2)
+                                                .foregroundColor(.secondary)
+                                            Spacer()
+                                            Button {
+                                                removeAttribute(for: item, attribute: attribute)
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundColor(.red.opacity(0.6))
+                                                    .font(.title2)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                        .padding(.vertical, 2)
+                                        .onTapGesture {
+                                            editAttribute(for: item, attribute: attribute)
+                                        }
+                                    }
+                                    
+                                    // Add attribute button
                                     Button {
-                                        removeAttribute(for: item, attribute: attribute)
+                                        addAttribute(for: item)
                                     } label: {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.red.opacity(0.6))
-                                            .font(.title2)
+                                        HStack {
+                                            Image(systemName: "plus.circle")
+                                                .foregroundColor(Color.appTint)
+                                                .font(.title2)
+                                            Text("Add Attribute")
+                                                .font(.title2)
+                                                .foregroundColor(Color.appTint)
+                                        }
                                     }
                                     .buttonStyle(.plain)
                                 }
-                                .padding(.vertical, 2)
-                                .onTapGesture {
-                                    editAttribute(for: item, attribute: attribute)
-                                }
+                                .padding(.top, 4)
                             }
-                            
-                            // Add attribute button
-                            Button {
-                                addAttribute(for: item)
-                            } label: {
-                                HStack {
-                                    Image(systemName: "plus.circle")
-                                        .foregroundColor(Color.appTint)
-                                        .font(.title2)
-                                    Text("Add Attribute")
-                                        .font(.title2)
-                                        .foregroundColor(Color.appTint)
-                                }
-                            }
-                            .buttonStyle(.plain)
                         }
-                        .padding(.top, 4)
+                        .padding(.vertical, 4)
+                        
                     }
-                }
-                .padding(.vertical, 4)
             }
-            .navigationTitle("Select Stock Items")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        addSelectedItems()
-                    }
-               
-                }
-            }
+            
+        }
+                .padding(.horizontal, 20)
+    }
+            
+            .navigationBarBackButtonHidden()
+//            .navigationTitle("Select Stock Items")
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarLeading) {
+//                    Button("Cancel") {
+//                        dismiss()
+//                    }
+//                }
+//                
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button("Save") {
+//                        addSelectedItems()
+//                    }
+//               
+//                }
+//            }
         }
         .onAppear {
             initializeQuantities()
@@ -408,9 +441,8 @@ struct OrderItemPickerView: View {
                 VStack(spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(isEditingAttribute ? "Edit Attribute" : "Add Attribute")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
+                            .font(.title)
+                        
                         
                         Text(isEditingAttribute ? "Update the attribute information" : "Add custom information to this item")
                             .font(.subheadline)

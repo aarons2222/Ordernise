@@ -65,7 +65,9 @@ struct SettingsView: View {
                                     get: { localeManager.currentCurrency.rawValue },
                                     set: { newValue in
                                         if let currency = Currency(rawValue: newValue) {
-                                            localeManager.setCurrency(currency)
+                                            DispatchQueue.main.async {
+                                                localeManager.setCurrency(currency)
+                                            }
                                         }
                                     }
                                 )) {
@@ -158,7 +160,7 @@ struct SettingsView: View {
                                         .font(.headline)
                                         .foregroundColor(.text)
                                     
-                                    Text("Pick a color to customise the app’s look.")
+                                    Text("Pick a color to customise the app’s look - some colours may make some UI elmenets unreadable.")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
@@ -167,7 +169,9 @@ struct SettingsView: View {
                                 ColorPicker("", selection: Binding(
                                     get: { Color(hex: tintHex) ?? .color1 },
                                     set: { color in
-                                        tintHex = color.toHex()
+                                        DispatchQueue.main.async {
+                                            tintHex = color.toHex()
+                                        }
                                     }
                                 ))
                                 .labelsHidden()

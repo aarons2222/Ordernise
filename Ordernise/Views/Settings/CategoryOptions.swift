@@ -12,9 +12,9 @@ import SwiftData
 struct CategoryOptions: View {
     
     @Environment(\.modelContext) private var modelContext
-
+    
     @Query(sort: \Category.name) private var categories: [Category]
-
+    
     
     @State private var showingAddCategory = false
     @State private var newCategoryName = ""
@@ -28,7 +28,7 @@ struct CategoryOptions: View {
         
         VStack{
             
-       
+            
             
             HeaderWithButton(
                 title: "Categories",
@@ -70,10 +70,77 @@ struct CategoryOptions: View {
                 
                 
             }
-         
-            .sheet(isPresented: $showingAddCategory) {
-                addCategorySheet
+            
+            .GenericSheet(
+                isPresented: $showingAddCategory,
+                title: "Add Category",
+                showButton: false,
+                action: {
+                    print("Continue tapped")
+                }
+            ) {
+                
+                
+                VStack(spacing: 30){
+                    
+                    
+                    CustomTextField(text: $newCategoryName, placeholder: "Category Name", systemImage: "plus.square.on.square")
+                        .padding(.top, 20)
+                    
+                    
+                    CustomCardView{
+                        
+                        
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Category Color")
+                                    .font(.headline)
+                                    .foregroundColor(.text)
+                                
+                                Text("Pick a color to quickly recognise items in this this category")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                
+                                
+                            }
+                            Spacer()
+                            ColorPicker("", selection: Binding(
+                                get: { Color(hex: newCategoryColor) ?? Color.appTint },
+                                set: { color in
+                                    newCategoryColor = color.toHex()
+                                }
+                            ))
+                            .labelsHidden()
+                        }
+                    }
+                    
+                    
+                    
+                    Spacer()
+                    
+                    let isEmpty = newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty
+      
+                     
+                     
+                        
+                    GlobalButton(title: "Save Category", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                            saveCategory()
+                        }
+                        .disabled(isEmpty)
+
+              
+                     
+                    
+                    
+                    
+                }
             }
+                
+    }
+
+            
+            
+            
             .alert("Delete Category", isPresented: .constant(categoryToDelete != nil)) {
                 Button("Delete", role: .destructive) {
                     if let category = categoryToDelete {
@@ -88,48 +155,14 @@ struct CategoryOptions: View {
                 Text("Are you sure you want to delete this category? This action cannot be undone.")
             }
         }
-   
-    }
+        
     
     
-    private var addCategorySheet: some View {
-        NavigationStack {
-            Form {
-                Section("Category Details") {
-                    TextField("Category Name", text: $newCategoryName)
-                    
-                    HStack {
-                        Text("Color")
-                        Spacer()
-                        ColorPicker("", selection: Binding(
-                            get: { Color(hex: newCategoryColor) ?? Color.appTint },
-                            set: { color in
-                                newCategoryColor = color.toHex()
-                            }
-                        ))
-                        .labelsHidden()
-                    }
-                }
-            }
-            .navigationTitle("Add Category")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        showingAddCategory = false
-                        resetCategoryForm()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveCategory()
-                    }
-                    .disabled(newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-        }
-    }
+
+    
+    
+    
+
     
     private func saveCategory() {
         let category = Category(
