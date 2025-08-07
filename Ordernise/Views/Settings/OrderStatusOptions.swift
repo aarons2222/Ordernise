@@ -58,8 +58,8 @@ struct OrderStatusOptions: View {
             HeaderWithButton(
                 title: "Order status option",
                 buttonContent: "plus.circle",
-                isButtonImage: true,
-                showTrailingButton: true,
+                isButtonImage: false,
+                showTrailingButton: false,
                 showLeadingButton: true,
                 onButtonTap: {
                

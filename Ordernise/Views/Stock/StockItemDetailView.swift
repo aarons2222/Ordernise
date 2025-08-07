@@ -51,7 +51,7 @@ struct StockItemDetailView: View {
     
     @StateObject private var localeManager = LocaleManager.shared
     
-    
+    @State var toastie: Toastie? = nil
     @State private var name = ""
     @State private var quantity = 0
     @State private var price = 0.0
@@ -87,8 +87,14 @@ struct StockItemDetailView: View {
         self.stockItem = nil
     }
     
-    @State private var anchor: InlineToastConfig.InlineToastAnchor = .top
-    @State private var showErrorToast: Bool = false
+
+    
+    @State private var errorTitle = ""
+    @State private var errorSubTitle = ""
+    
+    
+
+    
 
     
     // Initializer for viewing/editing existing item
@@ -108,19 +114,7 @@ struct StockItemDetailView: View {
             
       
             
-                      /// Sample Toasts
-                      let errorToast = InlineToastConfig(
-                          icon: "exclamationmark.circle.fill",
-                          title: "Incomplete form",
-                          subTitle: "Oops! Thats not enouge information. Give it another shot.",
-                          tint: .red,
-                          anchor: anchor,
-                          animationAnchor: anchor,
-                          actionIcon: "xmark"
-                      ) {
-                          showErrorToast = false
-                      }
-                      
+             
                    
 
 
@@ -170,11 +164,11 @@ struct StockItemDetailView: View {
                  
                         
                         
-                        
+                    CustomCardView{
                         HStack{
                             
                             Text("Quantity")
-                                .font(.caption)
+                                .font(.headline)
                                 .foregroundColor(.secondary)
                             
                             
@@ -214,6 +208,7 @@ struct StockItemDetailView: View {
                             
                             
                         }
+                    }.padding(.vertical, 5)
                         .padding(.horizontal, 20)
                         
                         
@@ -347,17 +342,12 @@ struct StockItemDetailView: View {
                         .padding(.horizontal, 20)
                     
                 }
-                .inlineToast(alignment: .center, config: errorToast, isPresented: showErrorToast)
-                .animation(.smooth(duration: 0.35, extraBounce: 0), value: showErrorToast)
+              
             
               
             }
-            
-            
-        
-            
-            
-            
+             .toastieView(toast: $toastie)
+   
     
         }
         .onAppear {
@@ -373,8 +363,7 @@ struct StockItemDetailView: View {
         }
         
         
-        
-        
+       
         
         .sheet(isPresented: $showingAttributeSheet) {
             NavigationStack {
@@ -571,10 +560,26 @@ struct StockItemDetailView: View {
     
     private func saveItem() {
         // Validation: Only for new items
-        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-            price == 0 ||
-            (stockItem == nil && quantity <= 0) {
-            showErrorToast.toggle()
+        var missingFields = [String]()
+
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            missingFields.append("Name")
+        }
+
+        if price == 0 {
+            missingFields.append("Price")
+        }
+
+        if stockItem == nil && quantity <= 0 {
+            missingFields.append("Quantity")
+        }
+
+        if !missingFields.isEmpty {
+            errorTitle = "Missing Required Fields"
+            errorSubTitle = "Please fill in: \(missingFields.joined(separator: ", "))"
+            
+      
+            toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
             return
         }
 

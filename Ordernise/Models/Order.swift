@@ -12,6 +12,7 @@ import SwiftData
 class Order {
     var id: UUID
     var date: Date
+    var orderReference: String?
     var customerName: String?
     var status: OrderStatus
     var platform: Platform
@@ -19,6 +20,7 @@ class Order {
     
     // Cost-related fields
     var shippingCost: Double
+    var sellingFees: Double
     var additionalCosts: Double
     var shippingMethod: String?
     var trackingReference: String?
@@ -30,12 +32,14 @@ class Order {
     init(
         id: UUID = UUID(),
         date: Date,
+        orderReference: String? = nil,
         customerName: String? = nil,
         status: OrderStatus = .received,
         platform: Platform = .amazon,
         attributes: [String: String] = [:],
         items: [OrderItem] = [],
         shippingCost: Double = 0.0,
+        sellingFees: Double = 0.0,
         additionalCosts: Double = 0.0,
         shippingMethod: String? = nil,
         trackingReference: String? = nil,
@@ -44,11 +48,13 @@ class Order {
         self.id = id
         self.date = date
         self.customerName = customerName
+        self.orderReference = orderReference
         self.status = status
         self.platform = platform
         self.attributes = attributes
         self.items = items
         self.shippingCost = shippingCost
+        self.sellingFees = sellingFees
         self.additionalCosts = additionalCosts
         self.shippingMethod = shippingMethod
         self.trackingReference = trackingReference

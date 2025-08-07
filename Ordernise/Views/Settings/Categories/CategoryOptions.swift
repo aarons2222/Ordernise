@@ -20,7 +20,8 @@ struct CategoryOptions: View {
     @State private var newCategoryName = ""
     @State private var newCategoryColor = "#007AFF"
     @State private var categoryToDelete: Category?
-    
+    @State private var categoryToEdit: Category?
+    @State private var isEditMode = false
     
     
     
@@ -37,8 +38,10 @@ struct CategoryOptions: View {
                 showTrailingButton: true,
                 showLeadingButton: true,
                 onButtonTap: {
+                    isEditMode = false
+                    categoryToEdit = nil
+                    resetCategoryForm()
                     showingAddCategory = true
-                    
                 }
             )
             
@@ -54,6 +57,13 @@ struct CategoryOptions: View {
                     } else {
                         ForEach(categories) { category in
                             CategoryRow(category: category)
+                                .onTapGesture {
+                                    categoryToEdit = category
+                                    isEditMode = true
+                                    newCategoryName = category.name
+                                    newCategoryColor = category.colorHex
+                                    showingAddCategory = true
+                                }
                                 .swipeActions {
                                     Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
                                         categoryToDelete = category
@@ -68,12 +78,12 @@ struct CategoryOptions: View {
                 
                 .navigationBarHidden(true)
                 
-                
+             
             }
             
             .GenericSheet(
                 isPresented: $showingAddCategory,
-                title: "Add Category",
+                title: isEditMode ? "Edit Category" : "Add Category",
                 showButton: false,
                 action: {
                     print("Continue tapped")
@@ -82,6 +92,8 @@ struct CategoryOptions: View {
                 
                 
                 VStack(spacing: 30){
+                    
+                    
                     
                     
                     CustomTextField(text: $newCategoryName, placeholder: "Category Name", systemImage: "plus.square.on.square")
@@ -93,7 +105,9 @@ struct CategoryOptions: View {
                         
                         HStack {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Category Color")
+                                
+                                
+                                Text("Color")
                                     .font(.headline)
                                     .foregroundColor(.text)
                                 
@@ -121,17 +135,31 @@ struct CategoryOptions: View {
                     let isEmpty = newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty
       
                      
-                     
+                    HStack{
                         
-                    GlobalButton(title: "Save Category", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                        if isEditMode {
+                            
+                            
+                            GlobalButton(title: "Delete", backgroundColor: Color.red) {
+                                if let categoryToEdit = categoryToEdit {
+                                    categoryToDelete = categoryToEdit
+                                    showingAddCategory = false
+                                }
+                            }
+                        
+                    }
+                        
+                        
+                        
+                        GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
                             saveCategory()
                         }
                         .disabled(isEmpty)
+                        
+                        
+                    }
+                    
 
-              
-                     
-                    
-                    
                     
                 }
             }
@@ -165,17 +193,25 @@ struct CategoryOptions: View {
 
     
     private func saveCategory() {
-        let category = Category(
-            name: newCategoryName.trimmingCharacters(in: .whitespaces),
-            colorHex: newCategoryColor
-        )
-        
-        modelContext.insert(category)
+        if isEditMode, let categoryToEdit = categoryToEdit {
+            // Update existing category
+            categoryToEdit.name = newCategoryName.trimmingCharacters(in: .whitespaces)
+            categoryToEdit.colorHex = newCategoryColor
+        } else {
+            // Create new category
+            let category = Category(
+                name: newCategoryName.trimmingCharacters(in: .whitespaces),
+                colorHex: newCategoryColor
+            )
+            modelContext.insert(category)
+        }
         
         do {
             try modelContext.save()
             showingAddCategory = false
             resetCategoryForm()
+            categoryToEdit = nil
+            isEditMode = false
         } catch {
             print("Failed to save category: \(error)")
         }

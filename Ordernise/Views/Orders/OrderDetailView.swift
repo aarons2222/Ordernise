@@ -15,6 +15,7 @@ struct OrderDetailView: View {
     @Query private var orderTemplates: [OrderTemplate]
     
     @StateObject private var localeManager = LocaleManager.shared
+    @State var toastie: Toastie? = nil
  
     
     // AppStorage for remembering user preferences
@@ -49,6 +50,7 @@ struct OrderDetailView: View {
     @StateObject private var viewModel = OrderDetailViewViewModel()
     
     @State private var date = Date()
+    @State private var orderReference = ""
     @State private var customerName = ""
     @State private var status: OrderStatus = .received
     @State private var platform: Platform = .amazon
@@ -66,6 +68,7 @@ struct OrderDetailView: View {
     
     // Cost-related state variables
     @State private var shippingCost = 0.0
+    @State private var sellingFees = 0.0
     @State private var additionalCosts = 0.0
     @State private var shippingMethod = ""
     @State private var trackingReference = ""
@@ -82,6 +85,19 @@ struct OrderDetailView: View {
     typealias OrderItemEntry = OrderDetailViewViewModel.OrderItemEntry
     typealias AttributeField = OrderDetailViewViewModel.AttributeField
     
+    
+
+
+        
+  
+    @State private var errorTitle = ""
+    @State private var errorSubTitle = ""
+    
+    
+ 
+    
+    
+    
     // Initializer for adding new order
     init(mode: Mode = .add) {
         self.mode = mode
@@ -97,6 +113,11 @@ struct OrderDetailView: View {
     var totalOrderValue: Double {
         viewModel.orderItems.reduce(0) { $0 + $1.totalPrice }
     }
+    
+    
+          
+      
+    
     
     // Break down complex view to help compiler
     private var orderInformationSection: some View {
@@ -115,6 +136,17 @@ struct OrderDetailView: View {
              
             }
     
+            
+            ListSection(title: "Order Reference") {
+                CustomTextField(
+                    text: $orderReference,
+                    placeholder: "Order Reference",
+                    systemImage: "number",
+                    isSecure: false
+                )
+                .focused($focusedField, equals: true)
+            }
+            
             
             
             
@@ -236,6 +268,14 @@ struct OrderDetailView: View {
             
             
             
+            CustomNumberField(
+                value: (mode.isEditable || isEditMode) ? $sellingFees : .constant(sellingFees),
+                placeholder: "Selling Fees",
+                systemImage: localeManager.currencySymbolName
+            )
+            .focused($focusedField, equals: mode.isEditable || isEditMode)
+            
+            
             ListSection(title: "Additional Costs") {
                 
                 
@@ -299,11 +339,19 @@ struct OrderDetailView: View {
     
     
 
- 
     
-    
+
+
+
     
     var body: some View {
+        
+        
+        
+            
+
+        
+        
         NavigationStack {
             
             VStack{
@@ -318,6 +366,8 @@ struct OrderDetailView: View {
                     showTrailingButton: true,
                     showLeadingButton: true,
                     onButtonTap: {
+                        
+                        
                         saveOrder()
                         
                     }
@@ -419,7 +469,7 @@ struct OrderDetailView: View {
                     
                     Spacer()
                     
-                    Text("Order Total: \(Double(totalOrderValue + shippingCost + additionalCosts), format: localeManager.currencyFormatStyle)")
+                    Text("Order Total: \(Double(totalOrderValue - (shippingCost + additionalCosts + sellingFees)), format: localeManager.currencyFormatStyle)")
 
                 }
                 .padding(.horizontal)
@@ -436,7 +486,11 @@ struct OrderDetailView: View {
                 
             }
            
-            
+              
+
+                
+                
+                
             }
             
      
@@ -543,7 +597,7 @@ struct OrderDetailView: View {
 //        
 
         
-        
+        .toastieView(toast: $toastie)
    
 
     }
@@ -739,6 +793,28 @@ struct OrderDetailView: View {
     private func saveOrder() {
         let validOrderItems = viewModel.orderItems.filter { $0.isValid }
         
+        // Validation only for new orders
+        if order == nil {
+            var missingFields = [String]()
+            
+            if customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                missingFields.append("Customer Name")
+            }
+            
+            if validOrderItems.isEmpty {
+                missingFields.append("Order Item")
+            }
+            
+            if !missingFields.isEmpty {
+                errorTitle = "Missing Required Fields"
+                errorSubTitle = "Please fill in: \(missingFields.joined(separator: ", "))"
+                
+       
+                toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
+                return
+            }
+        }
+        
         // Create attributes dictionary from valid attributes
         var attributesDict = Dictionary(
             uniqueKeysWithValues: attributes
@@ -835,6 +911,7 @@ struct OrderDetailView: View {
             print("Failed to save order: \(error)")
         }
     }
+    
 }
 
 // Helper view for selecting stock items
