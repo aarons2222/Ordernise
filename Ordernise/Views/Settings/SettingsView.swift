@@ -11,7 +11,7 @@ import SwiftData
 struct SettingsView: View {
     
     @StateObject private var localeManager = LocaleManager.shared
-    @AppStorage("userTintHex") private var tintHex: String = "#007AFF" // default blue
+    @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     @State private var selectedColor: Color = .color1
     
  
@@ -38,7 +38,7 @@ struct SettingsView: View {
                 )
                 
                 
-                ScrollView() {
+                ScrollView(showsIndicators: false) {
                     
                     VStack(alignment: .leading, spacing: 15) {
                         
@@ -124,9 +124,43 @@ struct SettingsView: View {
                             }
                         }
                         
+                        NavigationLink(destination: OrderFieldSettings()) {
+                            CustomCardView {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Order Fields")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text("Customize which fields are shown when creating and editing orders.")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                            }
+                        }
                         
-                        
-                        
+                        NavigationLink(destination: StockFieldSettings()) {
+                            CustomCardView {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Stock Fields")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text("Customize which fields are shown when creating and editing stock items.")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                            }
+                        }
                         
                         NavigationLink(destination: CategoryOptions()) {
                             CustomCardView{
@@ -150,8 +184,24 @@ struct SettingsView: View {
                             }
                         }
                         
-                        
-                        
+                        NavigationLink(destination: SalesReportView()) {
+                            CustomCardView("Sales Report") {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Sales Report")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text("Generate comprehensive sales reports with revenue, profit, and performance metrics.")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                            }
+                        }
                         
                         CustomCardView("App Settings") {
                             HStack {
@@ -177,6 +227,9 @@ struct SettingsView: View {
                                 .labelsHidden()
                             }
                         }
+                        
+                        
+                        Color.clear.frame(height: 60)
                     }
                     
                 
@@ -189,7 +242,7 @@ struct SettingsView: View {
            .onAppear {
                        selectedColor = Color(hex: tintHex) ?? .color1
                    }
-      
+         
     }
     }
     

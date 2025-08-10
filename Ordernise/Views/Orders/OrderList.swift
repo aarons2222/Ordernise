@@ -131,7 +131,7 @@ struct OrderList: View {
           
                 if orders.isEmpty {
                     Spacer()
-                    ContentUnavailableView("No Orders", systemImage: "bag", description: Text("Tap + to add your first order."))
+                    ContentUnavailableView("No Orders", systemImage: "bag", description: Text("Tap \(Image(systemName: "plus.circle")) to add your first order."))
                     Spacer()
                 } else if filteredOrders.isEmpty {
                     Spacer()
@@ -236,6 +236,14 @@ struct OrderList: View {
             
             // Delete the order from the model context
             modelContext.delete(order)
+            
+            // Save changes to persist deletion
+            do {
+                try modelContext.save()
+                print("✅ [OrderList] Order deleted successfully: \(order.id)")
+            } catch {
+                print("❌ [OrderList] Failed to delete order: \(error)")
+            }
         }
     }
     

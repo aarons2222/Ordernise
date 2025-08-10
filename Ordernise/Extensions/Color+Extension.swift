@@ -9,7 +9,8 @@ import SwiftUI
 
 extension Color {
     static var appTint: Color {
-        let hex = UserDefaults.standard.string(forKey: "userTintHex") ?? "#007AFF"
+        let hex = UserDefaults.standard.string(forKey: "userTintHex") ?? "#ACCDFF"
         return Color(hex: hex) ?? .color1
     }
+
 }

@@ -65,7 +65,7 @@ struct CustomNumberField: View {
             let displayValue = value?.wrappedValue ?? 0
             textValue = displayValue == 0 ? "" : formattedValue(displayValue)
         }
-        .onChange(of: value?.wrappedValue) { newValue in
+        .onChange(of: value?.wrappedValue) { _, newValue in
             // Only update the text field if the user is not currently editing
             if !isEditing {
                 let displayValue = newValue ?? 0
@@ -73,12 +73,9 @@ struct CustomNumberField: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
-            // When user finishes editing, format the value and stop editing mode
+            // When user finishes editing, stop editing mode but DON'T reformat
+            // The binding should already have the correct value from onChange
             isEditing = false
-            if let binding = value {
-                let displayValue = binding.wrappedValue
-                textValue = displayValue == 0 ? "" : formattedValue(displayValue)
-            }
         }
     }
 
@@ -98,9 +95,13 @@ struct CustomNumberField: View {
         }
 
         if let doubleValue = Double(filtered) {
+            print("🔢 [CustomNumberField] Updating binding from '\(string)' to \(doubleValue)")
             binding.wrappedValue = doubleValue
         } else if filtered.isEmpty {
+            print("🔢 [CustomNumberField] Setting binding to 0 (empty field)")
             binding.wrappedValue = 0
+        } else {
+            print("🔢 [CustomNumberField] Could not parse '\(string)' as Double")
         }
     }
 

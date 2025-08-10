@@ -13,7 +13,7 @@ class OrderDetailViewViewModel: ObservableObject {
         let id = UUID()
         var stockItem: StockItem?
         var quantity: Int = 1
-        var attributes: [AttributeField] = []
+    
         
         var isValid: Bool {
             guard let item = stockItem else { return false }
@@ -30,12 +30,7 @@ class OrderDetailViewViewModel: ObservableObject {
             return item.price * Double(quantity)
         }
     }
-    
-    struct AttributeField: Identifiable {
-        let id = UUID()
-        var key: String = ""
-        var value: String = ""
-    }
+
     
     // MARK: - Computed Properties
     var totalItemsPrice: Double {
@@ -53,14 +48,10 @@ class OrderDetailViewViewModel: ObservableObject {
     // MARK: - Public Methods
     
     /// Main method to handle stock item selection/updates from StockItemPickerView
-    func updateStockItem(_ stockItem: StockItem, quantity: Int, attributes: [AttributeField]) {
+    func updateStockItem(_ stockItem: StockItem, quantity: Int) {
         print("🔄 ViewModel: updateStockItem called for \(stockItem.name)")
-        print("   Quantity: \(quantity), Attributes: \(attributes.count)")
-        
-        // Log each attribute for debugging
-        for attr in attributes {
-            print("   - \(attr.key): \(attr.value)")
-        }
+
+   
         
         // Check if this item already exists in the order
         if let existingIndex = orderItems.firstIndex(where: { $0.stockItem?.id == stockItem.id }) {
@@ -70,17 +61,15 @@ class OrderDetailViewViewModel: ObservableObject {
                 orderItems.remove(at: existingIndex)
             } else {
                 // Update existing item
-                print("⚙️ ViewModel: Updating existing item \(stockItem.name) with \(attributes.count) attributes")
+                print("⚙️ ViewModel: Updating existing item \(stockItem.name)")
                 orderItems[existingIndex].quantity = quantity
-                orderItems[existingIndex].attributes = attributes
             }
         } else if quantity > 0 {
             // Add new item (only if quantity > 0)
-            print("➕ ViewModel: Adding new item \(stockItem.name) with \(attributes.count) attributes")
+            print("➕ ViewModel: Adding new item \(stockItem.name) with ")
             let newOrderItem = OrderItemEntry(
                 stockItem: stockItem,
                 quantity: quantity,
-                attributes: attributes
             )
             orderItems.append(newOrderItem)
         }
@@ -100,21 +89,7 @@ class OrderDetailViewViewModel: ObservableObject {
         return quantities
     }
     
-    /// Get existing attributes for StockItemPickerView initialization
-    func getExistingAttributes() -> [StockItem.ID: [AttributeField]] {
-        var attributes: [StockItem.ID: [AttributeField]] = [:]
-        for orderItem in orderItems {
-            if let stockItem = orderItem.stockItem {
-                attributes[stockItem.id] = orderItem.attributes
-                print("📝 ViewModel: Item \(stockItem.name) has \(orderItem.attributes.count) attributes")
-                for attr in orderItem.attributes {
-                    print("   - \(attr.key): \(attr.value)")
-                }
-            }
-        }
-        return attributes
-    }
-    
+
     /// Load existing order data for edit mode
     func loadOrderData(from order: Order) {
         print("📥 ViewModel: Loading order data for order \(order.id)")
@@ -123,22 +98,15 @@ class OrderDetailViewViewModel: ObservableObject {
         
         for orderItem in order.items {
             if let stockItem = orderItem.stockItem {
-                // Convert order item attributes to AttributeField
-                let attributeFields = orderItem.attributes.map { key, value in
-                    AttributeField(key: key, value: value)
-                }
-                
+            
                 let entry = OrderItemEntry(
                     stockItem: stockItem,
-                    quantity: orderItem.quantity,
-                    attributes: attributeFields
+                    quantity: orderItem.quantity
                 )
                 loadedItems.append(entry)
                 
-                print("📦 ViewModel: Loaded item \(stockItem.name) - qty: \(orderItem.quantity), attrs: \(attributeFields.count)")
-                for attr in attributeFields {
-                    print("   - \(attr.key): \(attr.value)")
-                }
+                print("📦 ViewModel: Loaded item \(stockItem.name) - qty: \(orderItem.quantity)")
+              
             }
         }
         
@@ -171,10 +139,8 @@ class OrderDetailViewViewModel: ObservableObject {
         print("   Total items: \(orderItems.count)")
         for (index, item) in orderItems.enumerated() {
             if let stockItem = item.stockItem {
-                print("   [\(index)] \(stockItem.name) - qty: \(item.quantity), attrs: \(item.attributes.count)")
-                for attr in item.attributes {
-                    print("      - \(attr.key): \(attr.value)")
-                }
+                print("   [\(index)] \(stockItem.name) - qty: \(item.quantity)")
+               
             }
         }
     }

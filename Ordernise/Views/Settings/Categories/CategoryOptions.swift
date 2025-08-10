@@ -45,130 +45,51 @@ struct CategoryOptions: View {
                 }
             )
             
-            ScrollView {
-                LazyVStack(spacing: 12) {
+         
                     if categories.isEmpty {
+                        Spacer()
                         ContentUnavailableView(
                             "No Categories",
                             systemImage: "folder",
-                            description: Text("Tap + to add your first category.")
+                            description: Text("Tap \(Image(systemName: "plus.circle")) to add your first category.")
                         )
-                        .padding(.top, 50)
+                        
+                        
+                        Spacer()
+                        
+                        
                     } else {
-                        ForEach(categories) { category in
-                            CategoryRow(category: category)
-                                .onTapGesture {
-                                    categoryToEdit = category
-                                    isEditMode = true
-                                    newCategoryName = category.name
-                                    newCategoryColor = category.colorHex
-                                    showingAddCategory = true
-                                }
-                                .swipeActions {
-                                    Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
-                                        categoryToDelete = category
-                                        resetPosition = true
-                                    }
-                                }
-                        }
                         
-                        
-                    }
-                }
-                
-                .navigationBarHidden(true)
-                
-             
-            }
-            
-            .GenericSheet(
-                isPresented: $showingAddCategory,
-                title: isEditMode ? "Edit Category" : "Add Category",
-                showButton: false,
-                action: {
-                    print("Continue tapped")
-                }
-            ) {
-                
-                
-                VStack(spacing: 30){
-                    
-                    
-                    
-                    
-                    CustomTextField(text: $newCategoryName, placeholder: "Category Name", systemImage: "plus.square.on.square")
-                        .padding(.top, 20)
-                    
-                    
-                    CustomCardView{
-                        
-                        
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
                                 
                                 
-                                Text("Color")
-                                    .font(.headline)
-                                    .foregroundColor(.text)
-                                
-                                Text("Pick a color to quickly recognise items in this this category")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                
-                            }
-                            Spacer()
-                            ColorPicker("", selection: Binding(
-                                get: { Color(hex: newCategoryColor) ?? Color.appTint },
-                                set: { color in
-                                    newCategoryColor = color.toHex()
-                                }
-                            ))
-                            .labelsHidden()
-                        }
-                    }
-                    
-                    
-                    
-                    Spacer()
-                    
-                    let isEmpty = newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty
-      
-                     
-                    HStack{
-                        
-                        if isEditMode {
-                            
-                            
-                            GlobalButton(title: "Delete", backgroundColor: Color.red) {
-                                if let categoryToEdit = categoryToEdit {
-                                    categoryToDelete = categoryToEdit
-                                    showingAddCategory = false
+                                ForEach(categories) { category in
+                                    CategoryRow(category: category)
+                                        .onTapGesture {
+                                            categoryToEdit = category
+                                            isEditMode = true
+                                            newCategoryName = category.name
+                                            newCategoryColor = category.colorHex
+                                            showingAddCategory = true
+                                        }
+                                        .swipeActions {
+                                            Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
+                                                categoryToDelete = category
+                                                resetPosition = true
+                                            }
+                                        }
                                 }
                             }
-                        
-                    }
-                        
-                        
-                        
-                        GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
-                            saveCategory()
                         }
-                        .disabled(isEmpty)
-                        
                         
                     }
-                    
-
-                    
-                }
-            }
                 
     }
-
+        .navigationBarHidden(true)
             
             
-            
+        
             .alert("Delete Category", isPresented: .constant(categoryToDelete != nil)) {
                 Button("Delete", role: .destructive) {
                     if let category = categoryToDelete {
@@ -182,6 +103,90 @@ struct CategoryOptions: View {
             } message: {
                 Text("Are you sure you want to delete this category? This action cannot be undone.")
             }
+        
+      .GenericSheet(
+          isPresented: $showingAddCategory,
+          title: isEditMode ? "Edit Category" : "Add Category",
+          showButton: false,
+          action: {
+              print("Continue tapped")
+          }
+      ) {
+          
+          
+          VStack(spacing: 30){
+              
+              
+              
+              
+              CustomTextField(text: $newCategoryName, placeholder: "Category Name", systemImage: "plus.square.on.square")
+                  .padding(.top, 20)
+              
+              
+              CustomCardView{
+                  
+                  
+                  HStack {
+                      VStack(alignment: .leading, spacing: 8) {
+                          
+                          
+                          Text("Color")
+                              .font(.headline)
+                              .foregroundColor(.text)
+                          
+                          Text("Pick a color to quickly recognise items in this this category")
+                              .font(.subheadline)
+                              .foregroundColor(.secondary)
+                          
+                          
+                      }
+                      Spacer()
+                      ColorPicker("", selection: Binding(
+                          get: { Color(hex: newCategoryColor) ?? Color.appTint },
+                          set: { color in
+                              newCategoryColor = color.toHex()
+                          }
+                      ))
+                      .labelsHidden()
+                  }
+              }
+              
+              
+              
+              Spacer()
+              
+              let isEmpty = newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty
+
+               
+              HStack{
+                  
+                  if isEditMode {
+                      
+                      
+                      GlobalButton(title: "Delete", backgroundColor: Color.red) {
+                          if let categoryToEdit = categoryToEdit {
+                              categoryToDelete = categoryToEdit
+                              showingAddCategory = false
+                          }
+                      }
+                  
+              }
+                  
+                  
+                  
+                  GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                      saveCategory()
+                  }
+                  .disabled(isEmpty)
+                  
+                  
+              }
+              
+
+              
+          }
+      }
+        
         }
         
     

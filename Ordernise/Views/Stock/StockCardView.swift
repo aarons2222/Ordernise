@@ -65,8 +65,8 @@ struct StockItemCard: View {
                     .padding(5)
                     
                     .background(
-                        RoundedRectangle(cornerRadius: 5).fill(quantityColor(item.quantityAvailable))
-                            .frame(minWidth: 10)
+                       Capsule().fill(quantityColor(item.quantityAvailable).gradient)
+                            .frame(minWidth: 25)
                     )
                     .foregroundColor(.white)
                 

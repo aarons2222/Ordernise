@@ -45,7 +45,7 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
     @Binding var selection: Value
     var content: (Value, CGFloat) -> Content
     
-    @AppStorage("userTintHex") private var tintHex: String = "#007AFF"
+    @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     
     init(config: FloatingTabConfig = .init(), selection: Binding<Value>, @ViewBuilder content: @escaping (Value, CGFloat) -> Content) {
         self.config = config
@@ -105,13 +105,13 @@ struct FloatingTabView<Content: View, Value: CaseIterable & Hashable & FloatingT
 }
 
 struct FloatingTabConfig {
-    var activeTint: Color = .white                      // Color of the active tab icon/text
+    var activeTint: Color = Color(UIColor.systemBackground)                  // Color of the active tab icon/text
     var activeBackgroundTint: Color = Color.appTint     // Background color of the active tab
     var inactiveTint: Color = .gray                     // Color of inactive tab icon/text
     var tabAnimation: Animation = .smooth(duration: 0.35, extraBounce: 0) // Animation config for tab switching
-    var backgroundColor: Color = .gray.opacity(0.1)     // Background color of the tab bar
+    var backgroundColor: Color = .color2    // Background color of the tab bar
     var insetAmount: CGFloat = 6                        // Padding/inset for layout
-    var isTranslucent: Bool = true                      // Determines if the tab bar is translucent
+    var isTranslucent: Bool = false                      // Determines if the tab bar is translucent
     var hPadding: CGFloat = 15
     var bPadding: CGFloat = 0
 }
@@ -170,7 +170,7 @@ fileprivate struct FloatingTabBar<Value: CaseIterable & Hashable & FloatingTabPr
                 
                     
                     Rectangle()
-                    .fill(config.backgroundColor.opacity(0.9))
+                    .fill(config.backgroundColor)
                 
             }
  

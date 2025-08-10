@@ -13,7 +13,7 @@ struct DashboardView: View {
     @Query private var allOrders: [Order]
     @Query private var stockItems: [StockItem]
     
-
+    
     @State private var selectedTimeFrame: TimeFrame = .thisMonth
     
     enum TimeFrame: String, CaseIterable {
@@ -55,24 +55,18 @@ struct DashboardView: View {
         filteredOrders
             .filter { $0.status == .fulfilled }
             .reduce(0) { total, order in
-                total + order.items.reduce(0) { itemTotal, item in
-                    itemTotal + (item.stockItem?.price ?? 0) * Double(item.quantity)
-                }
+                total + order.revenue
             }
     }
     
-    private var totalCost: Double {
+
+    
+    private var totalProfit: Double {
         filteredOrders
             .filter { $0.status == .fulfilled }
             .reduce(0) { total, order in
-                total + order.items.reduce(0) { itemTotal, item in
-                    itemTotal + (item.stockItem?.cost ?? 0) * Double(item.quantity)
-                }
+                total + order.profit
             }
-    }
-    
-    private var totalProfit: Double {
-        totalRevenue - totalCost
     }
     
     private var totalInventoryValue: Double {
@@ -85,6 +79,8 @@ struct DashboardView: View {
         stockItems.filter { $0.quantityAvailable <= 5 }.count
     }
     
+
+    
     var body: some View {
         VStack(spacing: 0) {
             
@@ -94,63 +90,53 @@ struct DashboardView: View {
                 title: "Dashboard",
                 buttonContent: "line.3.horizontal.decrease.circle",
                 isButtonImage: true,
-                showTrailingButton: true,
+                showTrailingButton: false,
                 showLeadingButton: false,
                 onButtonTap: {
-              
+                    
                     
                 }
             )
-
+            
+            if !allOrders.isEmpty {
+                timeFramePicker
+                
+            }
             
             
-        
-            
-            ScrollView {
+            ScrollView{
                 VStack(spacing: 20) {
                     if allOrders.isEmpty {
-                        // Show placeholder when no orders exist
+                        Spacer()
                         emptyStatePlaceholder
                     } else {
-                        // Time Frame Picker
-                        timeFramePicker
                         
-                        // Key Metrics Grid
+                        
+                        
                         metricsGrid
                         
-                        // Additional Insights
+                        // Sales by Category Chart
+                        //  SalesByCategoryChartView(orders: filteredOrders)
+                        
+                        // Additional metrics
                         additionalMetrics
                     }
                 }
                 .padding()
             }
+            .padding(.top)
+            
+            Spacer()
         }
-       
+        
     }
     
     // MARK: - UI Components
     
     private var emptyStatePlaceholder: some View {
         VStack(spacing: 24) {
-            Spacer()
             
-            // Icon
-            Image(systemName: "chart.bar.doc.horizontal")
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
             
-            // Title and message
-            VStack(spacing: 8) {
-                Text("No Orders Yet")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Text("Create your first order to see business analytics and insights here.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
             
             // Quick stats for inventory
             if !stockItems.isEmpty {
@@ -195,42 +181,64 @@ struct DashboardView: View {
                         }
                     }
                 }
+                
+                Spacer()
+            }else{
+                
+                
+                
+                
+                VStack {
+                    Spacer()
+                    ContentUnavailableView("Not enough data", systemImage: "chart.bar.doc.horizontal",
+                                           description: Text("As you add orders, you will see business analytics and insights here.")
+                    )
+                    Spacer()
+                }
+                
             }
             
-            Spacer()
+            
+            
+            
+            
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var timeFramePicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Time Period")
-                .font(.headline)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(TimeFrame.allCases, id: \.self) { timeFrame in
-                        Button(action: {
-                            selectedTimeFrame = timeFrame
-                        }) {
-                            Text(timeFrame.rawValue)
-                                .font(.subheadline)
-                                .fontWeight(selectedTimeFrame == timeFrame ? .semibold : .regular)
-                                .foregroundColor(selectedTimeFrame == timeFrame ? .white : .primary)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(selectedTimeFrame == timeFrame ? Color.appTint : Color(.systemGray6))
-                                )
-                        }
+        
+        
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(TimeFrame.allCases, id: \.self) { timeFrame in
+                    Button(action: {
+                        selectedTimeFrame = timeFrame
+                    }) {
+                        let isSelected = selectedTimeFrame == timeFrame
+                        
+                        
+                        Text(timeFrame.rawValue)
+                            .font(.subheadline)
+                            .fontWeight(isSelected ? .semibold : .regular)
+                            .foregroundColor(isSelected ? .white : .primary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.appTint.gradient)
+                                    .padding(.horizontal, 10)
+                                    .frame(maxHeight: .infinity, alignment: .bottom)
+                            )
                     }
                 }
-                .padding(.horizontal)
             }
+            .padding(.horizontal)
         }
     }
+    
     
     private var metricsGrid: some View {
         LazyVGrid(columns: [
@@ -259,7 +267,7 @@ struct DashboardView: View {
             MetricCard(
                 title: "Profit",
                 value: totalProfit.formatted(.currency(code: "GBP")),
-                subtitle: "Net Earnings",
+                subtitle: "Net Profit",
                 icon: "chart.line.uptrend.xyaxis",
                 color: totalProfit >= 0 ? .green : .red
             )
@@ -276,166 +284,111 @@ struct DashboardView: View {
         .padding(.horizontal)
     }
     
-    private var additionalMetrics: some View {
-        VStack(spacing: 16) {
-            // Inventory Overview
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Inventory Overview")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                HStack(spacing: 16) {
-                    // Total Inventory Value
-                    HStack {
-                        Image(systemName: "cube.box.fill")
-                            .foregroundColor(Color.appTint)
-                            .font(.title2)
-                        
-                        VStack(alignment: .leading) {
-                            Text(totalInventoryValue.formatted(.currency(code: "GBP")))
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            Text("Inventory Value")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                    
-                    // Low Stock Alert
-                    HStack {
-                        Image(systemName: lowStockItems > 0 ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                            .foregroundColor(lowStockItems > 0 ? .orange : .green)
-                            .font(.title2)
-                        
-                        VStack(alignment: .leading) {
-                            Text("\(lowStockItems)")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            Text("Low Stock Items")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                }
-                .padding(.horizontal)
-            }
-            
-            // Quick Stats
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Quick Stats")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Total Orders (\(selectedTimeFrame.rawValue))")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(filteredOrders.count)")
-                            .fontWeight(.medium)
-                    }
-                    
-                    HStack {
-                        Text("Pending Orders")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(filteredOrders.filter { $0.status == .pending }.count)")
-                            .fontWeight(.medium)
-                    }
-                    
-                    HStack {
-                        Text("Total Stock Items")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(stockItems.count)")
-                            .fontWeight(.medium)
-                    }
-                    
-                    if totalRevenue > 0 {
-                        Divider()
-                        HStack {
-                            Text("Average Order Value")
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text((totalRevenue / Double(max(totalSales, 1))).formatted(.currency(code: "GBP")))
-                                .fontWeight(.medium)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .padding(.horizontal)
-            }
-        }
-    }
-}
 
-// MARK: - Metric Card Component
-
-struct MetricCard: View {
-    let title: String
-    let value: String
-    let subtitle: String
-    let icon: String
-    let color: Color
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
-                    .font(.title2)
-                Spacer()
-            }
+    private var additionalMetrics: some View {
+        
+        
+        
+        // Quick Stats
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Quick Stats")
+                .font(.headline)
+                .padding(.horizontal)
             
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Total Orders (\(selectedTimeFrame.rawValue))")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(filteredOrders.count)")
+                        .fontWeight(.medium)
+                }
                 
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("Pending Orders")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(filteredOrders.filter { $0.status == .pending }.count)")
+                        .fontWeight(.medium)
+                }
+                
+                HStack {
+                    Text("Total Stock Items")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(stockItems.count)")
+                        .fontWeight(.medium)
+                }
+                
+                if totalRevenue > 0 {
+                    Divider()
+                    HStack {
+                        Text("Average Order Value")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text((totalRevenue / Double(max(totalSales, 1))).formatted(.currency(code: "GBP")))
+                            .fontWeight(.medium)
+                    }
+                }
             }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+            .padding(.horizontal)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        
+    }
+    
+    
+    // MARK: - Metric Card Component
+    
+    struct MetricCard: View {
+        let title: String
+        let value: String
+        let subtitle: String
+        let icon: String
+        let color: Color
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: icon)
+                        .foregroundColor(color)
+                        .font(.title2)
+                    Spacer()
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(value)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
     }
 }
 
-#Preview {
-    DashboardView()
-}
-
-
-
-
-import SwiftUI
+// MARK: - HeaderWithButton Component
 
 struct HeaderWithButton: View {
-    
-    
-
     let title: String
     let buttonContent: String
     let isButtonImage: Bool
     let showTrailingButton: Bool
     let showLeadingButton: Bool
     let onButtonTap: (() -> Void)?
-
+    
     @Environment(\.presentationMode) private var presentationMode
-
+    
     var body: some View {
         HStack(alignment: .center) {
             if showLeadingButton {
@@ -448,13 +401,13 @@ struct HeaderWithButton: View {
                         .padding(.leading)
                 }
             }
-
+            
             Text(title)
                 .font(.title)
                 .padding(.horizontal, showLeadingButton ? 5 : 15)
-
+            
             Spacer()
-
+            
             if showTrailingButton {
                 Button(action: {
                     onButtonTap?()
@@ -467,7 +420,6 @@ struct HeaderWithButton: View {
                         Text(buttonContent)
                             .font(.title3)
                             .foregroundColor(.appTint)
-
                     }
                 }
                 .padding(.horizontal)

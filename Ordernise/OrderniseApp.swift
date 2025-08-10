@@ -15,8 +15,7 @@ struct OrderniseApp: App {
             StockItem.self,
             Order.self,
             OrderItem.self,
-            OrderTemplate.self,
-            AttributeTemplate.self
+
         ])
         
         let modelConfiguration = ModelConfiguration(

@@ -27,6 +27,8 @@ class StockItem {
     var price: Double
     var cost: Double
     var currency: Currency
+    
+    // Custom field values storage
     var attributes: [String: String]
     
     @Relationship(deleteRule: .nullify)

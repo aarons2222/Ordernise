@@ -14,16 +14,7 @@ struct StockItemDetailView: View {
     @Query(sort: \Category.name) private var categories: [Category]
     
     // Using direct fetch instead of @Query to avoid SwiftData macro issues
-    var attributeTemplates: [AttributeTemplate] {
-        do {
-            let descriptor = FetchDescriptor<AttributeTemplate>()
-            let allTemplates = try modelContext.fetch(descriptor)
-            return allTemplates.filter { $0.templateType == .stockItem }
-        } catch {
-            print("Failed to fetch templates: \(error)")
-            return []
-        }
-    }
+
     
     enum Mode {
         case add
@@ -58,28 +49,19 @@ struct StockItemDetailView: View {
     @State private var cost = 0.0
     @State private var selectedCategory: Category?
     
-    // Dynamic attributes storage
-    @State private var attributes: [AttributeField] = []
     @State private var isEditMode = false
+    @State private var showingStockFieldSettings = false
     
-    // Template management
-    @State private var showingTemplateSheet = false
-    @State private var showingSaveTemplateAlert = false
-    @State private var templateName = ""
-    
-    // Standalone attribute sheet
-    @State private var showingAttributeSheet = false
-    @State private var newAttributeKey = ""
-    @State private var newAttributeValue = ""
-    @State private var editingAttribute: AttributeField?
-    @State private var isEditingAttribute = false
-    @FocusState private var attributeKeyboardFocused: Bool
+    // Custom field values storage
+    @State private var customFieldValues: [String: String] = [:]
     
     // Navigation to CategoryOptions
     @State private var showingCategoryOptions = false
     
-    // Use the same AttributeField type as other views
-    typealias AttributeField = OrderDetailView.AttributeField
+    // Field preferences for dynamic field rendering
+    @State private var fieldPreferences = UserDefaults.standard.stockFieldPreferences
+    
+
     
     // Initializer for adding new item
     init(mode: Mode = .add) {
@@ -147,199 +129,12 @@ struct StockItemDetailView: View {
             
             
                 ScrollView {
-            
-                     
-                        
-                        ListSection(title: "Item Name") {
-                            
-                            CustomTextField(
-                                text: $name,
-                                placeholder: "Enter item name",
-                                systemImage: "person",
-                                isSecure: false
-                            )
+                    // Dynamic field rendering based on user preferences
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(fieldPreferences.visibleFields) { fieldItem in
+                            fieldView(for: fieldItem)
                         }
-                        .padding(.horizontal, 20)
-                  
-                 
-                        
-                        
-                    CustomCardView{
-                        HStack{
-                            
-                            Text("Quantity")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
-                            
-                            
-                            Spacer()
-                            
-                            HStack(spacing: 12) {
-                                // Decrement Button
-                                Button {
-                                    if quantity > 0 {
-                                        quantity -= 1
-                                    }
-                                } label: {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(quantity > 0 ? Color.appTint.opacity(0.8) : .gray)
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(quantity <= 0)
-                                
-                                Text("\(quantity)")
-                                    .font(.headline)
-                                    .frame(minWidth: 30)
-                                
-                                // Increment Button
-                                Button {
-                                    quantity += 1
-                                } label: {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(Color.appTint)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            
-                            
-                            
-                            
-                            
-                        }
-                    }.padding(.vertical, 5)
-                        .padding(.horizontal, 20)
-                        
-                        
-                        
-                        
-                        
-                        
-                
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Category")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                               
-                                    if categories.isEmpty {
-                                      
-                                        
-                                        
-                                        GlobalButton(title: "Create Categories", showIcon: true, icon: "plus.circle" ,  action: {
-                                            showingCategoryOptions = true
-                                        })
-                                    
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        
-                                    } else {
-                                        // Use the new CategoryPicker component
-                                        CategoryPicker(
-                                            selection: $selectedCategory,
-                                            categories: categories,
-                                            onManageCategories: {
-                                                showingCategoryOptions = true
-                                            }
-                                        )
-                                   
-                                    }
-                                
-                            }.padding(.horizontal, 15)
-                        
-                  
-                   
-                    
-
-                        
-                        
-                        
-                        ListSection(title: "Item Price") {
-                            
-                            
-                            CustomNumberField(
-                                value: $price,
-                                placeholder: "Item Price",
-                                systemImage: localeManager.currencySymbolName,
-                                format: localeManager.currencyFormatStyle
-                            )
-                            
-                            
-                        }.padding(.horizontal, 20)
-                        
-                        
-                        
-                        ListSection(title: "Item Cost") {
-                            
-                            CustomNumberField(
-                                value: $cost,
-                                placeholder: "Item Cost",
-                                systemImage: localeManager.currencySymbolName,
-                                format: localeManager.currencyFormatStyle
-                            )
-                            
-                        }.padding(.horizontal, 20)
-                      
-
-                        
-                        
-                        
-                    
-                        
-                     
-                 
-                    
-                    
-   
-                            
-                            ListSection(title: "Custom Attributes") {
-                            // Display existing attributes
-                            ForEach(attributes) { attribute in
-                                AttributeRow(attribute: attribute)
-                                    .swipeActions {
-                                        Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
-                                            removeAttribute(attribute)
-                                            resetPosition = true
-                                        }
-                                    }
-                            }
-                            
-                       
-                                Button {
-                                    showingAttributeSheet = true
-                                } label: {
-                                    HStack {
-                                        Image(systemName: "plus.circle")
-                                            .foregroundColor(Color.appTint)
-                                            .font(.title2)
-                                        Text("Add Attribute")
-                                            .font(.title2)
-                                            .foregroundColor(Color.appTint)
-                                    }
-                                }
-                                .buttonStyle(.plain)
-                                
-                                
-                              
-                                
-                                if !attributeTemplates.isEmpty {
-                                    Button(action: { showingTemplateSheet = true }) {
-                                        Label("Load Template", systemImage: "tray.and.arrow.down")
-                                    }
-                                }
-                                
-                                if !attributes.isEmpty && attributes.contains(where: { !$0.key.isEmpty }) {
-                                    Button(action: { showingSaveTemplateAlert = true }) {
-                                        Label("Save as Template", systemImage: "tray.and.arrow.up")
-                                    }
-                                }
-                            
-                        }
-                        .padding(.horizontal, 20)
+                    }
                     
                 }
               
@@ -347,117 +142,217 @@ struct StockItemDetailView: View {
               
             }
              .toastieView(toast: $toastie)
+             .overlay(alignment: .bottomTrailing) {
+                 Button {
+                     showingStockFieldSettings = true
+                 } label: {
+                     Image(systemName: "pencil")
+                         .font(.title3)
+                         .fontWeight(.semibold)
+                         .foregroundStyle(.white)
+                         .frame(width: 45, height: 45)
+                         .background(
+                             Circle()
+                                 .fill(Color.appTint.gradient)
+                         )
+                 }
+                 .padding(.trailing, 20)
+             }
+            
    
     
         }
         .onAppear {
             loadItemData()
+            fieldPreferences = UserDefaults.standard.stockFieldPreferences
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            fieldPreferences = UserDefaults.standard.stockFieldPreferences
         }
         
-        .fullScreenCover(isPresented: $showingTemplateSheet) {
-            
-            AttributeTemplatePickerView(
-                templates: attributeTemplates,
-                onTemplateSelected: loadTemplate
-            )
+        .fullScreenCover(isPresented: $showingStockFieldSettings) {
+            StockFieldSettings()
         }
         
         
        
         
-        .sheet(isPresented: $showingAttributeSheet) {
-            NavigationStack {
-                VStack(spacing: 24) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(isEditingAttribute ? "Edit Attribute" : "Add Attribute")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                        
-                        Text(isEditingAttribute ? "Update the attribute information" : "Add custom information to this item")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    VStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Attribute Name")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            CustomTextField(
-                                text: $newAttributeKey,
-                                placeholder: "e.g., Color, Size, Material",
-                                systemImage: "tag",
-                                isSecure: false
-                            )
-                            .focused($attributeKeyboardFocused)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Value")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            CustomTextField(
-                                text: $newAttributeValue,
-                                placeholder: "Enter the value for this attribute",
-                                systemImage: "textformat",
-                                isSecure: false
-                            )
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 12) {
-                        Button("Cancel") {
-                            dismissAttributeSheet()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.gray.opacity(0.5).gradient)
-                        .foregroundColor(.primary)
-                        .cornerRadius(40)
-                        
-                        Button(isEditingAttribute ? "Save Changes" : "Add Attribute") {
-                            saveAttribute()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.appTint.gradient)
-                        .foregroundColor(.white)
-                        .cornerRadius(40)
-                        .disabled(newAttributeKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || newAttributeValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    }
-                }
-                .padding(24)
-                .presentationDetents([.height(400)])
-                .presentationDragIndicator(.visible)
-                .onAppear {
-                    if isEditingAttribute, let editingAttribute = editingAttribute {
-                        newAttributeKey = editingAttribute.key
-                        newAttributeValue = editingAttribute.value
-                    }
-                    attributeKeyboardFocused = true
-                }
-            }
-        }
+
         .sheet(isPresented: $showingCategoryOptions) {
             CategoryOptions()
         }
-        .alert("Save Template", isPresented: $showingSaveTemplateAlert) {
-            TextField("Template Name", text: $templateName)
-            Button("Save") {
-                saveAsTemplate()
+
+    }
+    
+    // MARK: - Dynamic Field Rendering
+    @ViewBuilder
+    private func fieldView(for fieldItem: StockFieldItem) -> some View {
+        if fieldItem.isBuiltIn, let builtInField = fieldItem.builtInField {
+            switch builtInField {
+            case .name:
+                ListSection(title: "Item Name") {
+                    CustomTextField(
+                        text: $name,
+                        placeholder: "Enter item name",
+                        systemImage: "tag",
+                        isSecure: false
+                    )
+                }
+                .padding(.horizontal, 20)
+                
+            case .quantityAvailable:
+                CustomCardView {
+                    HStack {
+                        Text("Quantity")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 12) {
+                            // Decrement Button
+                            Button {
+                                if quantity > 0 {
+                                    quantity -= 1
+                                }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(quantity > 0 ? Color.appTint.opacity(0.8) : .gray)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(quantity <= 0)
+                            
+                            Text("\(quantity)")
+                                .font(.headline)
+                                .frame(minWidth: 30)
+                            
+                            // Increment Button
+                            Button {
+                                quantity += 1
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(Color.appTint)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .padding(.vertical, 5)
+                .padding(.horizontal, 20)
+                
+            case .category:
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Category")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    if categories.isEmpty {
+                        GlobalButton(title: "Create Categories", showIcon: true, icon: "plus.circle") {
+                            showingCategoryOptions = true
+                        }
+                    } else {
+                        CategoryPicker(
+                            selection: $selectedCategory,
+                            categories: categories,
+                            onManageCategories: {
+                                showingCategoryOptions = true
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 15)
+                
+            case .price:
+                ListSection(title: "Item Price") {
+                    CustomNumberField(
+                        value: $price,
+                        placeholder: "Item Price",
+                        systemImage: localeManager.currencySymbolName,
+                        format: localeManager.currencyFormatStyle
+                    )
+                }
+                .padding(.horizontal, 20)
+                
+            case .cost:
+                ListSection(title: "Item Cost") {
+                    CustomNumberField(
+                        value: $cost,
+                        placeholder: "Item Cost",
+                        systemImage: localeManager.currencySymbolName,
+                        format: localeManager.currencyFormatStyle
+                    )
+                }
+                .padding(.horizontal, 20)
             }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Enter a name for this attribute template")
+        } else if let customField = fieldItem.customField {
+            // Render custom fields
+            renderCustomField(customField)
         }
     }
     
+    // MARK: - Custom Field Rendering
+    @ViewBuilder
+    private func renderCustomField(_ field: CustomStockField) -> some View {
+        switch field.fieldType {
+        case .text:
+            ListSection(title: field.name) {
+                CustomTextField(
+                    text: Binding(
+                        get: { customFieldValues[field.id.uuidString] ?? "" },
+                        set: { customFieldValues[field.id.uuidString] = $0 }
+                    ),
+                    placeholder: field.placeholder,
+                    systemImage: "textformat"
+                )
+            }
+            .padding(.horizontal, 20)
+            
+        case .number:
+            ListSection(title: field.name) {
+                CustomNumberField(
+                    value: Binding(
+                        get: { Double(customFieldValues[field.id.uuidString] ?? "0") ?? 0.0 },
+                        set: { customFieldValues[field.id.uuidString] = String($0) }
+                    ),
+                    placeholder: field.placeholder,
+                    systemImage: "number",
+                    format: .currency(code: localeManager.currentCurrency.rawValue).precision(.fractionLength(2))
+                )
+            }
+            .padding(.horizontal, 20)
+            
+        case .dropdown:
+            VStack(alignment: .leading, spacing: 4) {
+                Text(field.name)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                if field.dropdownOptions.isEmpty {
+                    Text("No options available")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 15)
+                } else {
+                    Picker(field.name, selection: Binding(
+                        get: { customFieldValues[field.id.uuidString] ?? "" },
+                        set: { customFieldValues[field.id.uuidString] = $0 }
+                    )) {
+                        Text("Select \(field.name.lowercased())")
+                            .tag("")
+                        ForEach(field.dropdownOptions, id: \.self) { option in
+                            Text(option)
+                                .tag(option)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .padding(.horizontal, 15)
+                }
+            }
+        }
+    }
+
     private func loadItemData() {
         // Set currency from settings for new items, or from existing item
         if let item = stockItem {
@@ -467,96 +362,30 @@ struct StockItemDetailView: View {
             cost = item.cost
             selectedCategory = item.category
             
-            // Load attributes
-            attributes = item.attributes.map { key, value in
-                AttributeField(key: key, value: value)
+            // Load custom field values from StockItem's attributes
+            customFieldValues = [:]
+            
+            // Load custom field values based on current preferences
+            for fieldItem in fieldPreferences.fieldItems {
+                if let customField = fieldItem.customField {
+                    let key = customField.id.uuidString
+                    // Load existing value from StockItem's attributes, or default to empty string
+                    customFieldValues[key] = item.attributes[key] ?? ""
+                }
             }
         } else {
-            // For new items, currency is already managed by LocaleManager
-            // Load default template if available
-            loadDefaultTemplate()
-        }
-    }
-    
-//    private func addAttribute() {
-//        attributes.append(AttributeField())
-//    }
-//    
-    private func removeAttribute(_ attribute: AttributeField) {
-        attributes.removeAll { $0.id == attribute.id }
-    }
-    
-    private func saveAttribute() {
-        let trimmedKey = newAttributeKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedValue = newAttributeValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !trimmedKey.isEmpty && !trimmedValue.isEmpty else { return }
-        
-        if isEditingAttribute, let editingAttribute = editingAttribute {
-            // Update existing attribute
-            if let index = attributes.firstIndex(where: { $0.id == editingAttribute.id }) {
-                attributes[index].key = trimmedKey
-                attributes[index].value = trimmedValue
+            // For new items, initialize empty custom field values
+            customFieldValues = [:]
+            for fieldItem in fieldPreferences.fieldItems {
+                if let customField = fieldItem.customField {
+                    let key = customField.id.uuidString
+                    customFieldValues[key] = ""
+                }
             }
-        } else {
-            // Add new attribute
-            let newAttribute = AttributeField(key: trimmedKey, value: trimmedValue)
-            attributes.append(newAttribute)
         }
-        
-        dismissAttributeSheet()
-    }
-    
-    private func dismissAttributeSheet() {
-        showingAttributeSheet = false
-        newAttributeKey = ""
-        newAttributeValue = ""
-        editingAttribute = nil
-        isEditingAttribute = false
     }
     
 
-    private func loadDefaultTemplate() {
-        // Find the default template for stock items
-        if let defaultTemplate = attributeTemplates.first(where: { $0.isDefault }) {
-            attributes = defaultTemplate.attributes.map { key, value in
-                AttributeField(key: key, value: value)
-            }
-        }
-    }
-    
-    private func loadTemplate(_ template: AttributeTemplate) {
-        // Replace current attributes with template attributes
-        attributes = template.attributes.map { key, value in
-            AttributeField(key: key, value: value)
-        }
-        showingTemplateSheet = false
-    }
-    
-    private func saveAsTemplate() {
-        guard !templateName.isEmpty else { return }
-        
-        let attributesDict = Dictionary(
-            uniqueKeysWithValues: attributes
-                .filter { !$0.key.isEmpty }
-                .map { ($0.key, $0.value) }
-        )
-        
-        let template = AttributeTemplate(
-            name: templateName,
-            attributes: attributesDict,
-            templateType: .stockItem
-        )
-        
-        modelContext.insert(template)
-        
-        do {
-            try modelContext.save()
-            templateName = ""
-        } catch {
-            print("Failed to save template: \(error)")
-        }
-    }
     
     private func saveItem() {
         // Validation: Only for new items
@@ -583,12 +412,6 @@ struct StockItemDetailView: View {
             return
         }
 
-        let attributesDict = Dictionary(
-            uniqueKeysWithValues: attributes
-                .filter { !$0.key.isEmpty }
-                .map { ($0.key, $0.value) }
-        )
-
         if let existingItem = stockItem {
             // Edit existing item
             existingItem.name = name
@@ -597,7 +420,8 @@ struct StockItemDetailView: View {
             existingItem.cost = cost
             existingItem.currency = localeManager.currentCurrency
             existingItem.category = selectedCategory
-            existingItem.attributes = attributesDict
+            // Save custom field values to attributes
+            existingItem.attributes = customFieldValues
         } else {
             // Add new item
             let newItem = StockItem(
@@ -606,7 +430,7 @@ struct StockItemDetailView: View {
                 price: price,
                 cost: cost,
                 currency: localeManager.currentCurrency,
-                attributes: attributesDict
+                attributes: customFieldValues
             )
             newItem.category = selectedCategory
             modelContext.insert(newItem)
@@ -623,31 +447,7 @@ struct StockItemDetailView: View {
 
 
 
-struct AttributeRow: View {
-    let attribute: StockItemDetailView.AttributeField
-    
-    var body: some View {
-        HStack {
-            Image(systemName: "tag.fill")
-                .font(.body)
-                .foregroundStyle(Color.appTint)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(attribute.key)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                Text(attribute.value)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .cardBackground()
-        .padding(.horizontal)
-    }
-}
+
 
 #Preview {
     StockItemDetailView(mode: .add)

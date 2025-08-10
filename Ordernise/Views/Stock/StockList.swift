@@ -89,7 +89,7 @@ struct StockList: View {
         Group {
             if stockItems.isEmpty {
                 Spacer()
-                ContentUnavailableView("No Stock Items", systemImage: "shippingbox", description: Text("Tap + to add your first item."))
+                ContentUnavailableView("No Stock Items", systemImage: "shippingbox", description: Text("Tap \(Image(systemName: "plus.circle")) to add your first item.."))
                 Spacer()
             } else if filteredItems.isEmpty {
                 Spacer()
@@ -121,7 +121,7 @@ struct StockList: View {
          
             .swipeActions {
                 Action(symbolImage: "trash.fill", tint: .white, background: .red) { reset in
-                    if let index = filteredItems.firstIndex(where: { $0.id == item.id }) {
+                    if filteredItems.contains(where: { $0.id == item.id }) {
                         itemToDelete = item
                         confirmDelete = true
                     }

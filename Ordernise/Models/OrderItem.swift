@@ -14,7 +14,6 @@ import SwiftData
 class OrderItem {
     var id: UUID
     var quantity: Int
-    var attributes: [String: String]
 
     @Relationship
     var stockItem: StockItem?
@@ -22,10 +21,9 @@ class OrderItem {
     @Relationship(inverse: \Order.items)
     var order: Order?
 
-    init(id: UUID = UUID(), quantity: Int, stockItem: StockItem? = nil, attributes: [String: String] = [:]) {
+    init(id: UUID = UUID(), quantity: Int, stockItem: StockItem? = nil) {
         self.id = id
         self.quantity = quantity
         self.stockItem = stockItem
-        self.attributes = attributes
     }
 }

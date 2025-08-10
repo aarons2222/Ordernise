@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-enum DeliveryMethod: String, CaseIterable, Identifiable {
+enum DeliveryMethod: String, CaseIterable, Identifiable, Codable {
     case collected = "Collected"
     case delivered = "Delivered"
 
@@ -40,8 +40,7 @@ struct DeliveryPicker: View {
     private func buttonLabel(for method: DeliveryMethod) -> some View {
         HStack(spacing: 8) {
             Image(systemName: selection == method ? "checkmark.circle.fill" : "circle")
-                .resizable()
-                .frame(width: 30, height: 30)
+                .font(.title2)
                 .foregroundColor(selection == method ? Color.appTint : Color.gray)
            
               
