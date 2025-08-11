@@ -11,6 +11,7 @@ import SwiftData
 struct SettingsView: View {
     
     @StateObject private var localeManager = LocaleManager.shared
+    @StateObject private var dummyDataManager = DummyDataManager.shared
     @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     @State private var selectedColor: Color = .color1
     
@@ -78,14 +79,54 @@ struct SettingsView: View {
                                 }
                                 .pickerStyle(.menu)
                                 .tint(Color.appTint)
-                                
-                                
-                                
-                                
                             }
                             
+                        
                             
                             
+                            HStack {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Text("Dummy Mode")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        if dummyDataManager.isDummyModeEnabled {
+                                            Text("ON")
+                                                .font(.caption2)
+                                                .fontWeight(.bold)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 2)
+                                                .background(Color.orange)
+                                                .foregroundColor(.white)
+                                                .clipShape(Capsule())
+                                        }
+                                    }
+                                    
+                                    Text(dummyDataManager.isDummyModeEnabled ? 
+                                        "Using 100 test orders from the last year for demonstration purposes" : 
+                                        "Use realistic test data instead of your actual business data")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.leading)
+                                }
+                                
+                                Spacer()
+                                
+                                VStack(spacing: 8) {
+                                    Toggle("", isOn: $dummyDataManager.isDummyModeEnabled)
+                                        .labelsHidden()
+                                        .tint(Color.appTint)
+                                    
+                                    if dummyDataManager.isDummyModeEnabled {
+                                        Button("Debug Refresh") {
+                                            dummyDataManager.forceRefresh()
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                    }
+                                }
+                            }
                         }
                         
                         

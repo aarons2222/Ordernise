@@ -7,17 +7,43 @@
 
 import SwiftUI
 import SwiftData
+import Charts
+
+struct CategorySalesData: Identifiable, Equatable {
+    let id = UUID()
+    let category: String
+    let revenue: Double
+    let color: Color
+    
+    static func == (lhs: CategorySalesData, rhs: CategorySalesData) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.category == rhs.category &&
+        lhs.revenue == rhs.revenue
+    }
+}
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var allOrders: [Order]
-    @Query private var stockItems: [StockItem]
-    
-    
+    @StateObject private var dummyDataManager = DummyDataManager.shared
+    @StateObject private var localeManager = LocaleManager.shared
+
     @State private var selectedTimeFrame: TimeFrame = .thisMonth
+    @State private var showingInfoSheet = false
+    
+    private var allOrders: [Order] {
+        // Force reactivity to dummy mode changes
+        _ = dummyDataManager.isDummyModeEnabled
+        return dummyDataManager.getOrders(from: modelContext)
+    }
+    
+    private var stockItems: [StockItem] {
+        // Force reactivity to dummy mode changes
+        _ = dummyDataManager.isDummyModeEnabled
+        return dummyDataManager.getStockItems(from: modelContext)
+    }
     
     enum TimeFrame: String, CaseIterable {
-        case today = "Today"
+    //    case today = "Today"
         case thisWeek = "This Week"
         case thisMonth = "This Month"
         case thisYear = "This Year"
@@ -30,8 +56,8 @@ struct DashboardView: View {
         let calendar = Calendar.current
         
         switch selectedTimeFrame {
-        case .today:
-            return allOrders.filter { calendar.isDate($0.date, inSameDayAs: now) }
+//        case .today:
+//            return allOrders.filter { calendar.isDate($0.date, inSameDayAs: now) }
         case .thisWeek:
             let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
             return allOrders.filter { $0.date >= weekStart }
@@ -48,12 +74,12 @@ struct DashboardView: View {
     
     // Calculate metrics
     private var totalSales: Int {
-        filteredOrders.filter { $0.status == .fulfilled }.count
+        filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }.count
     }
     
     private var totalRevenue: Double {
         filteredOrders
-            .filter { $0.status == .fulfilled }
+            .filter { $0.status == .fulfilled || $0.status == .delivered }
             .reduce(0) { total, order in
                 total + order.revenue
             }
@@ -63,7 +89,7 @@ struct DashboardView: View {
     
     private var totalProfit: Double {
         filteredOrders
-            .filter { $0.status == .fulfilled }
+            .filter { $0.status == .fulfilled || $0.status == .delivered }
             .reduce(0) { total, order in
                 total + order.profit
             }
@@ -79,6 +105,36 @@ struct DashboardView: View {
         stockItems.filter { $0.quantityAvailable <= 5 }.count
     }
     
+    private var salesByCategory: [CategorySalesData] {
+        let categoryRevenue = Dictionary(grouping: filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }) { order in
+            // Get category from the first order item (simplified approach)
+            order.items.first?.stockItem?.category?.name ?? "Uncategorized"
+        }.mapValues { orders in
+            orders.reduce(0.0) { $0 + $1.revenue }
+        }
+        
+        let colors: [Color] = [
+            .blue, .green, .orange, .purple, .red, 
+            .pink, .cyan, .mint, .indigo, .teal
+        ]
+        
+        return categoryRevenue.enumerated().map { index, item in
+            CategorySalesData(
+                category: item.key,
+                revenue: item.value,
+                color: colors[index % colors.count]
+            )
+        }
+        .filter { $0.revenue > 0 }
+        .sorted { $0.revenue > $1.revenue }
+    }
+    
+    private func calculatePercentage(_ revenue: Double) -> Double {
+        let total = salesByCategory.reduce(0) { $0 + $1.revenue }
+        guard total > 0 else { return 0 }
+        let percentage = (revenue / total) * 100
+        return (percentage * 10).rounded() / 10
+    }
 
     
     var body: some View {
@@ -88,13 +144,12 @@ struct DashboardView: View {
             
             HeaderWithButton(
                 title: "Dashboard",
-                buttonContent: "line.3.horizontal.decrease.circle",
+                buttonContent: "info.circle",
                 isButtonImage: true,
-                showTrailingButton: false,
+                showTrailingButton: true,
                 showLeadingButton: false,
                 onButtonTap: {
-                    
-                    
+                    showingInfoSheet = true
                 }
             )
             
@@ -104,139 +159,119 @@ struct DashboardView: View {
             }
             
             
-            ScrollView{
                 VStack(spacing: 20) {
-                    if allOrders.isEmpty {
-                        Spacer()
-                        emptyStatePlaceholder
+                    if filteredOrders.count < 6 {
+             
+                        
+                        ContentUnavailableView("Not enough sales data", systemImage: "chart.pie", description: Text("As you add orders, you will be able to view sales metrics here"))
+
+
+                        
+                
+                        
                     } else {
-                        
-                        
-                        
+                        ScrollView {
+
                         metricsGrid
-                        
-                        // Sales by Category Chart
-                        //  SalesByCategoryChartView(orders: filteredOrders)
-                        
-                        // Additional metrics
+                        salesByCategoryChart
                         additionalMetrics
+                            
                     }
                 }
-                .padding()
+  
+      
             }
             .padding(.top)
-            
+
             Spacer()
+            
+      
+        }
+        .sheet(isPresented: $showingInfoSheet) {
+            DashboardInfoSheet()
         }
         
     }
+    
+
     
     // MARK: - UI Components
     
-    private var emptyStatePlaceholder: some View {
-        VStack(spacing: 24) {
+    private var salesByCategoryChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Sales by Category")
+                    .font(.headline)
+                    .fontWeight(.regular)
+                    .foregroundColor(.primary)
+                    .underline()
+                Spacer()
+                
+                Image(systemName: "chart.pie")
+                    .font(.title2)
+                    .foregroundColor(.accentColor)
+            }
+            .padding(.bottom, 20)
+          
+                Chart(salesByCategory) { data in
+                    SectorMark(
+                        angle: .value("Revenue", data.revenue),
+                        innerRadius: 70,
+                        angularInset: 1
+                    )
+                    .cornerRadius(5) 
+                    .foregroundStyle(data.color)
+                }
+                .frame(height: 250)
+                .animation(.easeInOut(duration: 0.1), value: salesByCategory)
             
             
-            
-            // Quick stats for inventory
-            if !stockItems.isEmpty {
-                VStack(spacing: 16) {
-                    Divider()
-                        .padding(.horizontal, 32)
-                    
-                    Text("Current Inventory")
-                        .font(.headline)
-                    
-                    HStack(spacing: 32) {
-                        VStack {
-                            Text("\(stockItems.count)")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color.appTint)
-                            Text("Items")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        VStack {
-                            Text(totalInventoryValue.formatted(.currency(code: "GBP")))
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                            Text("Value")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        if lowStockItems > 0 {
-                            VStack {
-                                Text("\(lowStockItems)")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.orange)
-                                Text("Low Stock")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(Array(salesByCategory.enumerated()), id: \.element.id) { index, data in
+                    if !data.category.isEmpty {
+                        HStack {
+                            Image(systemName: "largecircle.fill.circle")
+                                .font(.body)
+                                .foregroundStyle(data.color)
+                            
+                            Text(data.category.capitalized)
+                                .font(.body)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Text("\(calculatePercentage(data.revenue), specifier: "%.1f")%")
+                                .font(.footnote)
+                                .foregroundColor(.gray)
                         }
                     }
                 }
-                
-                Spacer()
-            }else{
-                
-                
-                
-                
-                VStack {
-                    Spacer()
-                    ContentUnavailableView("Not enough data", systemImage: "chart.bar.doc.horizontal",
-                                           description: Text("As you add orders, you will see business analytics and insights here.")
-                    )
-                    Spacer()
-                }
-                
             }
-            
-            
-            
-            
-            
-            
+            .padding(.vertical, 8)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+        )
+        .padding(.horizontal)
     }
+
     
     private var timeFramePicker: some View {
-        
-        
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                ForEach(TimeFrame.allCases, id: \.self) { timeFrame in
-                    Button(action: {
-                        selectedTimeFrame = timeFrame
-                    }) {
-                        let isSelected = selectedTimeFrame == timeFrame
-                        
-                        
-                        Text(timeFrame.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(isSelected ? .semibold : .regular)
-                            .foregroundColor(isSelected ? .white : .primary)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color.appTint.gradient)
-                                    .padding(.horizontal, 10)
-                                    .frame(maxHeight: .infinity, alignment: .bottom)
-                            )
-                    }
-                }
-            }
-            .padding(.horizontal)
+        SegmentedControl(
+            tabs: TimeFrame.allCases,
+            activeTab: $selectedTimeFrame,
+            height: 45,
+            font: .callout,
+            activeTint: Color(UIColor.systemBackground),
+            inActiveTint: .gray.opacity(0.8)
+        ) { size in
+            RoundedRectangle(cornerRadius: 22.5)
+                .fill(Color.appTint.gradient)
+                .padding(.horizontal, 4)
         }
+        .padding(.horizontal)
     }
     
     
@@ -257,16 +292,18 @@ struct DashboardView: View {
             // Revenue
             MetricCard(
                 title: "Revenue",
-                value: totalRevenue.formatted(.currency(code: "GBP")),
+                value: totalRevenue.formatted(localeManager.currencyFormatStyle),
                 subtitle: "Total Income",
                 icon: "dollarsign.circle.fill",
                 color: .green
             )
             
+            
+
             // Profit
             MetricCard(
                 title: "Profit",
-                value: totalProfit.formatted(.currency(code: "GBP")),
+                value: totalProfit.formatted(localeManager.currencyFormatStyle),
                 subtitle: "Net Profit",
                 icon: "chart.line.uptrend.xyaxis",
                 color: totalProfit >= 0 ? .green : .red
@@ -327,7 +364,10 @@ struct DashboardView: View {
                         Text("Average Order Value")
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text((totalRevenue / Double(max(totalSales, 1))).formatted(.currency(code: "GBP")))
+                        
+                        
+                        Text("\(totalRevenue / Double(max(totalSales, 1)), format: localeManager.currencyFormatStyle)")
+
                             .fontWeight(.medium)
                     }
                 }
@@ -387,6 +427,8 @@ struct HeaderWithButton: View {
     let showLeadingButton: Bool
     let onButtonTap: (() -> Void)?
     
+    
+    
     @Environment(\.presentationMode) private var presentationMode
     
     var body: some View {
@@ -408,6 +450,11 @@ struct HeaderWithButton: View {
             
             Spacer()
             
+            
+            
+            
+            
+            
             if showTrailingButton {
                 Button(action: {
                     onButtonTap?()
@@ -426,5 +473,112 @@ struct HeaderWithButton: View {
             }
         }
         .frame(height: 50)
+    }
+}
+
+// MARK: - Dashboard Info Sheet Component
+
+struct DashboardInfoSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    
+                    // Sales Metrics Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Sales Metrics", systemImage: "chart.line.uptrend.xyaxis")
+                            .font(.headline)
+                            .foregroundColor(.appTint)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            InfoRow(title: "Total Sales", description: "Number of completed orders (fulfilled or delivered)")
+                            InfoRow(title: "Revenue", description: "Total income from completed orders")
+                            InfoRow(title: "Profit", description: "Revenue minus all costs (shipping, fees, product costs)")
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Time Filters Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Time Filters", systemImage: "clock")
+                            .font(.headline)
+                            .foregroundColor(.appTint)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            InfoRow(title: "Today", description: "Orders placed today")
+                            InfoRow(title: "This Week", description: "Orders from Monday onwards (week starts Monday)")
+                            InfoRow(title: "This Month", description: "Orders from the beginning of this month")
+                            InfoRow(title: "This Year", description: "Orders from January 1st")
+                            InfoRow(title: "All Time", description: "All orders ever placed")
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Inventory Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Inventory", systemImage: "shippingbox")
+                            .font(.headline)
+                            .foregroundColor(.appTint)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            InfoRow(title: "Total Value", description: "Current stock value (quantity × price)")
+                            InfoRow(title: "Low Stock", description: "Items with 5 or fewer units remaining")
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Important Notes Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Important Notes", systemImage: "info.circle")
+                            .font(.headline)
+                            .foregroundColor(.appTint)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            InfoRow(title: "Order Status", description: "Only completed orders (fulfilled or delivered status) count toward sales metrics")
+                            InfoRow(title: "Revenue", description: "Revenue includes customer shipping charges")
+                            InfoRow(title: "Profit", description: "Profit calculations include selling fees and costs")
+                            InfoRow(title: "Time Filters", description: "Time filters show orders placed during that period")
+                            InfoRow(title: "Week Definition", description: "Week starts Monday at 00:00:01, ends Sunday at 23:59:59")
+                        }
+                    }
+                    
+                    Spacer(minLength: 20)
+                }
+                .padding()
+            }
+            .navigationTitle("Dashboard Information")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.appTint)
+                }
+            }
+        }
+    }
+}
+
+// Helper component for info rows
+struct InfoRow: View {
+    let title: String
+    let description: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+            Text(description)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 2)
     }
 }

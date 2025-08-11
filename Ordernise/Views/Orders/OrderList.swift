@@ -33,7 +33,9 @@ enum OrderFilter: String, CaseIterable {
 
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Order.date, order: .reverse) private var orders: [Order]
+    @StateObject private var dummyDataManager = DummyDataManager.shared
+    
+    @Query private var ordersQuery: [Order]
     
     @State private var showingAddOrder = false
     @State private var confirmDelete = false
@@ -42,17 +44,20 @@ struct OrderList: View {
  
     @State private var selectedFilter: OrderFilter = .received
     @Binding var searchText: String
- 
     
+    private var allOrders: [Order] {
+        if dummyDataManager.isDummyModeEnabled {
+            return dummyDataManager.getOrders(from: modelContext)
+        } else {
+            return ordersQuery
+        }
+    }
+ 
     var filteredOrders: [Order] {
-        orders.filter { order in
-            let matchesSearch = searchText.isEmpty || 
-                order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
-                order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
-            
-            let matchesFilter = selectedFilter.matchesOrder(order)
-            
-            return matchesSearch && matchesFilter
+        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
+        
+        return searchFilteredOrders.filter { order in
+            selectedFilter.matchesOrder(order)
         }
     }
     
@@ -69,6 +74,27 @@ struct OrderList: View {
                 return false
             }
             return firstDate > secondDate
+        }
+    }
+    
+    // Computed properties for order counts
+    private var receivedOrdersCount: Int {
+        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
+        return searchFilteredOrders.filter { OrderFilter.received.matchesOrder($0) }.count
+    }
+    
+    private var completedOrdersCount: Int {
+        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
+        return searchFilteredOrders.filter { OrderFilter.completed.matchesOrder($0) }.count
+    }
+    
+    // Helper function to get count text for tab
+    private func countText(for filter: OrderFilter) -> String {
+        switch filter {
+        case .received:
+            return "(\(receivedOrdersCount))"
+        case .completed:
+            return "(\(completedOrdersCount))"
         }
     }
     
@@ -103,7 +129,7 @@ struct OrderList: View {
                     tabs: OrderFilter.allCases,
                     activeTab: $selectedFilter,
                     height: 35,
-                    extraText: nil,
+                    extraText: { filter in countText(for: filter) },
                     font: .callout,
                     activeTint: Color(UIColor.systemBackground),
                     inActiveTint: .gray.opacity(0.8)
@@ -129,7 +155,7 @@ struct OrderList: View {
                 
                 
           
-                if orders.isEmpty {
+                if allOrders.isEmpty {
                     Spacer()
                     ContentUnavailableView("No Orders", systemImage: "bag", description: Text("Tap \(Image(systemName: "plus.circle")) to add your first order."))
                     Spacer()
@@ -159,10 +185,14 @@ struct OrderList: View {
                                             .onTapGesture {
                                                 selectedOrder = order
                                             }
+                                        
+                                        Color.clear.frame(height: 15)
                                     }
                                 }
                             }
                         }
+                        
+                        Color.clear.frame(height: 40)
                     }
                   
                 }

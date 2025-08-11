@@ -12,8 +12,11 @@ import SwiftData
 struct CategoryOptions: View {
     
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var dummyDataManager = DummyDataManager.shared
     
-    @Query(sort: \Category.name) private var categories: [Category]
+    private var categories: [Category] {
+        dummyDataManager.getCategories(from: modelContext)
+    }
     
     
     @State private var showingAddCategory = false

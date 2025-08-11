@@ -156,14 +156,21 @@ struct SplashScreen: View {
                 .ignoresSafeArea()
                 .drawingGroup()
             
-            logoImage
-                .resizable()
-                .interpolation(.medium)
-                .scaledToFit()
-                .frame(width: 180, height: 180)
-                .scaleEffect(scale)
-                .opacity(opacity)
-                .drawingGroup()
+            
+            VStack(spacing: 0){
+                logoImage
+                    .resizable()
+                    .interpolation(.medium)
+                    .scaledToFit()
+                    .frame(width: 180, height: 180)
+                    .scaleEffect(scale)
+                    .opacity(opacity)
+                    .drawingGroup()
+                
+                Text("Ordernise")
+                    .font(Font.largeTitle.weight(.light))
+                    
+            }
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.4)) {

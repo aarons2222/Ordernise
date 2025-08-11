@@ -27,7 +27,7 @@ struct CustomTextField: View {
             } else {
                 TextField(placeholder, text: text)
                     .textContentType(.none)
-                    .autocapitalization(.none)
+                    .autocapitalization(.sentences)
                     .disableAutocorrection(true)
             }
 

@@ -38,12 +38,14 @@ struct OrderniseApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
+                .task {
                     // Initialize the FieldPreferencesManager with the model context
-                    Task { @MainActor in
-                        FieldPreferencesManager.shared.setModelContext(sharedModelContainer.mainContext)
-                        
-                        // Trigger migration from UserDefaults to SwiftData
+                    FieldPreferencesManager.shared.setModelContext(sharedModelContainer.mainContext)
+                    
+                    // Run migration asynchronously to avoid SwiftUI publishing warnings
+                    Task.detached { @MainActor in
+                        // Small delay to ensure view setup is complete
+                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
                         FieldPreferencesManager.shared.migrateFromUserDefaults()
                     }
                 }

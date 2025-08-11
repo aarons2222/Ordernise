@@ -20,7 +20,7 @@ import SwiftUI
 
 
 struct StockItemCard: View {
- 
+    @StateObject private var localeManager = LocaleManager.shared
     var item: StockItem
     let height: CGFloat
 
@@ -40,8 +40,27 @@ struct StockItemCard: View {
             
             // Right details section
             VStack(alignment: .leading, spacing: 8) {
-                Text(item.name)
-                    .font(.headline)
+                
+                HStack{
+                    Text(item.name)
+                        .font(.headline)
+                 
+                    
+                    
+                    Spacer()
+                    HStack(spacing: 0){
+                        Text("Quantity:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(" \(item.quantityAvailable)")
+                            .font(.caption)
+                            .foregroundColor(quantityColor(item.quantityAvailable))
+                    }
+                   
+                    
+                    
+                 
+                }
              
                 if let category = item.category{
                
@@ -52,26 +71,29 @@ struct StockItemCard: View {
                 
                 
                 
-                LabelValue(label: "Price: ", value: "\(item.price)")
+                HStack(alignment: .center, spacing: 2) {
+                    Text("Price")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    Text("\(item.price, format: localeManager.currencyFormatStyle)")
+                        .font(.caption)
+                 
+                }
+
+                
+                
+                
+                
+             
+             
 
             
                 }
                 
                 
-                Spacer()
+               
                 
-                Text("\(item.quantityAvailable)")
-                    .font(.body)
-                    .padding(5)
-                    
-                    .background(
-                       Capsule().fill(quantityColor(item.quantityAvailable).gradient)
-                            .frame(minWidth: 25)
-                    )
-                    .foregroundColor(.white)
-                
-                
-              
+               
             }
             .frame(height: height)
             .padding()
@@ -103,7 +125,7 @@ struct LabelValue: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 2) {
-            Text(label.uppercased())
+            Text(label)
                 .font(.caption2)
                 .foregroundColor(.secondary)
             Text(value)
