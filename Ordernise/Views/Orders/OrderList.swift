@@ -39,10 +39,10 @@ struct OrderList: View {
     @State private var confirmDelete = false
     @State private var selectedOrder: Order?
     @State private var orderToDelete: Order?
-    @State private var searchText = ""
+ 
     @State private var selectedFilter: OrderFilter = .received
-
-    
+    @Binding var searchText: String
+ 
     
     var filteredOrders: [Order] {
         orders.filter { order in
@@ -257,11 +257,11 @@ struct OrderList: View {
     }
 }
 
-#Preview {
-    OrderList()
-}
-
-
+//#Preview {
+//    OrderList()
+//}
+//
+//
 
 
 

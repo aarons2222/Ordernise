@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 // MARK: - Custom Field Types
 enum OrderFieldType: String, Codable, CaseIterable {
@@ -274,7 +275,7 @@ struct OrderFieldPreferences: Codable, Equatable {
 
 }
 
-// MARK: - UserDefaults Extension
+// MARK: - UserDefaults Extension (SwiftData-backed)
 extension UserDefaults {
     private enum Keys {
         static let orderFieldPreferences = "orderFieldPreferences"
@@ -282,15 +283,62 @@ extension UserDefaults {
     
     var orderFieldPreferences: OrderFieldPreferences {
         get {
+            // Try SwiftData first (synchronously)
+            if let swiftDataPrefs = loadOrderFieldPreferencesSync() {
+                return swiftDataPrefs
+            }
+            
+            // Fallback to UserDefaults and migrate
             guard let data = data(forKey: Keys.orderFieldPreferences),
                   let preferences = try? JSONDecoder().decode(OrderFieldPreferences.self, from: data) else {
                 return OrderFieldPreferences.default
             }
+            
+            // Migrate to SwiftData asynchronously
+            Task { @MainActor in
+                FieldPreferencesManager.shared.saveOrderFieldPreferences(preferences)
+                print("[UserDefaults] Migrated order preferences to SwiftData")
+            }
+            
             return preferences
         }
         set {
+            // Save to SwiftData (primary) asynchronously
+            Task { @MainActor in
+                FieldPreferencesManager.shared.saveOrderFieldPreferences(newValue)
+            }
+            
+            // Keep UserDefaults for backwards compatibility (immediate)
             if let data = try? JSONEncoder().encode(newValue) {
                 set(data, forKey: Keys.orderFieldPreferences)
+            }
+        }
+    }
+    
+    private func loadOrderFieldPreferencesSync() -> OrderFieldPreferences? {
+        // Access SwiftData synchronously from main thread if available
+        guard Thread.isMainThread else {
+            return nil
+        }
+        
+        // Use MainActor.assumeIsolated to safely access the main actor context
+        return MainActor.assumeIsolated {
+            guard let context = FieldPreferencesManager.shared.modelContext else {
+                return nil
+            }
+            
+            let descriptor = FetchDescriptor<OrderFieldPreferencesModel>(
+                predicate: #Predicate { $0.id == "default" }
+            )
+            
+            do {
+                let models = try context.fetch(descriptor)
+                guard let model = models.first else { return nil }
+                
+                return try JSONDecoder().decode(OrderFieldPreferences.self, from: model.fieldItemsData)
+            } catch {
+                print("[UserDefaults] Error loading order preferences from SwiftData: \(error)")
+                return nil
             }
         }
     }
@@ -298,6 +346,21 @@ extension UserDefaults {
     /// Temporary method to force reset field preferences (for debugging)
     func resetOrderFieldPreferences() {
         removeObject(forKey: "orderFieldPreferences")
+        // Also clear SwiftData
+        Task { @MainActor in
+            if let context = FieldPreferencesManager.shared.modelContext {
+                let descriptor = FetchDescriptor<OrderFieldPreferencesModel>()
+                do {
+                    let models = try context.fetch(descriptor)
+                    for model in models {
+                        context.delete(model)
+                    }
+                    try context.save()
+                } catch {
+                    print("[DEBUG] Error clearing SwiftData: \(error)")
+                }
+            }
+        }
         print("[DEBUG] Preferences reset - will use fresh defaults")
     }
 }

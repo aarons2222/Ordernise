@@ -15,7 +15,9 @@ struct OrderniseApp: App {
             StockItem.self,
             Order.self,
             OrderItem.self,
-
+            Category.self,
+            StockFieldPreferencesModel.self,
+            OrderFieldPreferencesModel.self
         ])
         
         let modelConfiguration = ModelConfiguration(
@@ -36,6 +38,15 @@ struct OrderniseApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    // Initialize the FieldPreferencesManager with the model context
+                    Task { @MainActor in
+                        FieldPreferencesManager.shared.setModelContext(sharedModelContainer.mainContext)
+                        
+                        // Trigger migration from UserDefaults to SwiftData
+                        FieldPreferencesManager.shared.migrateFromUserDefaults()
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
     }

@@ -124,6 +124,34 @@ struct SettingsView: View {
                             }
                         }
                         
+                        NavigationLink(destination: PlatformOptions()) {
+                            
+                            CustomCardView {
+                                
+                                HStack{
+                                    
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Platform Options")
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        
+                                        
+                                        Text("Select which platforms are available in your order workflow.")
+                                        
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                        
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                
+                            }
+                        }
+                        
                         NavigationLink(destination: OrderFieldSettings()) {
                             CustomCardView {
                                 HStack {

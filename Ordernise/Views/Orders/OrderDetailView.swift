@@ -59,7 +59,7 @@ struct OrderDetailView: View {
     @State private var orderReference = ""
     @State private var customerName = ""
     @State private var status: OrderStatus = .received
-    @State private var platform: Platform = .amazon
+    @State private var platform: Platform = Platform.enabledPlatforms.first ?? .amazon
     @State private var customPlatformText = ""
     @State private var isEditMode = false
     @State private var showingStockItemPicker = false
@@ -689,13 +689,17 @@ struct OrderDetailView: View {
             isEditMode = true
             print("✏️ [OrderDetailView] Auto-enabled edit mode for existing order")
         } else {
-            // For new orders, initialize with user's last chosen platform
-            if let savedPlatform = Platform.allCases.first(where: { $0.rawValue == lastSelectedPlatform }) {
+            // For new orders, initialize with user's last chosen platform if it's still enabled
+            if let savedPlatform = Platform.allCases.first(where: { $0.rawValue == lastSelectedPlatform }),
+               Platform.enabledPlatforms.contains(savedPlatform) {
                 platform = savedPlatform
                 // If the saved platform is custom, load the saved custom text
-                if savedPlatform == .amazon {
+                if savedPlatform == .custom {
                     customPlatformText = lastCustomPlatformText
                 }
+            } else {
+                // If saved platform is disabled or not found, use first enabled platform
+                platform = Platform.enabledPlatforms.first ?? .amazon
             }
             
             // For new orders, start with one empty item

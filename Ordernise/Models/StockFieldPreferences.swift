@@ -1,4 +1,4 @@
-//
+ //
 //  StockFieldPreferences.swift
 //  Ordernise
 //
@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 // MARK: - Custom Field Types
 enum StockFieldType: String, Codable, CaseIterable {
@@ -249,7 +250,7 @@ struct StockFieldPreferences: Codable, Equatable {
     }
 }
 
-// MARK: - UserDefaults Extension
+// MARK: - UserDefaults Extension (SwiftData-backed)
 extension UserDefaults {
     private enum StockKeys {
         static let stockFieldPreferences = "stockFieldPreferences"
@@ -257,15 +258,62 @@ extension UserDefaults {
     
     var stockFieldPreferences: StockFieldPreferences {
         get {
+            // Try SwiftData first (synchronously)
+            if let swiftDataPrefs = loadStockFieldPreferencesSync() {
+                return swiftDataPrefs
+            }
+            
+            // Fallback to UserDefaults and migrate
             guard let data = data(forKey: StockKeys.stockFieldPreferences),
                   let preferences = try? JSONDecoder().decode(StockFieldPreferences.self, from: data) else {
                 return StockFieldPreferences.default
             }
+            
+            // Migrate to SwiftData asynchronously
+            Task { @MainActor in
+                FieldPreferencesManager.shared.saveStockFieldPreferences(preferences)
+                print("[UserDefaults] Migrated stock preferences to SwiftData")
+            }
+            
             return preferences
         }
         set {
+            // Save to SwiftData (primary) asynchronously
+            Task { @MainActor in
+                FieldPreferencesManager.shared.saveStockFieldPreferences(newValue)
+            }
+            
+            // Keep UserDefaults for backwards compatibility (immediate)
             if let data = try? JSONEncoder().encode(newValue) {
                 set(data, forKey: StockKeys.stockFieldPreferences)
+            }
+        }
+    }
+    
+    private func loadStockFieldPreferencesSync() -> StockFieldPreferences? {
+        // Access SwiftData synchronously from main thread if available
+        guard Thread.isMainThread else {
+            return nil
+        }
+        
+        // Use MainActor.assumeIsolated to safely access the main actor context
+        return MainActor.assumeIsolated {
+            guard let context = FieldPreferencesManager.shared.modelContext else {
+                return nil
+            }
+            
+            let descriptor = FetchDescriptor<StockFieldPreferencesModel>(
+                predicate: #Predicate { $0.id == "default" }
+            )
+            
+            do {
+                let models = try context.fetch(descriptor)
+                guard let model = models.first else { return nil }
+                
+                return try JSONDecoder().decode(StockFieldPreferences.self, from: model.fieldItemsData)
+            } catch {
+                print("[UserDefaults] Error loading stock preferences from SwiftData: \(error)")
+                return nil
             }
         }
     }
@@ -273,6 +321,21 @@ extension UserDefaults {
     /// Temporary method to force reset stock field preferences (for debugging)
     func resetStockFieldPreferences() {
         removeObject(forKey: "stockFieldPreferences")
+        // Also clear SwiftData
+        Task { @MainActor in
+            if let context = FieldPreferencesManager.shared.modelContext {
+                let descriptor = FetchDescriptor<StockFieldPreferencesModel>()
+                do {
+                    let models = try context.fetch(descriptor)
+                    for model in models {
+                        context.delete(model)
+                    }
+                    try context.save()
+                } catch {
+                    print("[DEBUG] Error clearing SwiftData: \(error)")
+                }
+            }
+        }
         print("[DEBUG] Stock preferences reset - will use fresh defaults")
     }
 }

@@ -9,7 +9,7 @@ struct StockList: View {
     @State private var confirmDelete = false
     @State private var selectedStockItem: StockItem?
     @State private var itemToDelete: StockItem?
-    @State private var searchText = ""
+    @Binding var searchText: String
     
     var filteredItems: [StockItem] {
         stockItems.filter { item in
@@ -29,7 +29,7 @@ struct StockList: View {
         NavigationStack {
             VStack {
                 headerSection
-                searchSection
+               // searchSection
                 mainContentView
             }
             .fullScreenCover(isPresented: $showingAddStock) {

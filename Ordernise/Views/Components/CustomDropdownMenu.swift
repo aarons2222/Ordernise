@@ -198,7 +198,7 @@ struct PlatformDropdownMenu: View {
     var body: some View {
         CustomDropdownMenu(
             title: "Platform",
-            options: Platform.allCases,
+            options: Platform.enabledPlatforms,
             selection: $selection,
             optionToString: { $0.rawValue.capitalized },
             optionToImage: { platformIcon(for: $0) }
