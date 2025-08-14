@@ -27,27 +27,33 @@ struct DashboardView: View {
     @StateObject private var dummyDataManager = DummyDataManager.shared
     @StateObject private var localeManager = LocaleManager.shared
 
-    @State private var selectedTimeFrame: TimeFrame = .thisMonth
+    @State private var selectedTimeFrame: TimeFrame = .thirtyDays
     @State private var showingInfoSheet = false
     
     private var allOrders: [Order] {
-        // Force reactivity to dummy mode changes
-        _ = dummyDataManager.isDummyModeEnabled
         return dummyDataManager.getOrders(from: modelContext)
     }
     
     private var stockItems: [StockItem] {
-        // Force reactivity to dummy mode changes
-        _ = dummyDataManager.isDummyModeEnabled
         return dummyDataManager.getStockItems(from: modelContext)
     }
     
     enum TimeFrame: String, CaseIterable {
-    //    case today = "Today"
-        case thisWeek = "This Week"
-        case thisMonth = "This Month"
-        case thisYear = "This Year"
-        case allTime = "All Time"
+
+        case thirtyDays = "30 Days"
+        case sixMonths = "6 Months"
+        case twelveMonths = "12 Months"
+        
+        var localizedTitle: String {
+            switch self {
+            case .thirtyDays:
+                return String(localized: "30 Days")
+            case .sixMonths:
+                return String(localized: "6 Months")
+            case .twelveMonths:
+                return String(localized: "12 Months")
+            }
+        }
     }
     
     // Filtered orders based on selected time frame
@@ -55,21 +61,26 @@ struct DashboardView: View {
         let now = Date()
         let calendar = Calendar.current
         
+        let filtered: [Order]
+        
         switch selectedTimeFrame {
-//        case .today:
-//            return allOrders.filter { calendar.isDate($0.date, inSameDayAs: now) }
-        case .thisWeek:
-            let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
-            return allOrders.filter { $0.date >= weekStart }
-        case .thisMonth:
-            let monthStart = calendar.dateInterval(of: .month, for: now)?.start ?? now
-            return allOrders.filter { $0.date >= monthStart }
-        case .thisYear:
-            let yearStart = calendar.dateInterval(of: .year, for: now)?.start ?? now
-            return allOrders.filter { $0.date >= yearStart }
-        case .allTime:
-            return allOrders
+
+        case .thirtyDays:
+            // Last 30 days from now
+            let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now) ?? now
+            filtered = allOrders.filter { $0.date >= thirtyDaysAgo && $0.date <= now }
+        case .sixMonths:
+            // Last 6 months from now
+            let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: now) ?? now
+            filtered = allOrders.filter { $0.date >= sixMonthsAgo && $0.date <= now }
+        case .twelveMonths:
+            // Last 12 months from now
+            let twelveMonthsAgo = calendar.date(byAdding: .month, value: -12, to: now) ?? now
+            filtered = allOrders.filter { $0.date >= twelveMonthsAgo && $0.date <= now }
         }
+        
+        // Sort by date descending (most recent first)
+        return filtered.sorted { $0.date > $1.date }
     }
     
     // Calculate metrics
@@ -107,26 +118,48 @@ struct DashboardView: View {
     
     private var salesByCategory: [CategorySalesData] {
         let categoryRevenue = Dictionary(grouping: filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }) { order in
-            // Get category from the first order item (simplified approach)
-            order.items.first?.stockItem?.category?.name ?? "Uncategorized"
-        }.mapValues { orders in
-            orders.reduce(0.0) { $0 + $1.revenue }
+            // Get category object from the first order item
+            order.items.first?.stockItem?.category
+        }.compactMapValues { orders in
+            orders.isEmpty ? nil : orders.reduce(0.0) { $0 + $1.revenue }
         }
         
-        let colors: [Color] = [
+        // Fallback colors for uncategorized items
+        let fallbackColors: [Color] = [
             .blue, .green, .orange, .purple, .red, 
             .pink, .cyan, .mint, .indigo, .teal
         ]
         
-        return categoryRevenue.enumerated().map { index, item in
-            CategorySalesData(
-                category: item.key,
-                revenue: item.value,
-                color: colors[index % colors.count]
-            )
+        var result: [CategorySalesData] = []
+        var uncategorizedRevenue: Double = 0
+        var fallbackColorIndex = 0
+        
+        for (category, revenue) in categoryRevenue {
+            if let category = category {
+                // Use the actual category color
+                result.append(CategorySalesData(
+                    category: category.name,
+                    revenue: revenue,
+                    color: category.color
+                ))
+            } else {
+                // Accumulate uncategorized revenue
+                uncategorizedRevenue += revenue
+            }
         }
-        .filter { $0.revenue > 0 }
-        .sorted { $0.revenue > $1.revenue }
+        
+        // Add uncategorized items if any
+        if uncategorizedRevenue > 0 {
+            result.append(CategorySalesData(
+                category: String(localized: "Uncategorized"),
+                revenue: uncategorizedRevenue,
+                color: .gray
+            ))
+        }
+        
+        return result
+            .filter { $0.revenue > 0 }
+            .sorted { $0.revenue > $1.revenue }
     }
     
     private func calculatePercentage(_ revenue: Double) -> Double {
@@ -143,7 +176,7 @@ struct DashboardView: View {
             
             
             HeaderWithButton(
-                title: "Dashboard",
+                title: String(localized: "Dashboard"),
                 buttonContent: "info.circle",
                 isButtonImage: true,
                 showTrailingButton: true,
@@ -163,7 +196,7 @@ struct DashboardView: View {
                     if filteredOrders.count < 6 {
              
                         
-                        ContentUnavailableView("Not enough sales data", systemImage: "chart.pie", description: Text("As you add orders, you will be able to view sales metrics here"))
+                        ContentUnavailableView(String(localized: "Not enough sales data"), systemImage: "chart.pie", description: Text(String(localized: "As you add orders, you will be able to view sales metrics here")))
 
 
                         
@@ -175,6 +208,8 @@ struct DashboardView: View {
                         metricsGrid
                         salesByCategoryChart
                         additionalMetrics
+                            
+                            Color.clear.frame(height: 40)
                             
                     }
                 }
@@ -200,7 +235,7 @@ struct DashboardView: View {
     private var salesByCategoryChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Sales by Category")
+                Text(String(localized: "Sales by Category"))
                     .font(.headline)
                     .fontWeight(.regular)
                     .foregroundColor(.primary)
@@ -262,7 +297,8 @@ struct DashboardView: View {
         SegmentedControl(
             tabs: TimeFrame.allCases,
             activeTab: $selectedTimeFrame,
-            height: 45,
+            height: 35,
+            customText: { timeFrame in timeFrame.localizedTitle },
             font: .callout,
             activeTint: Color(UIColor.systemBackground),
             inActiveTint: .gray.opacity(0.8)
@@ -282,18 +318,18 @@ struct DashboardView: View {
         ], spacing: 16) {
             // Sales Count
             MetricCard(
-                title: "Sales",
+                title: String(localized: "Sales"),
                 value: "\(totalSales)",
-                subtitle: "Completed Orders",
+                subtitle: String(localized: "Completed Orders"),
                 icon: "cart.fill",
                 color: .blue
             )
             
             // Revenue
             MetricCard(
-                title: "Revenue",
+                title: String(localized: "Revenue"),
                 value: totalRevenue.formatted(localeManager.currencyFormatStyle),
-                subtitle: "Total Income",
+                subtitle: String(localized: "Total Income"),
                 icon: "dollarsign.circle.fill",
                 color: .green
             )
@@ -302,18 +338,18 @@ struct DashboardView: View {
 
             // Profit
             MetricCard(
-                title: "Profit",
+                title: String(localized: "Profit"),
                 value: totalProfit.formatted(localeManager.currencyFormatStyle),
-                subtitle: "Net Profit",
+                subtitle: String(localized: "Net Profit"),
                 icon: "chart.line.uptrend.xyaxis",
                 color: totalProfit >= 0 ? .green : .red
             )
             
             // Profit Margin
             MetricCard(
-                title: "Margin",
+                title: String(localized: "Margin"),
                 value: totalRevenue > 0 ? "\(Int((totalProfit / totalRevenue) * 100))%" : "0%",
-                subtitle: "Profit Margin",
+                subtitle: String(localized: "Profit Margin"),
                 icon: "percent",
                 color: .orange
             )
@@ -329,13 +365,13 @@ struct DashboardView: View {
         
         // Quick Stats
         VStack(alignment: .leading, spacing: 12) {
-            Text("Quick Stats")
+            Text(String(localized: "Quick Stats"))
                 .font(.headline)
                 .padding(.horizontal)
             
             VStack(spacing: 8) {
                 HStack {
-                    Text("Total Orders (\(selectedTimeFrame.rawValue))")
+                    Text(String(localized: "Total Orders (\(selectedTimeFrame.localizedTitle))"))
                         .foregroundColor(.secondary)
                     Spacer()
                     Text("\(filteredOrders.count)")
@@ -343,7 +379,7 @@ struct DashboardView: View {
                 }
                 
                 HStack {
-                    Text("Pending Orders")
+                    Text(String(localized: "Pending Orders"))
                         .foregroundColor(.secondary)
                     Spacer()
                     Text("\(filteredOrders.filter { $0.status == .pending }.count)")
@@ -351,7 +387,7 @@ struct DashboardView: View {
                 }
                 
                 HStack {
-                    Text("Total Stock Items")
+                    Text(String(localized: "Total Stock Items"))
                         .foregroundColor(.secondary)
                     Spacer()
                     Text("\(stockItems.count)")
@@ -361,7 +397,7 @@ struct DashboardView: View {
                 if totalRevenue > 0 {
                     Divider()
                     HStack {
-                        Text("Average Order Value")
+                        Text(String(localized: "Average Order Value"))
                             .foregroundColor(.secondary)
                         Spacer()
                         
@@ -417,64 +453,7 @@ struct DashboardView: View {
     }
 }
 
-// MARK: - HeaderWithButton Component
 
-struct HeaderWithButton: View {
-    let title: String
-    let buttonContent: String
-    let isButtonImage: Bool
-    let showTrailingButton: Bool
-    let showLeadingButton: Bool
-    let onButtonTap: (() -> Void)?
-    
-    
-    
-    @Environment(\.presentationMode) private var presentationMode
-    
-    var body: some View {
-        HStack(alignment: .center) {
-            if showLeadingButton {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "chevron.backward.circle")
-                        .font(.title)
-                        .foregroundColor(.appTint)
-                        .padding(.leading)
-                }
-            }
-            
-            Text(title)
-                .font(.title)
-                .padding(.horizontal, showLeadingButton ? 5 : 15)
-            
-            Spacer()
-            
-            
-            
-            
-            
-            
-            if showTrailingButton {
-                Button(action: {
-                    onButtonTap?()
-                }) {
-                    if isButtonImage {
-                        Image(systemName: buttonContent)
-                            .font(.title)
-                            .foregroundColor(.appTint)
-                    } else {
-                        Text(buttonContent)
-                            .font(.title3)
-                            .foregroundColor(.appTint)
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-        .frame(height: 50)
-    }
-}
 
 // MARK: - Dashboard Info Sheet Component
 
@@ -488,14 +467,14 @@ struct DashboardInfoSheet: View {
                     
                     // Sales Metrics Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Label("Sales Metrics", systemImage: "chart.line.uptrend.xyaxis")
+                        Label(String(localized: "Sales Metrics"), systemImage: "chart.line.uptrend.xyaxis")
                             .font(.headline)
                             .foregroundColor(.appTint)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: "Total Sales", description: "Number of completed orders (fulfilled or delivered)")
-                            InfoRow(title: "Revenue", description: "Total income from completed orders")
-                            InfoRow(title: "Profit", description: "Revenue minus all costs (shipping, fees, product costs)")
+                            InfoRow(title: String(localized: "Total Sales"), description: String(localized: "Number of completed orders (fulfilled or delivered)"))
+                            InfoRow(title: String(localized: "Revenue"), description: String(localized: "Total income from completed orders"))
+                            InfoRow(title: String(localized: "Profit"), description: String(localized: "Revenue minus all costs (shipping, fees, product costs)"))
                         }
                     }
                     
@@ -503,16 +482,14 @@ struct DashboardInfoSheet: View {
                     
                     // Time Filters Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Label("Time Filters", systemImage: "clock")
+                        Label(String(localized: "Time Filters"), systemImage: "clock")
                             .font(.headline)
                             .foregroundColor(.appTint)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: "Today", description: "Orders placed today")
-                            InfoRow(title: "This Week", description: "Orders from Monday onwards (week starts Monday)")
-                            InfoRow(title: "This Month", description: "Orders from the beginning of this month")
-                            InfoRow(title: "This Year", description: "Orders from January 1st")
-                            InfoRow(title: "All Time", description: "All orders ever placed")
+                            InfoRow(title: String(localized: "30 Days"), description: String(localized: "Orders from the last 30 days up to now"))
+                            InfoRow(title: String(localized: "6 Months"), description: String(localized: "Orders from the last 6 months up to now"))
+                            InfoRow(title: String(localized: "12 Months"), description: String(localized: "Orders from the last 12 months up to now"))
                         }
                     }
                     
@@ -520,13 +497,13 @@ struct DashboardInfoSheet: View {
                     
                     // Inventory Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Label("Inventory", systemImage: "shippingbox")
+                        Label(String(localized: "Inventory"), systemImage: "shippingbox")
                             .font(.headline)
                             .foregroundColor(.appTint)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: "Total Value", description: "Current stock value (quantity × price)")
-                            InfoRow(title: "Low Stock", description: "Items with 5 or fewer units remaining")
+                            InfoRow(title: String(localized: "Total Value"), description: String(localized: "Current stock value (quantity × price)"))
+                            InfoRow(title: String(localized: "Low Stock"), description: String(localized: "Items with 5 or fewer units remaining"))
                         }
                     }
                     
@@ -534,16 +511,17 @@ struct DashboardInfoSheet: View {
                     
                     // Important Notes Section
                     VStack(alignment: .leading, spacing: 12) {
-                        Label("Important Notes", systemImage: "info.circle")
+                        Label(String(localized: "Important Notes"), systemImage: "info.circle")
                             .font(.headline)
                             .foregroundColor(.appTint)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: "Order Status", description: "Only completed orders (fulfilled or delivered status) count toward sales metrics")
-                            InfoRow(title: "Revenue", description: "Revenue includes customer shipping charges")
-                            InfoRow(title: "Profit", description: "Profit calculations include selling fees and costs")
-                            InfoRow(title: "Time Filters", description: "Time filters show orders placed during that period")
-                            InfoRow(title: "Week Definition", description: "Week starts Monday at 00:00:01, ends Sunday at 23:59:59")
+                            InfoRow(title: String(localized: "Order Status"), description: String(localized: "Only completed orders (fulfilled or delivered status) count toward sales metrics"))
+                            InfoRow(title: String(localized: "Revenue"), description: String(localized: "Revenue includes customer shipping charges"))
+                            InfoRow(title: String(localized: "Profit"), description: String(localized: "Profit calculations include selling fees and costs"))
+                            InfoRow(title: String(localized: "Time Filters"), description: String(localized: "All time periods are rolling windows from the current date and time backwards"))
+                            InfoRow(title: String(localized: "Rolling Periods"), description: String(localized: "30 Days = last 30 days, etc. Updated in real-time"))
+                            InfoRow(title: String(localized: "Data Sorting"), description: String(localized: "Orders are sorted by date with most recent first within each time period"))
                         }
                     }
                     
@@ -551,11 +529,11 @@ struct DashboardInfoSheet: View {
                 }
                 .padding()
             }
-            .navigationTitle("Dashboard Information")
+            .navigationTitle(String(localized: "Dashboard Information"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(String(localized: "Done")) {
                         dismiss()
                     }
                     .foregroundColor(.appTint)

@@ -35,9 +35,9 @@ struct OrderDetailView: View {
         
         var title: String {
             switch self {
-            case .add: return "Add Order"
-            case .edit: return "Edit Order"
-            case .view: return "Order Details"
+            case .add: return String(localized: "Add Order")
+            case .edit: return String(localized: "Edit Order")
+            case .view: return String(localized: "Order Details")
             }
         }
         
@@ -68,6 +68,20 @@ struct OrderDetailView: View {
     // Field preferences - reactive to UserDefaults changes
     @State private var fieldPreferences = UserDefaults.standard.orderFieldPreferences
     @State private var customFieldValues: [UUID: String] = [:]
+    
+    // Computed property for Save button validation
+    private var isSaveButtonDisabled: Bool {
+        // For new orders, validate required fields
+        if order == nil {
+            let hasValidCustomerName = !customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let hasValidOrderItems = !viewModel.orderItems.filter { $0.isValid }.isEmpty
+            
+            return !(hasValidCustomerName && hasValidOrderItems)
+        }
+        
+        // For existing orders, always allow saving
+        return false
+    }
     
     // Cost-related state variables
     @State private var shippingCost = 0.0
@@ -100,7 +114,10 @@ struct OrderDetailView: View {
     @State private var errorSubTitle = ""
     
     
- 
+
+    
+
+    
     
     
     
@@ -166,16 +183,16 @@ struct OrderDetailView: View {
                     
                 case .orderDate:
                     HStack() {
-                        Text("Order Date")
+                        Text(String(localized: "Order Date"))
                         Spacer()
                         MyDatePicker(selectedDate: $date)
                     }
                     
                 case .orderReference:
-                    ListSection(title: "Order Reference") {
+                    ListSection(title: String(localized: "Order Reference")) {
                         CustomTextField(
                             text: $orderReference,
-                            placeholder: "Order Reference",
+                            placeholder: String(localized: "Order Reference"),
                             systemImage: "number",
                             isSecure: false
                         )
@@ -183,10 +200,10 @@ struct OrderDetailView: View {
                     }
                     
                 case .customerName:
-                    ListSection(title: "Customer Name") {
+                    ListSection(title: String(localized: "Customer Name")) {
                         CustomTextField(
                             text: $customerName,
-                            placeholder: "Customer Name",
+                            placeholder: String(localized: "Customer Name"),
                             systemImage: "person",
                             isSecure: false
                         )
@@ -194,11 +211,11 @@ struct OrderDetailView: View {
                     }
                     
                 case .orderStatus:
-                    ListSection(title: "Order Status") {
+                    ListSection(title: String(localized: "Order Status")) {
                         StatusDropdownMenu(selection: $status)
                     }
                 case .platform:
-                    ListSection(title: "Platform") {
+                    ListSection(title: String(localized: "Platform")) {
                         PlatformDropdownMenu(selection: $platform)
                             .onChange(of: platform) { oldValue, newValue in
                                 // Save the selected platform for future orders
@@ -210,7 +227,7 @@ struct OrderDetailView: View {
                             Spacer(minLength: 10)
                             CustomTextField(
                                 text: $customPlatformText,
-                                placeholder: "Enter platform name",
+                                placeholder: String(localized: "Enter platform name"),
                                 systemImage: "square.stack.3d.down.forward",
                                 isSecure: false
                             )
@@ -235,43 +252,43 @@ struct OrderDetailView: View {
                         // Conditional shipping fields
                         if deliveryMethod != .collected {
                             VStack(spacing: 16) {
-                                ListSection(title: "Shipping Method") {
+                                ListSection(title: String(localized: "Shipping Method")) {
                                     CustomTextField(
                                         text: $shippingMethod,
-                                        placeholder: "e.g. Standard, Express, Pickup",
+                                        placeholder: String(localized: "e.g. Standard, Express, Pickup"),
                                         systemImage: "envelope.front",
                                         isSecure: false
                                     )
                                     .focused($focusedField, equals: true)
                                 }
                                 
-                                ListSection(title: "Tracking") {
+                                ListSection(title: String(localized: "Tracking")) {
                                     CustomTextField(
                                         text: $trackingReference,
-                                        placeholder: "Tracking Reference",
+                                        placeholder: String(localized: "Tracking Reference"),
                                         systemImage: "number",
                                         isSecure: false
                                     )
                                     .focused($focusedField, equals: true)
                                 }
                                 
-                                ListSection(title: "Customer Shipping Charge") {
+                                ListSection(title: String(localized: "Customer Shipping Charge")) {
                                     CustomNumberField(
                                         value: (mode.isEditable || isEditMode) ? $customerShippingCharge : .constant(customerShippingCharge),
-                                        placeholder: "Amount charged to customer",
+                                        placeholder: String(localized: "Amount charged to customer"),
                                         systemImage: localeManager.currencySymbolName
                                     )
                                     .focused($focusedField, equals: mode.isEditable || isEditMode)
                                 }
                                 
-                                ListSection(title: "Shipping Costs") {
+                                ListSection(title: String(localized: "Shipping Costs")) {
                                     CustomNumberField(
                                         value: {
                                             let isEditable = (mode.isEditable || isEditMode)
                                             print("🔗 [OrderDetailView] Shipping Cost binding - isEditable: \(isEditable), mode: \(mode), isEditMode: \(isEditMode)")
                                             return isEditable ? $shippingCost : .constant(shippingCost)
                                         }(),
-                                        placeholder: "Shipping Costs",
+                                        placeholder: String(localized: "Shipping Costs"),
                                         systemImage: localeManager.currencySymbolName
                                     )
                                     .focused($focusedField, equals: mode.isEditable || isEditMode)
@@ -281,20 +298,20 @@ struct OrderDetailView: View {
                     }
                     
                 case .sellingFees:
-                    ListSection(title: "Selling Fees") {
+                    ListSection(title: String(localized: "Selling Fees")) {
                     CustomNumberField(
                         value: (mode.isEditable || isEditMode) ? $sellingFees : .constant(sellingFees),
-                        placeholder: "Selling Fees",
+                        placeholder: String(localized: "Selling Fees"),
                         systemImage: localeManager.currencySymbolName
                     )
                     .focused($focusedField, equals: mode.isEditable || isEditMode)
                 }
                 
             case .additionalCosts:
-                ListSection(title: "Additional Costs") {
+                ListSection(title: String(localized: "Additional Costs")) {
                     CustomNumberField(
                         value: (mode.isEditable || isEditMode) ? $additionalCosts : .constant(additionalCosts),
-                        placeholder: "Additional Costs",
+                        placeholder: String(localized: "Additional Costs"),
                         systemImage: localeManager.currencySymbolName
                     )
                     .focused($focusedField, equals: mode.isEditable || isEditMode)
@@ -302,9 +319,9 @@ struct OrderDetailView: View {
                 
 
             case .notes:
-                ListSection(title: "Notes") {
+                ListSection(title: String(localized: "Notes")) {
                     CustomTextEditor(text: $additionalCostNotes,
-                                     placeholder: "e.g. Handling fee, Tax, Insurance",
+                                     placeholder: String(localized: "e.g. Handling fee, Tax, Insurance"),
                                      systemImage: "text.alignleft",
                                      isFocused: $focusedField)
                 }
@@ -315,7 +332,7 @@ struct OrderDetailView: View {
                     // Order Items Display
                     let validOrderItems = viewModel.orderItems.filter { $0.isValid }
                     if !validOrderItems.isEmpty {
-                        ListSection(title: "Items") {
+                        ListSection(title: String(localized: "Items")) {
                             VStack {
                                 ForEach($viewModel.orderItems) { $orderItem in
                                     if let stockItem = orderItem.stockItem {
@@ -345,7 +362,7 @@ struct OrderDetailView: View {
                     
                     // Add Items Button (always present)
                     GlobalButton(
-                        title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "Add items" : "Edit items",
+                        title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? String(localized: "Add items") : String(localized: "Edit items"),
                         showIcon: true,
                         icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",
                         action: {
@@ -389,17 +406,18 @@ struct OrderDetailView: View {
                 HeaderWithButton(
                     title: {
                         if mode == .view && !isEditMode {
-                            return "Order"
+                            return String(localized: "Order")
                         } else if mode == .view && isEditMode {
-                            return "Edit Order"
+                            return String(localized: "Edit Order")
                         } else {
-                            return "New Order"
+                            return String(localized: "New Order")
                         }
                     }(),
-                    buttonContent: "Save",
+                    buttonContent: String(localized: "Save"),
                     isButtonImage: false,
                     showTrailingButton: true,
                     showLeadingButton: true,
+                    isButtonDisabled: isSaveButtonDisabled,
                     onButtonTap: {
                         saveOrder()
                     }
@@ -417,7 +435,7 @@ struct OrderDetailView: View {
                         // Items subtotal
                         HStack {
                             Spacer()
-                            Text("Items Total: \(totalOrderValue, format: localeManager.currencyFormatStyle)")
+                            Text("\(String(localized: "Items Total: "))\(totalOrderValue, format: localeManager.currencyFormatStyle)")
                                 .font(.body)
                         }
                         
@@ -425,7 +443,7 @@ struct OrderDetailView: View {
                         if customerShippingCharge > 0 {
                             HStack {
                                 Spacer()
-                                Text("Shipping Revenue: +\(customerShippingCharge, format: localeManager.currencyFormatStyle)")
+                                Text("\(String(localized: "Shipping Revenue: +"))\(customerShippingCharge, format: localeManager.currencyFormatStyle)")
                                     .font(.caption)
                                     .foregroundColor(.green)
                             }
@@ -435,7 +453,7 @@ struct OrderDetailView: View {
                         if customerShippingCharge > 0 {
                             HStack {
                                 Spacer()
-                                Text("Total Revenue: \(totalRevenue, format: localeManager.currencyFormatStyle)")
+                                Text("\(String(localized: "Total Revenue: "))\(totalRevenue, format: localeManager.currencyFormatStyle)")
                                     .font(.body)
                                     .fontWeight(.medium)
                             }
@@ -444,14 +462,14 @@ struct OrderDetailView: View {
                         // Charges section
                         if totalCharges > 0 {
                             VStack(alignment: .trailing, spacing: 4) {
-                                Text("Charges:")
+                                Text(String(localized: "Charges:"))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                 
                                 if shippingCost > 0 {
                                     HStack {
                                         Spacer()
-                                        Text("Shipping: -\(shippingCost, format: localeManager.currencyFormatStyle)")
+                                        Text("\(String(localized: "Shipping: -"))\(shippingCost, format: localeManager.currencyFormatStyle)")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -460,7 +478,7 @@ struct OrderDetailView: View {
                                 if sellingFees > 0 {
                                     HStack {
                                         Spacer()
-                                        Text("Selling Fees: -\(sellingFees, format: localeManager.currencyFormatStyle)")
+                                        Text("\(String(localized: "Selling Fees: -"))\(sellingFees, format: localeManager.currencyFormatStyle)")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -469,7 +487,7 @@ struct OrderDetailView: View {
                                 if additionalCosts > 0 {
                                     HStack {
                                         Spacer()
-                                        Text("Additional: -\(additionalCosts, format: localeManager.currencyFormatStyle)")
+                                        Text("\(String(localized: "Additional: -"))\(additionalCosts, format: localeManager.currencyFormatStyle)")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -483,7 +501,7 @@ struct OrderDetailView: View {
                         // Net total
                         HStack {
                             Spacer()
-                            Text("Order Total: \(netOrderTotal, format: localeManager.currencyFormatStyle)")
+                            Text("\(String(localized: "Order Total: "))\(netOrderTotal, format: localeManager.currencyFormatStyle)")
                                 .font(.headline)
                                 .fontWeight(.semibold)
                         }
@@ -491,7 +509,7 @@ struct OrderDetailView: View {
                         // Profit
                         HStack {
                             Spacer()
-                            Text("Profit: \(orderProfit, format: localeManager.currencyFormatStyle)")
+                            Text("\(String(localized: "Profit: "))\(orderProfit, format: localeManager.currencyFormatStyle)")
                                 .font(.subheadline)
                                 .foregroundColor(orderProfit >= 0 ? .green : .red)
                                 .fontWeight(.medium)
@@ -513,10 +531,10 @@ struct OrderDetailView: View {
 
             .navigationBarHidden(true)
             
-            
+         
 
         }
-        .navigationBarHidden(true)
+     
         .overlay(alignment: .bottomTrailing) {
             Button {
                 showingOrderFieldSettings = true
@@ -532,6 +550,8 @@ struct OrderDetailView: View {
                     )
             }
             .padding(.trailing, 20)
+            .padding(.bottom, 10)
+
         }
         .fullScreenCover(isPresented: $showingOrderFieldSettings) {
             OrderFieldSettings()
@@ -741,21 +761,21 @@ struct OrderDetailView: View {
     private func saveOrder() {
         let validOrderItems = viewModel.orderItems.filter { $0.isValid }
         
-        // Validation only for new orders
+        // Validation checks as safety net (button should be disabled for invalid data)
         if order == nil {
             var missingFields = [String]()
             
             if customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                missingFields.append("Customer Name")
+                missingFields.append(String(localized: "Customer Name"))
             }
             
             if validOrderItems.isEmpty {
-                missingFields.append("Order Item")
+                missingFields.append(String(localized: "Order Item"))
             }
             
             if !missingFields.isEmpty {
-                errorTitle = "Missing Required Fields"
-                errorSubTitle = "Please fill in: \(missingFields.joined(separator: ", "))"
+                errorTitle = String(localized: "Missing Required Fields")
+                errorSubTitle = "\(String(localized: "Please fill in: "))\(missingFields.joined(separator: ", "))"
                 
        
                 toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
@@ -937,7 +957,7 @@ struct OrderDetailView: View {
             print("    - Net Order Total: \(netOrderTotal)")
             print("    - Order Profit: \(orderProfit)")
             
-            toastie = Toastie(type: .success, title: "Order Saved", message: "Order has been saved successfully")
+            toastie = Toastie(type: .success, title: String(localized: "Order Saved"), message: String(localized: "Order has been saved successfully"))
             dismiss()
         } catch {
             print("Failed to save order: \(error)")
@@ -948,5 +968,4 @@ struct OrderDetailView: View {
 #Preview {
     OrderDetailView(mode: .add)
 }
-
 

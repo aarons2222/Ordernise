@@ -35,6 +35,7 @@ struct CustomNumberField: View {
         HStack(spacing: 12) {
             Image(systemName: systemImage)
                 .foregroundColor(.appTint)
+                .font(.title2)
 
             if let binding = value {
                 TextField(placeholder, text: $textValue)

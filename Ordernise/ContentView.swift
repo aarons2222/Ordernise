@@ -47,7 +47,7 @@ struct ContentView: View {
 
     var body: some View {
         
-  
+        ThemeSwitcher{
             
             ZStack(alignment: .bottom) {
                 // Main content
@@ -84,20 +84,21 @@ struct ContentView: View {
                         .ignoresSafeArea()
                         .transition(.opacity)
                 }
-            
+                
             }
-        
             
-       
-      
-        .safeAreaInset(edge: .bottom) {
-            // This creates proper spacing for the tab bar
-            Color.clear.frame(height: isKeyboardVisible ? 0 : 10)
-        }
-
-        .onChange(of: activeTab) {
-            // Save tab to UserDefaults
-            UserDefaults.standard.set(activeTab.rawValue, forKey: selectedTabKey)
+            
+            
+            
+            .safeAreaInset(edge: .bottom) {
+                // This creates proper spacing for the tab bar
+                Color.clear.frame(height: isKeyboardVisible ? 0 : 10)
+            }
+            
+            .onChange(of: activeTab) {
+                // Save tab to UserDefaults
+                UserDefaults.standard.set(activeTab.rawValue, forKey: selectedTabKey)
+            }
         }
     }
 }
@@ -188,3 +189,40 @@ struct SplashScreen: View {
 }
 
 
+extension String {
+    var localized: LocalizedStringKey {
+        LocalizedStringKey(self)
+    }
+}
+
+
+
+
+struct ThemeSwitcher<Content: View>: View{
+    @ViewBuilder var content: Content
+    @AppStorage("AppTheme") private var appTheme: AppTheme = .dark
+    
+    var body: some View {
+        content
+            .preferredColorScheme(appTheme.colorScheme)
+    }
+}
+
+
+enum AppTheme: String, CaseIterable {
+
+    case light = "Light"
+    case dark = "Dark"
+    case systemDefault = "System"
+    
+    var colorScheme: ColorScheme? {
+        
+        
+        switch self {
+        case .light: .light
+        case .dark: .dark
+        case .systemDefault: nil
+         
+        }
+    }
+}

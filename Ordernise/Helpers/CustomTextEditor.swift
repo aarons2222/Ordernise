@@ -22,10 +22,13 @@ struct CustomTextEditor: View {
                 .background(.clear)
                 .padding(.leading, 35)
                 .focused(isFocused, equals: true)
+                .autocapitalization(.sentences)
+                .disableAutocorrection(true)
             
             HStack(spacing: 12) {
                 Image(systemName: systemImage)
                     .foregroundColor(.appTint)
+                    .font(.title2)
                 
                 Spacer()
             }

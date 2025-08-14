@@ -49,7 +49,7 @@ struct StockItemCard: View {
                     
                     Spacer()
                     HStack(spacing: 0){
-                        Text("Quantity:")
+                        Text("\(String(localized: "Quantity")):")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Text(" \(item.quantityAvailable)")
@@ -63,16 +63,16 @@ struct StockItemCard: View {
                 }
              
                 if let category = item.category{
-               
                     
-                    LabelValue(label: "Category: ", value: category.name)
+                    
+                    LabelValue(label: "\(String(localized: "Category")): ", value: category.name)
                     
                 }
                 
                 
                 
                 HStack(alignment: .center, spacing: 2) {
-                    Text("Price")
+                    Text("\(String(localized: "Price")): ")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                     Text("\(item.price, format: localeManager.currencyFormatStyle)")

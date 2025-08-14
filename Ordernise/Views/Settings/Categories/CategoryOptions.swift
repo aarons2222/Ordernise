@@ -35,7 +35,7 @@ struct CategoryOptions: View {
             
             
             HeaderWithButton(
-                title: "Categories",
+                title: String(localized: "Categories"),
                 buttonContent: "plus.circle",
                 isButtonImage: true,
                 showTrailingButton: true,
@@ -47,14 +47,16 @@ struct CategoryOptions: View {
                     showingAddCategory = true
                 }
             )
-            
+           
          
                     if categories.isEmpty {
                         Spacer()
                         ContentUnavailableView(
-                            "No Categories",
+                            String(localized: "No Categories"),
                             systemImage: "folder",
-                            description: Text("Tap \(Image(systemName: "plus.circle")) to add your first category.")
+                            description: Text(String(localized: "Tap ")) + 
+                                        Text(Image(systemName: "plus.circle")) + 
+                                        Text(String(localized: " to add your first category."))
                         )
                         
                         
@@ -89,27 +91,30 @@ struct CategoryOptions: View {
                     }
                 
     }
+        
         .navigationBarHidden(true)
-            
+        
+        
+      
             
         
-            .alert("Delete Category", isPresented: .constant(categoryToDelete != nil)) {
-                Button("Delete", role: .destructive) {
+            .alert(String(localized: "Delete Category"), isPresented: .constant(categoryToDelete != nil)) {
+                Button(String(localized: "Delete"), role: .destructive) {
                     if let category = categoryToDelete {
                         deleteCategory(category)
                     }
                     categoryToDelete = nil
                 }
-                Button("Cancel", role: .cancel) {
+                Button(String(localized: "Cancel"), role: .cancel) {
                     categoryToDelete = nil
                 }
             } message: {
-                Text("Are you sure you want to delete this category? This action cannot be undone.")
+                Text(String(localized: "Are you sure you want to delete this category? This action cannot be undone."))
             }
         
       .GenericSheet(
           isPresented: $showingAddCategory,
-          title: isEditMode ? "Edit Category" : "Add Category",
+          title: isEditMode ? String(localized: "Edit Category") : String(localized: "Add Category"),
           showButton: false,
           action: {
               print("Continue tapped")
@@ -121,8 +126,7 @@ struct CategoryOptions: View {
               
               
               
-              
-              CustomTextField(text: $newCategoryName, placeholder: "Category Name", systemImage: "plus.square.on.square")
+                            CustomTextField(text: $newCategoryName, placeholder: String(localized: "Category Name"), systemImage: "plus.square.on.square")
                   .padding(.top, 20)
               
               
@@ -132,14 +136,13 @@ struct CategoryOptions: View {
                   HStack {
                       VStack(alignment: .leading, spacing: 8) {
                           
-                          
-                          Text("Color")
-                              .font(.headline)
-                              .foregroundColor(.text)
-                          
-                          Text("Pick a color to quickly recognise items in this this category")
-                              .font(.subheadline)
-                              .foregroundColor(.secondary)
+                                                    Text(String(localized: "Color"))
+                               .font(.headline)
+                               .foregroundColor(.text)
+                           
+                           Text(String(localized: "Pick a color to quickly recognise items in this this category"))
+                               .font(.subheadline)
+                               .foregroundColor(.secondary)
                           
                           
                       }
@@ -165,8 +168,7 @@ struct CategoryOptions: View {
                   
                   if isEditMode {
                       
-                      
-                      GlobalButton(title: "Delete", backgroundColor: Color.red) {
+                                            GlobalButton(title: String(localized: "Delete"), backgroundColor: Color.red) {
                           if let categoryToEdit = categoryToEdit {
                               categoryToDelete = categoryToEdit
                               showingAddCategory = false
@@ -176,8 +178,7 @@ struct CategoryOptions: View {
               }
                   
                   
-                  
-                  GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                                    GlobalButton(title: isEditMode ? String(localized: "Update") : String(localized: "Save"), backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
                       saveCategory()
                   }
                   .disabled(isEmpty)

@@ -13,6 +13,15 @@ enum DeliveryMethod: String, CaseIterable, Identifiable, Codable {
     case delivered = "Delivered"
 
     var id: String { self.rawValue }
+    
+    var localizedName: String {
+        switch self {
+        case .collected:
+            return String(localized: "Collected")
+        case .delivered:
+            return String(localized: "Delivered")
+        }
+    }
 }
 
 struct DeliveryPicker: View {
@@ -31,7 +40,7 @@ struct DeliveryPicker: View {
                     }
                     .buttonStyle(PlainButtonStyle()) // optional to remove default button styling
                 }
-            }
+            } 
       
         .padding()
     }
@@ -45,7 +54,7 @@ struct DeliveryPicker: View {
            
               
 
-            Text(method.rawValue)
+            Text(method.localizedName)
              
         }
         .padding(8)

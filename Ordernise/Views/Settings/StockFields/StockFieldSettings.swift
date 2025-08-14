@@ -25,7 +25,7 @@ struct StockFieldSettings: View {
     var body: some View {
         VStack {
             HeaderWithButton(
-                title: "Stock Fields",
+                title: String(localized: "Stock Fields"),
                 buttonContent: "plus.circle",
                 isButtonImage: true,
                 showTrailingButton: true,
@@ -54,20 +54,27 @@ struct StockFieldSettings: View {
                         
 
                             List {
-                                VStack{
+                                
+                            
                                     CustomCardView {
-                                        VStack(alignment: .leading, spacing: 0) {
+                                        VStack(alignment: .leading, spacing: 5) {
                                             HStack {
                                                 Image(systemName: "info.circle")
                                                     .foregroundColor(.appTint)
-                                                Text("Customize Your Stock Item Form")
+                                                Text("Customise Your Stock Item Form")
                                                     .font(.headline)
                                                     .foregroundColor(.text)
                                                 Spacer()
-                                            }
+                                            }.padding(.bottom, 5)
                                             
-                                            Text("• Drag to reorder fields\n• Toggle visibility on/off\n• Add custom fields with the + button\n• Required fields cannot be hidden")
-                                                .font(.caption)
+                                            
+                                            VStack(alignment: .leading, spacing: 5){
+                                                Text("• \(String(localized: "Drag to reorder fields"))")
+                                                Text("• \( String(localized: "Toggle visibility on/off"))")
+                                                Text("• \(   String(localized: "Add custom fields with the + button"))")
+                                                Text("• \(String(localized: "Required fields cannot be hidden"))")
+                                            }
+                                                .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
                                         
@@ -76,20 +83,14 @@ struct StockFieldSettings: View {
                                     
                                   
                                   
-                                            HStack {
-                                                Text("Field Order & Visibility")
-                                                    .font(.headline)
-                                                    .foregroundColor(.text)
-                                                
-                                                Spacer()
-                                                
-
-                                            }.padding(.top)
+                              
+                                    
+                                 
                                     
                                     
+                          
+                                Section {
                                     
-                                    
-                                }
                                 ForEach(allFields, id: \.id) { fieldItem in
                                     DraggableStockFieldRow(
                                         fieldItem: fieldItem,
@@ -109,21 +110,29 @@ struct StockFieldSettings: View {
                                         .fill(.thinMaterial)
                                 )
                                 
+                                } header: {
+                                    SectionHeader(title: String(localized: "Field Order & Visibility"))
+                                        .textCase(nil)
+                                }
                                 
                             }.scrollIndicators(.hidden)
                            
                             .listRowSpacing(10)
                             .scrollContentBackground(.hidden)
+                            .padding(.top, -10)
+                                
+                                
                     
             Color.clear.frame(height: 30)
                 
                         
                 
                
-               
+            
             
         }
         .navigationBarHidden(true)
+    
         .onAppear {
             // Reload preferences from UserDefaults to ensure changes are reflected
             preferences = UserDefaults.standard.stockFieldPreferences
@@ -206,72 +215,6 @@ struct StockFieldSettings: View {
     }
 }
 
-//struct DraggableStockFieldRow: View {
-//    let fieldItem: StockFieldItem
-//    @Binding var preferences: StockFieldPreferences
-//    
-//    var body: some View {
-//        HStack(spacing: 12) {
-//            // Drag handle
-//            Image(systemName: "line.3.horizontal")
-//                .foregroundColor(.secondary)
-//                .font(.caption)
-//            
-//            // Field icon
-//            Image(systemName: fieldItem.systemImage)
-//                .foregroundColor(.appTint)
-//                .frame(width: 20)
-//            
-//            // Field name
-//            VStack(alignment: .leading, spacing: 2) {
-//                Text(fieldItem.displayName)
-//                    .font(.body)
-//                    .foregroundColor(.primary)
-//                
-//                if fieldItem.isRequired {
-//                    Text("Required")
-//                        .font(.caption2)
-//                        .foregroundColor(.orange)
-//                        .padding(.horizontal, 6)
-//                        .padding(.vertical, 2)
-//                        .background(Color.orange.opacity(0.1))
-//                        .cornerRadius(4)
-//                }
-//            }
-//            
-//            Spacer()
-//            
-//            // Custom field actions
-//            if !fieldItem.isBuiltIn {
-//                Button {
-//                    preferences.removeField(withId: fieldItem.id)
-//                    UserDefaults.standard.stockFieldPreferences = preferences
-//                } label: {
-//                    Image(systemName: "trash")
-//                        .foregroundColor(.red)
-//                        .font(.caption)
-//                }
-//                .buttonStyle(.plain)
-//            }
-//            
-//            // Visibility toggle
-//            Toggle("", isOn: Binding(
-//                get: { fieldItem.isVisible },
-//                set: { newValue in
-//                    if let index = preferences.fieldItems.firstIndex(where: { $0.id == fieldItem.id }) {
-//                        preferences.fieldItems[index].isVisible = newValue
-//                        UserDefaults.standard.stockFieldPreferences = preferences
-//                    }
-//                }
-//            ))
-//            .disabled(fieldItem.isRequired)
-//        }
-//        .padding(.vertical, 4)
-//    }
-//}
-//
-//
-
 struct DraggableStockFieldRow: View {
     let fieldItem: StockFieldItem
     @Binding var preferences: StockFieldPreferences
@@ -284,25 +227,16 @@ struct DraggableStockFieldRow: View {
             // Field icon
             Image(systemName: fieldItem.systemImage)
                 .foregroundColor(.appTint)
-                .font(.body)
+                .font(.title2)
                 
             
-            // Field info
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(fieldItem.displayName)
+      
+            Text(fieldItem.displayName)
                         .font(.body)
                         .foregroundColor(.text)
                     
                  
-                }
-                
-                if !fieldItem.isBuiltIn {
-                    Text(fieldItem.customField?.fieldType.displayName ?? "")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
+            
             
             Spacer()
             
@@ -381,7 +315,6 @@ struct AddCustomStockFieldContent: View {
         let newField = CustomStockField(
             name: fieldName,
             placeholder: "Enter \(fieldName.lowercased())",
-            fieldType: .text,
             isRequired: false
         )
         onSave(newField)
@@ -391,7 +324,8 @@ struct AddCustomStockFieldContent: View {
         VStack(spacing: 30) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Field Name")
-                    .font(.headline)
+                    .font(.body)
+                    .fontWeight(.regular)
                     .foregroundColor(.text)
                 
                 CustomTextField(

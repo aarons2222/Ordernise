@@ -15,7 +15,12 @@ struct SettingsView: View {
     @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     @State private var selectedColor: Color = .color1
     
+    @State private var showingSupport = false
+    
+    
+    @AppStorage("AppTheme") private var appTheme: AppTheme = .systemDefault
  
+    @State private var sectionHeaderLeadingPadding: CGFloat = 16
     
     var body: some View {
         
@@ -27,7 +32,7 @@ struct SettingsView: View {
                 
                 
                 HeaderWithButton(
-                    title: "Settings",
+                    title: String(localized: "Settings"),
                     buttonContent: "line.3.horizontal.decrease.circle",
                     isButtonImage: true,
                     showTrailingButton: false,
@@ -43,69 +48,74 @@ struct SettingsView: View {
                     
                     VStack(alignment: .leading, spacing: 15) {
                         
+                        VStack(alignment: .leading){
+                         
                         
-                        CustomCardView("General") {
+                    SectionHeader(title: String(localized: "General"))
+                            .padding(.leading, sectionHeaderLeadingPadding)
                             
-                            
-                            HStack{
+                            CustomCardView{
                                 
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Default Currency")
-                                        .font(.headline)
-                                        .foregroundColor(.text)
-                                    
-                                    Text("This currency will be used for new stock items")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    
-                                    
-                                }
-                                Spacer()
                                 
-                                Picker("Currency", selection: Binding(
-                                    get: { localeManager.currentCurrency.rawValue },
-                                    set: { newValue in
-                                        if let currency = Currency(rawValue: newValue) {
-                                            DispatchQueue.main.async {
-                                                localeManager.setCurrency(currency)
-                                            }
-                                        }
-                                    }
-                                )) {
-                                    ForEach(Currency.allCases, id: \.rawValue) { currency in
-                                        Text("\(localeManager.getCurrencySymbol(for: currency)) \(localeManager.getCurrencyDisplayName(for: currency))")
-                                            .tag(currency.rawValue)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                                .tint(Color.appTint)
-                            }
-                            
-                        
-                            
-                            
-                            HStack {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    HStack {
-                                        Text("Dummy Mode")
+                                HStack{
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(String(localized: "Currency"))
                                             .font(.headline)
                                             .foregroundColor(.text)
                                         
-                                        if dummyDataManager.isDummyModeEnabled {
-                                            Text("ON")
-                                                .font(.caption2)
-                                                .fontWeight(.bold)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 2)
-                                                .background(Color.orange)
-                                                .foregroundColor(.white)
-                                                .clipShape(Capsule())
+                                        Text(String(localized: "This currency will be used for new stock items"))
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        
+                                        
+                                    }
+                                    Spacer()
+                                    
+                                    
+                                    Menu {
+                                        ForEach(Currency.allCases, id: \.rawValue) { currency in
+                                            Button {
+                                                localeManager.setCurrency(currency)
+                                            } label: {
+                                                Text(" \(localeManager.getCurrencySymbol(for: currency))  \(localeManager.getCurrencyDisplayName(for: currency))")
+                                                    .font(.title2)
+                                                
+                                                
+                                            }
+                                        }
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            
+                                            Text(localeManager.getCurrencySymbol(for: localeManager.currentCurrency))
+                                                .font(.title)
+                                                .foregroundStyle(Color.appTint)
+                                            Image(systemName: "chevron.up.chevron.down")
+                                                .font(.title3)
+                                                .tint(Color.appTint)
                                         }
                                     }
                                     
+                                }
+                                
+                                
+                            }
+                            
+                            CustomCardView{
+                            
+                            HStack {
+                                VStack(alignment: .leading, spacing: 8) {
+                                 
+                                        Text(String(localized: "Dummy Mode"))
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                   
+                                
+                                    
                                     Text(dummyDataManager.isDummyModeEnabled ? 
-                                        "Using 100 test orders from the last year for demonstration purposes" : 
-                                        "Use realistic test data instead of your actual business data")
+                                        String(localized: "Using 100 test orders from the last year for demonstration purposes") : 
+                                        String(localized: "Use realistic test data instead of your actual business data"))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
@@ -113,189 +123,386 @@ struct SettingsView: View {
                                 
                                 Spacer()
                                 
-                                VStack(spacing: 8) {
+                               
                                     Toggle("", isOn: $dummyDataManager.isDummyModeEnabled)
                                         .labelsHidden()
                                         .tint(Color.appTint)
                                     
-                                    if dummyDataManager.isDummyModeEnabled {
-                                        Button("Debug Refresh") {
-                                            dummyDataManager.forceRefresh()
+                              
+                                
+                            }
+                        }
+                        
+                        
+                        
+                        
+                        }
+                        
+                        
+                        
+                        
+                        VStack(alignment: .leading){
+                     
+
+                            SectionHeader(title: String(localized: "Workflow Settings"))
+                                .padding(.leading, sectionHeaderLeadingPadding)
+                            
+                            
+                            
+                            NavigationLink(destination: OrderStatusOptions()) {
+                                
+                                CustomCardView(String(localized: "Order Settings")) {
+                                    
+                                    HStack(alignment: .center){
+                                        
+                                        
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Order Status Options"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            
+                                            
+                                            Text(String(localized: "Select which statuses are available in your order workflow."))
+                                            
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                            
                                         }
-                                        .font(.caption)
-                                        .foregroundColor(.orange)
+                                        
+                                        Spacer()
+                                        
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
                                     }
+                                    
                                 }
                             }
-                        }
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        NavigationLink(destination: OrderStatusOptions()) {
                             
-                            CustomCardView("Order Settings") {
+                            
+                            
+                            
+                            NavigationLink(destination: PlatformOptions()) {
                                 
-                                HStack{
+                                CustomCardView {
                                     
-                                    
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Order Status Options")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
+                                    HStack{
                                         
                                         
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Platform Options"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            
+                                            
+                                            Text(String(localized: "Select which platforms are available in your order workflow."))
+                                            
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                            
+                                        }
                                         
-                                        Text("Select which statuses are available in your order workflow.")
+                                        Spacer()
                                         
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+
                                     }
                                     
-                                    Spacer()
                                 }
-                                
+                            }
+                            
+                            
+                            
+                            NavigationLink(destination: CategoryOptions().enableSwipeBack()) {
+                                CustomCardView{
+                                    
+                                    HStack{
+                                        
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Categories"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text(String(localized: "Organise your stock items by category to keep things easy to find."))
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+
+                                    }
+                                }
+                            }
+                            
+                        }
+                        
+                        
+                        
+                        
+                        
+                        
+                       
+                        
+                   
+                        
+                 
+                  
+                        
+                        VStack(alignment: .leading){
+                         
+                            
+                            
+                  
+
+                            
+                            SectionHeader(title: String(localized: "Form Fields"))
+                                .padding(.leading, sectionHeaderLeadingPadding)
+                            
+                            NavigationLink(destination: OrderFieldSettings()) {
+                                CustomCardView {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Order Fields"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text(String(localized: "Customise which fields are shown when creating and editing orders"))
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+
+                                    }
+                                }
+                            }
+                        
+                            
+                            
+                            
+                            
+                            NavigationLink(destination: StockFieldSettings()) {
+                                CustomCardView {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Stock Fields"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text(String(localized: "Customise which fields are shown when creating and editing stock items."))
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+
+                                    }
+                                }
+                            }
+                            
+                            
+                            
+                        }
+                        
+                        
+                        
+                        
+                   
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        VStack(alignment: .leading){
+                        
+                            
+                  
+                            
+                            SectionHeader(title: String(localized: "Data"))
+                                .padding(.leading, sectionHeaderLeadingPadding)
+
+                            
+                            NavigationLink(destination: ExportDataView()) {
+                                CustomCardView {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Export Data"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text(String(localized: "Export your orders and inventory data to Excel or CSV format for analysis and backup."))
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+                                    }
+                                }
                             }
                         }
                         
-                        NavigationLink(destination: PlatformOptions()) {
+                        
+                        VStack(alignment: .leading){
+                      
+                            
+                            
+                            SectionHeader(title: String(localized: "Appearance"))
+                                .padding(.leading, sectionHeaderLeadingPadding)
+                            
                             
                             CustomCardView {
                                 
-                                HStack{
-                                    
-                                    
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Platform Options")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                        
-                                        
-                                        Text("Select which platforms are available in your order workflow.")
-                                        
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                        
-                                    }
-                                    
-                                    Spacer()
-                                }
-                                
-                            }
-                        }
-                        
-                        NavigationLink(destination: OrderFieldSettings()) {
-                            CustomCardView {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Order Fields")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                        Text("Customize which fields are shown when creating and editing orders.")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                    }
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        
-                        NavigationLink(destination: StockFieldSettings()) {
-                            CustomCardView {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Stock Fields")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                        Text("Customize which fields are shown when creating and editing stock items.")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                    }
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        
-                        NavigationLink(destination: CategoryOptions()) {
-                            CustomCardView{
-                                
-                                HStack{
-                                    
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Categories")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                        Text("Organise your stock items by category to keep things easy to find.")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                    }
-                                    
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        
-                        NavigationLink(destination: SalesReportView()) {
-                            CustomCardView("Sales Report") {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Sales Report")
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                        Text("Generate comprehensive sales reports with revenue, profit, and performance metrics.")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.leading)
-                                    }
-                                    
-                                    Spacer()
-                                }
-                            }
-                        }
-                        
-                        CustomCardView("App Settings") {
-                            HStack {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("App Tint")
+                                    Text(String(localized: "App Theme"))
                                         .font(.headline)
                                         .foregroundColor(.text)
                                     
-                                    Text("Pick a color to customise the app’s look - some colours may make some UI elmenets unreadable.")
+                                    
+                                    Text(String(localized: "Pick your favorite theme, or let the app follow your device settings."))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
-                                }
-                                Spacer()
-                                ColorPicker("", selection: Binding(
-                                    get: { Color(hex: tintHex) ?? .color1 },
-                                    set: { color in
-                                        DispatchQueue.main.async {
-                                            tintHex = color.toHex()
-                                        }
+                                    
+                                    SegmentedControl(
+                                        tabs: AppTheme.allCases,
+                                        activeTab: $appTheme,
+                                        height: 35,
+                                        font: .callout,
+                                        activeTint: Color(UIColor.systemBackground),
+                                        inActiveTint: .gray.opacity(0.8)
+                                    ) { size in
+                                        RoundedRectangle(cornerRadius: 22.5)
+                                            .fill(Color.appTint.gradient)
+                                            .padding(.horizontal, 4)
                                     }
-                                ))
-                                .labelsHidden()
+                                    .padding(.vertical)
+                                    
+                                    
+                                    
+                                    
+//                                    
+//                                    Picker("", selection: $appTheme){
+//                                        
+//                                        ForEach(AppTheme.allCases, id: \.rawValue){ theme in
+//                                                    
+//                                            Text(theme.rawValue)
+//                                                .tag(theme)
+//                                        }
+//                                    }
+//                                    .pickerStyle(.segmented)
+                                    
+                                    
+                                    
+                                }
+                                
                             }
+                            
+                            CustomCardView {
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(String(localized: "App Tint"))
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text(String(localized: "Pick a color to customise the app's look - some colours may make some UI elements unreadable."))
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    Spacer()
+                                    ColorPicker("", selection: Binding(
+                                        get: { Color(hex: tintHex) ?? .color1 },
+                                        set: { color in
+                                            DispatchQueue.main.async {
+                                                tintHex = color.toHex()
+                                            }
+                                        }
+                                    ))
+                                    .labelsHidden()
+                                }
+                            }
+                            
+                            
                         }
+                 
+                        
+                        
+                        
+                        VStack(alignment: .leading){
+                     
+                            SectionHeader(title: String(localized: "Support"))
+                                .padding(.leading, sectionHeaderLeadingPadding)
+
+                            Button{
+                                self.showingSupport = true
+                            }label: {
+                            
+                    
+                                CustomCardView {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Support"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text(String(localized: "Get support here"))
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+                                    }
+                                }
+                            }
+                            
+                            
+                            
+                        }
+                        
                         
                         
                         Color.clear.frame(height: 60)
@@ -313,6 +520,11 @@ struct SettingsView: View {
                    }
          
     }
+        
+     
+            .fullScreenCover(isPresented: $showingSupport) {
+                SupportView()
+            }
     }
     
 
@@ -335,3 +547,24 @@ struct SettingsView: View {
 
 
 
+
+
+struct SwipeBackEnabledView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        let controller = UIViewController()
+        DispatchQueue.main.async {
+            if let navController = controller.navigationController {
+                navController.interactivePopGestureRecognizer?.isEnabled = true
+                navController.interactivePopGestureRecognizer?.delegate = nil
+            }
+        }
+        return controller
+    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
+extension View {
+    func enableSwipeBack() -> some View {
+        self.background(SwipeBackEnabledView().frame(width: 0, height: 0))
+    }
+}

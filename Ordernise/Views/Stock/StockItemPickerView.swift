@@ -32,8 +32,8 @@ struct StockItemPickerView: View {
         NavigationStack {
             VStack {
                 HeaderWithButton(
-                    title: "Select Stock Items",
-                    buttonContent: "Done",
+                    title: String(localized: "Select Stock Items"),
+                    buttonContent: String(localized: "Done"),
                     isButtonImage: false,
                     showTrailingButton: true,
                     showLeadingButton: true,
@@ -67,6 +67,7 @@ struct StockItemPickerView: View {
                 }
             }
             .navigationBarHidden(true)
+            .enableSwipeBack()
         }
     }
 }
@@ -93,7 +94,7 @@ private struct StockItemRow: View {
                             .font(.headline)
                             .foregroundColor(.text)
                         
-                        Text("Available: \(item.quantityAvailable)")
+                        Text("\(String(localized: "Available")): \(item.quantityAvailable)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -107,7 +108,7 @@ private struct StockItemRow: View {
                     
                     VStack(alignment: .trailing, spacing: 4) {
                         if quantity > 0 {
-                            Text("Total: \(totalPrice, format: localeManager.currencyFormatStyle)")
+                            Text("\(String(localized: "Total")): \(totalPrice, format: localeManager.currencyFormatStyle)")
                                 .font(.subheadline)
                                 .foregroundColor(.appTint)
                                 .fontWeight(.semibold)
@@ -148,7 +149,7 @@ private struct StockItemRow: View {
                     Button {
                         onSelect()
                     } label: {
-                        Text("Add")
+                        Text(String(localized: "Add"))
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)

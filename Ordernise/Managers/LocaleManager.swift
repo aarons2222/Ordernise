@@ -18,13 +18,14 @@ enum SupportedLocale: String, CaseIterable {
     case deDE = "de-DE"       // German (Germany)
     case itIT = "it-IT"       // Italian (Italy)
     case jaJP = "ja-JP"       // Japanese (Japan)
-    case koKR = "ko-KR"       // Korean (South Korea)
     case zhCN = "zh-CN"       // Simplified Chinese (China)
-    case ptBR = "pt-BR"       // Portuguese (Brazil)
     case nlNL = "nl-NL"       // Dutch (Netherlands)
     case plPL = "pl-PL"       // Polish (Poland)
     case trTR = "tr-TR"       // Turkish (Turkey)
     case svSE = "sv-SE"       // Swedish (Sweden)
+    
+    
+    
 
     var locale: Locale {
         Locale(identifier: rawValue)
@@ -52,12 +53,9 @@ enum SupportedLocale: String, CaseIterable {
             return "eurosign.circle"
         case .plPL:
             return "polishzlotysign.circle"
-        case .ptBR:
-            return "realsign.circle"
+
         case .jaJP:
             return "yensign.circle"
-        case .koKR:
-            return "wonsign.circle"
         case .zhCN:
             return "chineseyuanrenminbisign.circle"
         case .trTR:
@@ -68,25 +66,34 @@ enum SupportedLocale: String, CaseIterable {
     var currencyDisplayName: String {
         switch self {
         case .enUS:
-            return "US Dollar"
+            return  String(localized: "US Dollar")
         case .enGB:
-            return "British Pound"
+            return String(localized: "British Pound")
         case .esES, .frFR, .deDE, .itIT, .nlNL, .svSE:
-            return "Euro"
+            return String(localized: "Euro")
         case .plPL:
-            return "Polish Złoty"
-        case .ptBR:
-            return "Brazilian Real"
+            return String(localized: "Polish Złoty")
+  
         case .jaJP:
-            return "Japanese Yen"
-        case .koKR:
-            return "South Korean Won"
+            return String(localized: "Japanese Yen")
         case .zhCN:
-            return "Chinese Yuan"
+            return String(localized: "Chinese Yuan")
         case .trTR:
-            return "Turkish Lira"
+            return String(localized: "Turkish Lira")
         }
     }
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     var currencySymbol: String {
         switch self {
@@ -98,12 +105,8 @@ enum SupportedLocale: String, CaseIterable {
             return "€"
         case .plPL:
             return "zł"
-        case .ptBR:
-            return "R$"
         case .jaJP:
             return "¥"
-        case .koKR:
-            return "₩"
         case .zhCN:
             return "¥"
         case .trTR:
@@ -196,12 +199,16 @@ class LocaleManager: ObservableObject {
         case .jpy: return SupportedLocale.jaJP.currencyDisplayName
         case .cny: return SupportedLocale.zhCN.currencyDisplayName
         case .pln: return SupportedLocale.plPL.currencyDisplayName
-        case .aud: return "Australian Dollar"
-        case .cad: return "Canadian Dollar"
-        case .chf: return "Swiss Franc"
-        case .inr: return "Indian Rupee"
+        case .aud: return String(localized: "Australian Dollar")
+        case .cad: return String(localized: "Canadian Dollar")
+        case .chf: return String(localized: "Swiss Franc")
         }
     }
+    
+    
+    
+    
+
     
     /// Gets the currency symbol name for SF Symbols
     var currencySymbolName: String {
@@ -231,7 +238,6 @@ class LocaleManager: ObservableObject {
         case .aud: return "dollarsign.circle"
         case .cad: return "dollarsign.circle"
         case .chf: return "francsign.circle"
-        case .inr: return "indianrupeesign.circle"
         }
     }
     
@@ -248,7 +254,6 @@ class LocaleManager: ObservableObject {
         case .aud: return "A$"
         case .cad: return "C$"
         case .chf: return "CHF"
-        case .inr: return "₹"
         }
     }
     
@@ -303,7 +308,8 @@ class LocaleManager: ObservableObject {
             newCurrency = .jpy
         case .zhCN:
             newCurrency = .cny
-        case .ptBR, .koKR, .trTR:
+        case .trTR:
+            
             // These locales don't have corresponding currencies in our Currency enum
             // Keep current currency
             return
@@ -324,7 +330,7 @@ class LocaleManager: ObservableObject {
         case .jpy: return .jaJP
         case .cny: return .zhCN
         case .pln: return .plPL
-        case .aud, .cad, .chf, .inr: return nil
+        case .aud, .cad, .chf: return nil
         }
     }
     

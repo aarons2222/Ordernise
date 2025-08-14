@@ -1,8 +1,8 @@
 //
-//  OrderFieldSettings.swift
+//  StockFieldSettings.swift
 //  Ordernise
 //
-//  Created by Aaron Strickland on 07/08/2025.
+//  Created by Aaron Strickland on 10/08/2025.
 //
 
 import SwiftUI
@@ -17,8 +17,6 @@ struct OrderFieldSettings: View {
     @State var isEmpty: Bool = false
     @State var fieldName: String = ""
 
-    
-    
     init() {
         let prefs = UserDefaults.standard.orderFieldPreferences
         self._preferences = State(initialValue: prefs)
@@ -27,7 +25,7 @@ struct OrderFieldSettings: View {
     var body: some View {
         VStack {
             HeaderWithButton(
-                title: "Order Fields",
+                title: String(localized: "Order Fields"),
                 buttonContent: "plus.circle",
                 isButtonImage: true,
                 showTrailingButton: true,
@@ -45,10 +43,10 @@ struct OrderFieldSettings: View {
                             
                             
                             let allFields = preferences.allFieldsInOrder
-                            let _ = print("[DEBUG FOREACH] About to render \(allFields.count) fields")
+                            let _ = print("[DEBUG ORDER FOREACH] About to render \(allFields.count) fields")
                             let _ = allFields.enumerated().forEach { index, item in
                                 if let builtIn = item.builtInField {
-                                    print("[DEBUG FOREACH] Field[\(index)]: \(builtIn.rawValue) - ID: \(item.id)")
+                                    print("[DEBUG ORDER FOREACH] Field[\(index)]: \(builtIn.rawValue) - ID: \(item.id)")
                                 }
                             }
                             
@@ -56,20 +54,27 @@ struct OrderFieldSettings: View {
                         
 
                             List {
-                                VStack{
+                                
+                            
                                     CustomCardView {
-                                        VStack(alignment: .leading, spacing: 0) {
+                                        VStack(alignment: .leading, spacing: 5) {
                                             HStack {
                                                 Image(systemName: "info.circle")
                                                     .foregroundColor(.appTint)
-                                                Text("Customize Your Order Form")
+                                                Text("Customise Your Order Item Form")
                                                     .font(.headline)
                                                     .foregroundColor(.text)
                                                 Spacer()
-                                            }
+                                            }.padding(.bottom, 5)
                                             
-                                            Text("• Drag to reorder fields\n• Toggle visibility on/off\n• Add custom fields with the + button\n• Required fields cannot be hidden")
-                                                .font(.caption)
+                                            
+                                            VStack(alignment: .leading, spacing: 5){
+                                                Text("• \(String(localized: "Drag to reorder fields"))")
+                                                Text("• \( String(localized: "Toggle visibility on/off"))")
+                                                Text("• \(   String(localized: "Add custom fields with the + button"))")
+                                                Text("• \(String(localized: "Required fields cannot be hidden"))")
+                                            }
+                                                .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
                                         
@@ -78,22 +83,16 @@ struct OrderFieldSettings: View {
                                     
                                   
                                   
-                                            HStack {
-                                                Text("Field Order & Visibility")
-                                                    .font(.headline)
-                                                    .foregroundColor(.text)
-                                                
-                                                Spacer()
-                                                
-
-                                            }.padding(.top)
+                              
+                                    
+                                 
                                     
                                     
+                          
+                                Section {
                                     
-                                    
-                                }
                                 ForEach(allFields, id: \.id) { fieldItem in
-                                    DraggableFieldRow(
+                                    DraggableOrderFieldRow(
                                         fieldItem: fieldItem,
                                         preferences: $preferences,
                                         onTap: {
@@ -111,51 +110,57 @@ struct OrderFieldSettings: View {
                                         .fill(.thinMaterial)
                                 )
                                 
+                                } header: {
+                                    SectionHeader(title: String(localized: "Field Order & Visibility"))
+                                        .textCase(nil)
+                                }
                                 
                             }.scrollIndicators(.hidden)
                            
                             .listRowSpacing(10)
                             .scrollContentBackground(.hidden)
+                            .padding(.top, -10)
+                                
+                                
                     
             Color.clear.frame(height: 30)
                 
                         
                 
                
-               
+            
             
         }
         .navigationBarHidden(true)
+    
         .onAppear {
             // Reload preferences from UserDefaults to ensure changes are reflected
             preferences = UserDefaults.standard.orderFieldPreferences
             
-            print("[DEBUG] Raw fieldItems count: \(preferences.fieldItems.count)")
+            print("[DEBUG ORDER] Raw fieldItems count: \(preferences.fieldItems.count)")
             for (index, item) in preferences.fieldItems.enumerated() {
                 if let builtIn = item.builtInField {
-                    print("[DEBUG] fieldItems[\(index)]: \(builtIn.rawValue) - sortOrder: \(item.sortOrder) - visible: \(item.isVisible)")
-                } else {
-                    print("[DEBUG] fieldItems[\(index)]: custom field - sortOrder: \(item.sortOrder) - visible: \(item.isVisible)")
+                    print("[DEBUG ORDER] fieldItems[\(index)]: \(builtIn.rawValue) - sortOrder: \(item.sortOrder) - visible: \(item.isVisible)")
+                } else if let custom = item.customField {
+                    print("[DEBUG ORDER] fieldItems[\(index)]: custom_\(custom.name) - sortOrder: \(item.sortOrder) - visible: \(item.isVisible)")
                 }
             }
             
-            print("[DEBUG] allFieldsInOrder count: \(preferences.allFieldsInOrder.count)")
+            print("[DEBUG ORDER] allFieldsInOrder count: \(preferences.allFieldsInOrder.count)")
             for (index, item) in preferences.allFieldsInOrder.enumerated() {
                 if let builtIn = item.builtInField {
-                    print("[DEBUG] allFieldsInOrder[\(index)]: \(builtIn.rawValue) - sortOrder: \(item.sortOrder)")
+                    print("[DEBUG ORDER] allFieldsInOrder[\(index)]: \(builtIn.rawValue) - isVisible: \(item.isVisible)")
+                } else if let custom = item.customField {
+                    print("[DEBUG ORDER] allFieldsInOrder[\(index)]: custom_\(custom.name) - isVisible: \(item.isVisible)")
                 }
             }
         }
-        .onChange(of: preferences) { _, newValue in
-            UserDefaults.standard.orderFieldPreferences = newValue
-           
-        }
-      
         .GenericSheet(
             isPresented: $showingAddFieldSheet,
             title: editingField != nil ? "Edit Custom Field" : "Add Custom Field",
             showButton: false,
             action: {
+                // Action when sheet is dismissed
                 editingField = nil
             }
         ) {
@@ -192,11 +197,11 @@ struct OrderFieldSettings: View {
                 }
             )
         }
-      
     }
     
-    private func savePreferences() {
-        UserDefaults.standard.orderFieldPreferences = preferences
+    private func applyPreset(_ preset: OrderFieldPreferences) {
+        preferences = preset
+        savePreferences()
     }
     
     private func moveField(from source: IndexSet, to destination: Int) {
@@ -205,22 +210,12 @@ struct OrderFieldSettings: View {
         savePreferences()
     }
     
-    
-    private func addField() {
-        let customField = CustomOrderField(
-            name: fieldName.trimmingCharacters(in: .whitespaces),
-            placeholder: fieldName.trimmingCharacters(in: .whitespaces),
-            fieldType: .text,
-            isRequired: false
-        )
-        
-        self.preferences.addCustomField(customField)
-        self.showingAddFieldSheet = false
+    private func savePreferences() {
+        UserDefaults.standard.orderFieldPreferences = preferences
     }
 }
 
-
-struct DraggableFieldRow: View {
+struct DraggableOrderFieldRow: View {
     let fieldItem: OrderFieldItem
     @Binding var preferences: OrderFieldPreferences
     let onTap: () -> Void
@@ -232,32 +227,21 @@ struct DraggableFieldRow: View {
             // Field icon
             Image(systemName: fieldItem.systemImage)
                 .foregroundColor(.appTint)
-                .font(.body)
+                .font(.title2)
                 
             
-            // Field info
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(fieldItem.displayName)
+      
+            Text(fieldItem.displayName)
                         .font(.body)
                         .foregroundColor(.text)
                     
                  
-                }
-                
-                if !fieldItem.isBuiltIn {
-                    Text(fieldItem.customField?.fieldType.displayName ?? "")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
+            
             
             Spacer()
             
             
-            // Tap to edit for custom fields (remove delete button)
-            // Custom fields are now editable via tap gesture
-            
+      
             
             if fieldItem.isRequired {
                 Text("Required")
@@ -269,15 +253,11 @@ struct DraggableFieldRow: View {
                     .cornerRadius(4)
             }else{
                 Toggle("", isOn: Binding(
-                    get: {
-                        if let index = preferences.fieldItems.firstIndex(where: { $0.id == fieldItem.id }) {
-                            return preferences.fieldItems[index].isVisible
-                        }
-                        return false
-                    },
+                    get: { fieldItem.isVisible },
                     set: { newValue in
                         if let index = preferences.fieldItems.firstIndex(where: { $0.id == fieldItem.id }) {
                             preferences.fieldItems[index].isVisible = newValue
+                            UserDefaults.standard.orderFieldPreferences = preferences
                         }
                     }
                 ))
@@ -303,6 +283,22 @@ struct DraggableFieldRow: View {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct AddCustomOrderFieldContent: View {
     let editingField: CustomOrderField?
     let onSave: (CustomOrderField) -> Void
@@ -319,7 +315,6 @@ struct AddCustomOrderFieldContent: View {
         let newField = CustomOrderField(
             name: fieldName,
             placeholder: "Enter \(fieldName.lowercased())",
-            fieldType: .text,
             isRequired: false
         )
         onSave(newField)
@@ -329,7 +324,8 @@ struct AddCustomOrderFieldContent: View {
         VStack(spacing: 30) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Field Name")
-                    .font(.headline)
+                    .font(.body)
+                    .fontWeight(.regular)
                     .foregroundColor(.text)
                 
                 CustomTextField(
@@ -340,8 +336,14 @@ struct AddCustomOrderFieldContent: View {
                 .onChange(of: fieldName) { _, newValue in
                     isEmpty = newValue.trimmingCharacters(in: .whitespaces).isEmpty
                 }
+                .onAppear {
+                    if let editingField = editingField {
+                        fieldName = editingField.name
+                        isEmpty = fieldName.trimmingCharacters(in: .whitespaces).isEmpty
+                    }
+                }
                 
-                Text("This will create a text field in your order form")
+                Text("This will create a text field in your order item form")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -356,212 +358,17 @@ struct AddCustomOrderFieldContent: View {
                     }
                 }
                 
-                GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ?  Color.gray.opacity(0.6) : Color.appTint) {
                     addField()
                 }
                 .disabled(isEmpty)
             }
         }
-        .onAppear {
-            if let editingField = editingField {
-                fieldName = editingField.name
-                isEmpty = fieldName.trimmingCharacters(in: .whitespaces).isEmpty
-            } else {
-                fieldName = ""
-                isEmpty = true
-            }
-        }
     }
 }
-
-//
-//// MARK: - DraggableFieldRow
-//struct DraggableFieldRow: View {
-//    let fieldItem: OrderFieldItem
-//    @Binding var preferences: OrderFieldPreferences
-//    
-//    var body: some View {
-//        let _ = print("[DEBUG ROW] Rendering row for: \(fieldItem.id)")
-//        let _ = print("[DEBUG ROW] systemImage: \(fieldItem.systemImage)")
-//        let _ = print("[DEBUG ROW] displayName: \(fieldItem.displayName)")
-//        let _ = print("[DEBUG ROW] isRequired: \(fieldItem.isRequired)")
-//        let _ = print("[DEBUG ROW] isBuiltIn: \(fieldItem.isBuiltIn)")
-//        
-//        return HStack {
-//       
-//            
-//            // Field icon
-//            Image(systemName: fieldItem.systemImage)
-//                .foregroundColor(.appTint)
-//                .font(.body)
-//                
-//            
-//            // Field info
-//            VStack(alignment: .leading, spacing: 2) {
-//                HStack {
-//                    Text(fieldItem.displayName)
-//                        .font(.body)
-//                        .foregroundColor(.text)
-//                    
-//                    if fieldItem.isRequired {
-//                        Text("Required")
-//                            .font(.caption2)
-//                            .foregroundColor(.secondary)
-//                            .padding(.horizontal, 6)
-//                            .padding(.vertical, 2)
-//                            .background(Color.secondary.opacity(0.2))
-//                            .cornerRadius(4)
-//                    }
-//                }
-//                
-//                if !fieldItem.isBuiltIn {
-//                    Text(fieldItem.customField?.fieldType.displayName ?? "")
-//                        .font(.caption)
-//                        .foregroundColor(.secondary)
-//                }
-//            }
-//            
-//            Spacer()
-//            
-//            // Delete button for custom fields
-//            if !fieldItem.isBuiltIn {
-//                Button {
-//                    preferences.removeField(withId: fieldItem.id)
-//                } label: {
-//                    Image(systemName: "trash")
-//                        .foregroundColor(.red)
-//                        .font(.caption)
-//                }
-//                .padding(.trailing, 8)
-//            }
-//            
-//            // Visibility toggle
-//            Toggle("", isOn: Binding(
-//                get: {
-//                    if let index = preferences.fieldItems.firstIndex(where: { $0.id == fieldItem.id }) {
-//                        return preferences.fieldItems[index].isVisible
-//                    }
-//                    return false
-//                },
-//                set: { newValue in
-//                    if let index = preferences.fieldItems.firstIndex(where: { $0.id == fieldItem.id }) {
-//                        preferences.fieldItems[index].isVisible = newValue
-//                    }
-//                }
-//            ))
-//            .tint(Color.appTint)
-//            .disabled(fieldItem.isRequired)
-//
-//            
-//        }
-//        .padding(10)
-//        .contentShape(Rectangle())
-//    }
-//}
-//
-
-
-//struct FieldGroupCard<Content: View>: View {
-//    let title: String
-//    let subtitle: String
-//    let icon: String
-//    @ViewBuilder let content: Content
-//    
-//    var body: some View {
-//        CustomCardView {
-//            VStack(alignment: .leading, spacing: 16) {
-//                HStack {
-//                    Image(systemName: icon)
-//                        .font(.title2)
-//                        .foregroundColor(.appTint)
-//                    
-//                    VStack(alignment: .leading, spacing: 2) {
-//                        Text(title)
-//                            .font(.headline)
-//                            .foregroundColor(.text)
-//                        Text(subtitle)
-//                            .font(.caption)
-//                            .foregroundColor(.secondary)
-//                    }
-//                    
-//                    Spacer()
-//                }
-//                
-//                content
-//            }
-//        }
-//    }
-//}
-//
-//
-
-
-struct FieldToggleRow: View {
-    let title: String
-    @Binding var isEnabled: Bool
-    var isRequired: Bool = false
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.body)
-                .foregroundColor(isRequired ? .text : .text)
-            
-            if isRequired {
-                Text("Required")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(4)
-            }
-            
-            Spacer()
-            
-            Toggle("", isOn: $isEnabled)
-                .disabled(isRequired)
-        }
-    }
-}
-
-
-
-struct PresetRow: View {
-    let title: String
-    let description: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundColor(.text)
-                    Text(description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding()
-            .cardBackground()
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
-
 
 #Preview {
-    OrderFieldSettings()
+    StockFieldSettings()
 }
-
 
 

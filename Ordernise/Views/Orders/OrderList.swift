@@ -21,6 +21,16 @@ enum OrderFilter: String, CaseIterable {
     case received = "Received"
     case completed = "Completed"
     
+    // Localized display name for UI
+    var localizedTitle: String {
+        switch self {
+        case .received:
+            return String(localized: "Received")
+        case .completed:
+            return String(localized: "Completed")
+        }
+    }
+    
     func matchesOrder(_ order: Order) -> Bool {
         switch self {
         case .received:
@@ -30,6 +40,7 @@ enum OrderFilter: String, CaseIterable {
         }
     }
 }
+
 
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
@@ -46,11 +57,7 @@ struct OrderList: View {
     @Binding var searchText: String
     
     private var allOrders: [Order] {
-        if dummyDataManager.isDummyModeEnabled {
-            return dummyDataManager.getOrders(from: modelContext)
-        } else {
-            return ordersQuery
-        }
+        return dummyDataManager.getOrders(from: modelContext)
     }
  
     var filteredOrders: [Order] {
@@ -98,6 +105,10 @@ struct OrderList: View {
         }
     }
     
+    
+    
+    
+    
     var body: some View {
         
         
@@ -107,10 +118,10 @@ struct OrderList: View {
         NavigationStack {
             
             VStack {
-              
+                
                 
                 HeaderWithButton(
-                    title: "Orders",
+                    title: String(localized: "Orders"),
                     buttonContent: "plus.circle",
                     isButtonImage: true,
                     showTrailingButton: true,
@@ -130,6 +141,7 @@ struct OrderList: View {
                     activeTab: $selectedFilter,
                     height: 35,
                     extraText: { filter in countText(for: filter) },
+                    customText: { filter in filter.localizedTitle },
                     font: .callout,
                     activeTint: Color(UIColor.systemBackground),
                     inActiveTint: .gray.opacity(0.8)
@@ -152,16 +164,22 @@ struct OrderList: View {
                 
                 
                 
-                
+               
                 
           
                 if allOrders.isEmpty {
                     Spacer()
-                    ContentUnavailableView("No Orders", systemImage: "bag", description: Text("Tap \(Image(systemName: "plus.circle")) to add your first order."))
+                    ContentUnavailableView(
+                        String(localized: "No Orders"), 
+                        systemImage: "bag", 
+                        description: Text(String(localized: "Tap ")) + 
+                                    Text(Image(systemName: "plus.circle")) + 
+                                    Text(String(localized: " to add your first order."))
+                    )
                     Spacer()
                 } else if filteredOrders.isEmpty {
                     Spacer()
-                    ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No orders match your search."))
+                    ContentUnavailableView(String(localized: "No Results"), systemImage: "magnifyingglass", description: Text(String(localized: "No orders match your search.")))
                     Spacer()
                 } else {
                     
@@ -198,7 +216,9 @@ struct OrderList: View {
                 }
             }
             
-            .alert("Confirm deletion", isPresented: $confirmDelete, actions: {
+            
+            
+            .alert( String(localized: "Confirm deletion"), isPresented: $confirmDelete, actions: {
                 
                 /// A destructive button that appears in red.
                 Button(role: .destructive) {
@@ -206,17 +226,16 @@ struct OrderList: View {
                         deleteOrder(order)
                     }
                 } label: {
-                    Text("Delete")
+                    Text(String(localized: "Delete"))
                 }
                 
                 /// A cancellation button that appears with bold text.
-                Button("Cancel", role: .cancel) {
+                Button(String(localized: "Cancel"), role: .cancel) {
                     // Perform cancellation
                 }
                 
-          
             }, message: {
-                Text("This action cannot be undone")
+                Text(String(localized: "This action cannot be undone"))
             })
             
 
@@ -292,6 +311,5 @@ struct OrderList: View {
 //}
 //
 //
-
 
 

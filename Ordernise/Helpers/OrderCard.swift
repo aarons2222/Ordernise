@@ -29,7 +29,7 @@ struct OrderCardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
                     // Left section
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 4) {
                         
                         if let customerName = order.customerName {
                             Text(customerName)
@@ -40,29 +40,31 @@ struct OrderCardView: View {
                         
                         
                         if !order.items.isEmpty {
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading) {
                                 ForEach(order.items, id: \.id) { item in
-                                    HStack {
+                                
                                         
                                         
-                                        Text("\(item.quantity) x \(item.stockItem?.name ?? "Unnamed Item")")
+                                        Text("\(item.quantity) x \(item.stockItem?.name ?? String(localized: "Unnamed Item"))")
                                             .font(.caption)
                                             .foregroundColor(.gray)
                                         
                                       
                                       
                                       
-                                    }
+                                    
                                 }
                             }
                         }
 
+                        Text(order.platform.rawValue)
+                            .font(.caption)
+                            .foregroundColor(.gray)
                         
                         
                    
 
                         
-                   
                     
                     }
 
@@ -72,27 +74,31 @@ struct OrderCardView: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         HStack(spacing: 6) {
                             Image(systemName: "largecircle.fill.circle")
-                            Text(order.status.rawValue.capitalizedFirst())
+                            Text(order.status.localizedTitle)
+                            
                         }
                         .font(.caption)
                         .foregroundStyle(order.status.statusColor)
 
-                        Text(order.platform.rawValue)
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                   
 
-                        
-                        let totalValue = order.items.reduce(0.0) { total, item in
-                            total + (item.stockItem?.price ?? 0.0) * Double(item.quantity)
-                        }
-
-                        if !order.items.isEmpty {
-                            Text("Order Total: \(totalValue, format: localeManager.currencyFormatStyle)")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                     
+                        Spacer()
+                   
                     }
+                    .padding(.top, 1)
+                }
+                
+                HStack{
+                    Spacer()
+                    let totalValue = order.items.reduce(0.0) { total, item in
+                        total + (item.stockItem?.price ?? 0.0) * Double(item.quantity)
+                    }
+
+                    if !order.items.isEmpty {
+                        Text("\(String(localized: "Order Total: "))\(totalValue, format: localeManager.currencyFormatStyle)")
+                            .font(.footnote)
+                    }
+                 
                 }
             }
             .padding()

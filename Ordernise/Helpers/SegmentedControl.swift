@@ -14,6 +14,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
     @Binding var activeTab: Tab
     var height: CGFloat = 45
     var extraText: ((Tab) -> String)?
+    var customText: ((Tab) -> String)? // Custom text provider for localization
     /// Customization Properties
     var displayAsText: Bool = false
     var font: Font = .footnote
@@ -36,7 +37,8 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
     }
     
     private var dynamicInActiveTint: Color {
-        inActiveTint
+        // Ensure inactive tint is always properly resolved for current color scheme
+        Color(UIColor.secondaryLabel)
     }
     
 
@@ -48,14 +50,15 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
             
             HStack(spacing: 0) {
                 ForEach(tabs, id: \.self) { tab in
-                    Group {
+                     Group {
+                         let displayText = customText?(tab) ?? tab.rawValue
                          if let extraText = extraText?(tab) {
-                             Text("\(tab.rawValue) \(extraText)")
+                             Text("\(displayText) \(extraText)")
                                  .lineLimit(1)
                                  .minimumScaleFactor(0.7)
                                  .padding(.horizontal, 4)
                          } else {
-                             Text(tab.rawValue)
+                             Text(displayText)
                             
                          }
                      }
@@ -94,6 +97,11 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                     }
                 }
             }
+            .background {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(.ultraThinMaterial)
+                    .ignoresSafeArea()
+            }
             .preference(key: SizeKey.self, value: size)
             .onPreferenceChange(SizeKey.self) { size in
                 if let index = tabs.firstIndex(of: activeTab) {
@@ -103,6 +111,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
             }
         }
         .frame(height: height)
+        
     }
 }
 

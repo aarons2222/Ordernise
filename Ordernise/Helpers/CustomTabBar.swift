@@ -28,17 +28,19 @@ struct CustomTabBar: View {
         // List the tabs that should have search
         return activeTab == .orders || activeTab == .stock
     }
+   
+    
     
     
     
     private var placeholderText: String {
         switch activeTab {
         case .orders:
-            return "Search orders..."
+            return  String(localized: "Search orders...")
         case .stock:
-            return "Search stock..."
+            return String(localized: "Search stock...")
         default:
-            return "Search..."
+            return String(localized: "Search...")
         }
     }
     

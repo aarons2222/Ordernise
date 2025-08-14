@@ -64,6 +64,7 @@ struct CustomDropdownMenu<T: Hashable>: View {
                     Spacer()
                     
                     Image(systemName: "chevron.down.circle")
+                        .font(.title2)
                         .foregroundStyle(Color.appTint)
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
                         .animation(.easeInOut(duration: 0.2), value: isExpanded)
@@ -116,6 +117,7 @@ struct CustomDropdownMenu<T: Hashable>: View {
                                 if option == selection {
                                     Image(systemName: "checkmark.circle")
                                         .foregroundStyle(Color.appTint)
+                                        .font(.title2)
                                 }
                             }
                             .padding(.horizontal, 12)
@@ -124,6 +126,7 @@ struct CustomDropdownMenu<T: Hashable>: View {
                                 RoundedRectangle(cornerRadius: 8)
                                     .fill(option == selection ? Color.appTint.opacity(0.1) : .clear)
                             )
+                            .contentShape(Rectangle()) 
                         }
                         .buttonStyle(PlainButtonStyle())
                         
@@ -155,10 +158,10 @@ struct StatusDropdownMenu: View {
     
     var body: some View {
         CustomDropdownMenu(
-            title: "Status",
+            title: String(localized: "Status"),
             options: OrderStatus.enabledCases,
             selection: $selection,
-            optionToString: { $0.rawValue.capitalized },
+            optionToString: { $0.localizedTitle },
             optionToColor: { $0.statusColor }
         )
     }

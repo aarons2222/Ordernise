@@ -56,7 +56,7 @@ struct OrderStatusOptions: View {
           
             
             HeaderWithButton(
-                title: "Order status option",
+                title: String(localized: "Order status option"),
                 buttonContent: "plus.circle",
                 isButtonImage: false,
                 showTrailingButton: false,
@@ -76,10 +76,10 @@ struct OrderStatusOptions: View {
                     HStack{
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Choose which order statuses are available in your workflow")
+                            Text(String(localized: "Choose which order statuses are available in your workflow"))
                                 .font(.headline)
                              
-                            Text("At least one status must remain enabled")
+                            Text(String(localized: "At least one status must remain enabled"))
                                 .font(.subheadline)
                                 .foregroundColor(.orange)
                         }
@@ -89,9 +89,7 @@ struct OrderStatusOptions: View {
                         Spacer()
                     }
                     
-                    ForEach(OrderStatus.allCases.indices, id: \.self) { index in
-                        let status = OrderStatus.allCases[index]
-                        
+                    ForEach(OrderStatus.allCases, id: \.self) { status in
                         VStack(spacing: 0) {
                             HStack {
                                 Toggle(isOn: Binding(
@@ -99,13 +97,14 @@ struct OrderStatusOptions: View {
                                     set: { _ in toggleStatus(status) }
                                 )) {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(status.rawValue.capitalized)
+                                        Text(status.localizedTitle)
                                             .font(.headline)
                                         Text(statusDescription(for: status))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                     }
                                 }
+                               
                                 .tint(Color.appTint)
                                 .disabled(enabledOrderStatuses.count == 1 && isStatusEnabled(status))
                                 .padding(.horizontal, 0)
@@ -113,7 +112,7 @@ struct OrderStatusOptions: View {
                             }
                             
                             // Show divider only if not the last item
-                            if index < OrderStatus.allCases.count - 1 {
+                            if status != OrderStatus.allCases.last {
                                 Divider()
                             }
                         }
@@ -138,23 +137,23 @@ struct OrderStatusOptions: View {
        
     
     }
-    
-    
+
     private func statusDescription(for status: OrderStatus) -> String {
         switch status {
-        case .received: return "Order has been recorded"
-        case .pending: return "Waiting for payment or confirmation"
-        case .processing: return "Being prepared/packed"
-        case .shipped: return "Handed over to carrier"
-        case .delivered: return "Reached customer"
-        case .fulfilled: return "Successfully completed"
-        case .returned: return "Sent back by customer"
-        case .refunded: return "Payment returned to customer"
-        case .canceled: return "Manually or automatically canceled"
-        case .failed: return "Payment or processing failure"
-        case .onHold: return "Temporarily paused"
+        case .received: return String(localized: "Order has been recorded")
+        case .pending: return String(localized: "Waiting for payment or confirmation")
+        case .processing: return String(localized: "Being prepared/packed")
+        case .shipped: return String(localized: "Handed over to carrier")
+        case .delivered: return String(localized: "Reached customer")
+        case .fulfilled: return String(localized: "Successfully completed")
+        case .returned: return String(localized: "Sent back by customer")
+        case .refunded: return String(localized: "Payment returned to customer")
+        case .canceled: return String(localized: "Manually or automatically canceled")
+        case .failed: return String(localized: "Payment or processing failure")
+        case .onHold: return String(localized: "Temporarily paused")
         }
     }
+
 }
 
 #Preview {

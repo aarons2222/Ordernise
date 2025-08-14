@@ -8,17 +8,6 @@
 import Foundation
 import SwiftData
 
-
-//
-//  StockItem.swift
-//  Ordernise
-//
-//  Created by Aaron Strickland on 28/07/2025.
-//
-
-import Foundation
-import SwiftData
-
 @Model
 class StockItem {
     var id: UUID

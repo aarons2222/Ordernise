@@ -23,9 +23,9 @@ struct StockItemDetailView: View {
         
         var title: String {
             switch self {
-            case .add: return "Add Stock Item"
-            case .edit: return "Edit Stock Item"
-            case .view: return "Stock Item"
+            case .add: return String(localized: "Add Stock Item")
+            case .edit: return String(localized: "Edit Stock Item")
+            case .view: return String(localized: "Stock Item")
             }
         }
         
@@ -36,6 +36,9 @@ struct StockItemDetailView: View {
             }
         }
     }
+    
+   
+
     
     let mode: Mode
     let stockItem: StockItem?
@@ -58,8 +61,23 @@ struct StockItemDetailView: View {
     // Navigation to CategoryOptions
     @State private var showingCategoryOptions = false
     
+    
     // Field preferences for dynamic field rendering
     @State private var fieldPreferences = UserDefaults.standard.stockFieldPreferences
+    
+    // Computed property for Save button validation
+    private var isSaveButtonDisabled: Bool {
+        // Name is required and cannot be empty
+        let hasValidName = !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        
+        // Price is required and must be greater than 0
+        let hasValidPrice = price > 0
+        
+        // For new items, quantity must be greater than 0
+        let hasValidQuantity = stockItem != nil || quantity > 0
+        
+        return !(hasValidName && hasValidPrice && hasValidQuantity)
+    }
     
 
     
@@ -109,10 +127,11 @@ struct StockItemDetailView: View {
                 
                 HeaderWithButton(
                     title: mode.title,
-                    buttonContent: "Save",
+                    buttonContent: String(localized: "Save"),
                     isButtonImage: false,
                     showTrailingButton: true,
                     showLeadingButton: true,
+                    isButtonDisabled: isSaveButtonDisabled,
                     onButtonTap: {
                         
                         saveItem()
@@ -157,6 +176,7 @@ struct StockItemDetailView: View {
                          )
                  }
                  .padding(.trailing, 20)
+                 .padding(.bottom, 10)
              }
             
    
@@ -190,10 +210,10 @@ struct StockItemDetailView: View {
         if fieldItem.isBuiltIn, let builtInField = fieldItem.builtInField {
             switch builtInField {
             case .name:
-                ListSection(title: "Item Name") {
+                ListSection(title: String(localized: "Item Name")) {
                     CustomTextField(
                         text: $name,
-                        placeholder: "Enter item name",
+                        placeholder: String(localized: "Enter item name"),
                         systemImage: "tag",
                         isSecure: false
                     )
@@ -203,7 +223,7 @@ struct StockItemDetailView: View {
             case .quantityAvailable:
                 CustomCardView {
                     HStack {
-                        Text("Quantity")
+                        Text(String(localized: "Quantity"))
                             .font(.headline)
                             .foregroundColor(.secondary)
                         
@@ -244,12 +264,12 @@ struct StockItemDetailView: View {
                 
             case .category:
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Category")
+                    Text(String(localized: "Quantity"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
                     if categories.isEmpty {
-                        GlobalButton(title: "Create Categories", showIcon: true, icon: "plus.circle") {
+                        GlobalButton(title: String(localized: "Create Categories"), showIcon: true, icon: "plus.circle") {
                             showingCategoryOptions = true
                         }
                     } else {
@@ -265,10 +285,10 @@ struct StockItemDetailView: View {
                 .padding(.horizontal, 15)
                 
             case .price:
-                ListSection(title: "Item Price") {
+                ListSection(title: String(localized: "Item Price")) {
                     CustomNumberField(
                         value: $price,
-                        placeholder: "Item Price",
+                        placeholder: String(localized: "Enter item price"),
                         systemImage: localeManager.currencySymbolName,
                         format: localeManager.currencyFormatStyle
                     )
@@ -276,10 +296,10 @@ struct StockItemDetailView: View {
                 .padding(.horizontal, 20)
                 
             case .cost:
-                ListSection(title: "Item Cost") {
+                ListSection(title: String(localized: "Item Cost")) {
                     CustomNumberField(
                         value: $cost,
-                        placeholder: "Item Cost",
+                        placeholder: String(localized: "Enter item cost"),
                         systemImage: localeManager.currencySymbolName,
                         format: localeManager.currencyFormatStyle
                     )
@@ -295,8 +315,7 @@ struct StockItemDetailView: View {
     // MARK: - Custom Field Rendering
     @ViewBuilder
     private func renderCustomField(_ field: CustomStockField) -> some View {
-        switch field.fieldType {
-        case .text:
+     
             ListSection(title: field.name) {
                 CustomTextField(
                     text: Binding(
@@ -309,49 +328,10 @@ struct StockItemDetailView: View {
             }
             .padding(.horizontal, 20)
             
-        case .number:
-            ListSection(title: field.name) {
-                CustomNumberField(
-                    value: Binding(
-                        get: { Double(customFieldValues[field.id.uuidString] ?? "0") ?? 0.0 },
-                        set: { customFieldValues[field.id.uuidString] = String($0) }
-                    ),
-                    placeholder: field.placeholder,
-                    systemImage: "number",
-                    format: .currency(code: localeManager.currentCurrency.rawValue).precision(.fractionLength(2))
-                )
-            }
-            .padding(.horizontal, 20)
-            
-        case .dropdown:
-            VStack(alignment: .leading, spacing: 4) {
-                Text(field.name)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                if field.dropdownOptions.isEmpty {
-                    Text("No options available")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 15)
-                } else {
-                    Picker(field.name, selection: Binding(
-                        get: { customFieldValues[field.id.uuidString] ?? "" },
-                        set: { customFieldValues[field.id.uuidString] = $0 }
-                    )) {
-                        Text("Select \(field.name.lowercased())")
-                            .tag("")
-                        ForEach(field.dropdownOptions, id: \.self) { option in
-                            Text(option)
-                                .tag(option)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .padding(.horizontal, 15)
-                }
-            }
+      
+ 
         }
-    }
+    
 
     private func loadItemData() {
         // Set currency from settings for new items, or from existing item
@@ -388,7 +368,7 @@ struct StockItemDetailView: View {
 
     
     private func saveItem() {
-        // Validation: Only for new items
+        // Validation checks as safety net (button should be disabled for invalid data)
         var missingFields = [String]()
 
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -407,7 +387,6 @@ struct StockItemDetailView: View {
             errorTitle = "Missing Required Fields"
             errorSubTitle = "Please fill in: \(missingFields.joined(separator: ", "))"
             
-      
             toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
             return
         }

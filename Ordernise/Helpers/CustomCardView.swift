@@ -24,14 +24,7 @@ struct CustomCardView<Content: View>: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let title = title {
-                Text(title)
-                    .font(.body)
-                    .fontWeight(.regular)
-                    .foregroundColor(.black)
-                    .padding(.bottom, 10)
-            }
-
+       
             
             content
                 .padding()

@@ -8,42 +8,18 @@
 import Foundation
 import SwiftData
 
-// MARK: - Custom Field Types
-enum StockFieldType: String, Codable, CaseIterable {
-    case text = "text"
-    case number = "number"
-    case dropdown = "dropdown"
-    
-    var displayName: String {
-        switch self {
-        case .text: return "Text Field"
-        case .number: return "Number Field"
-        case .dropdown: return "Dropdown"
-        }
-    }
-    
-    var systemImage: String {
-        switch self {
-        case .text: return "textformat"
-        case .number: return "number"
-        case .dropdown: return "list.bullet"
-        }
-    }
-}
 
 struct CustomStockField: Codable, Equatable, Identifiable {
     var id = UUID()
     var name: String
     var placeholder: String
-    var fieldType: StockFieldType
     var isRequired: Bool = false
     var isVisible: Bool = true
-    var dropdownOptions: [String] = [] // For dropdown type
+  
     
-    init(name: String, placeholder: String, fieldType: StockFieldType, isRequired: Bool = false) {
+    init(name: String, placeholder: String, isRequired: Bool = false) {
         self.name = name
         self.placeholder = placeholder
-        self.fieldType = fieldType
         self.isRequired = isRequired
     }
 }
@@ -58,13 +34,16 @@ enum BuiltInStockField: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .name: return "Item Name"
-        case .quantityAvailable: return "Quantity Available"
-        case .price: return "Item Price"
-        case .cost: return "Item Cost"
-        case .category: return "Category"
+        case .name: return  String(localized: "Item Name") 
+        case .quantityAvailable: return String(localized: "Quantity Available")
+        case .price: return String(localized: "Item Price")
+        case .cost: return String(localized: "Item Cost")
+        case .category: return String(localized: "Category")
         }
     }
+    
+    
+    
     
     var isRequired: Bool {
         switch self {
@@ -139,7 +118,7 @@ struct StockFieldItem: Codable, Equatable, Identifiable {
         if isBuiltIn {
             return builtInField?.systemImage ?? "questionmark"
         } else {
-            return customField?.fieldType.systemImage ?? "questionmark"
+            return "textformat"
         }
     }
 }

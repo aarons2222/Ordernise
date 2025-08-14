@@ -15,12 +15,12 @@ struct CategoryPicker: View {
     
     // Create a "None" category for the dropdown
     private var noneCategory: Category {
-        Category(name: "None", colorHex: "#808080") // Gray color in hex
+        Category(name: String(localized: "None"), colorHex: "#808080") // Gray color in hex
     }
     
     // Create a "Manage Categories" option for the dropdown
     private var manageCategoriesOption: Category {
-        Category(name: "Manage Categories...", colorHex: "#007AFF") // Blue color in hex
+        Category(name: String(localized: "Manage Categories..."), colorHex: "#007AFF") // Blue color in hex
     }
     
     // All options including None and Manage Categories
@@ -39,15 +39,15 @@ struct CategoryPicker: View {
     
     var body: some View {
         CustomDropdownMenu(
-            title: "Category",
+            title: String(localized: "Category"),
             options: allOptions,
             selection: Binding<Category>(
                 get: { currentSelection },
                 set: { newValue in
                     // If "None" is selected, set selection to nil
-                    if newValue.name == "None" {
+                    if newValue.name == String(localized: "None") {
                         selection = nil
-                    } else if newValue.name == "Manage Categories..." {
+                    } else if newValue.name == String(localized: "Manage Categories...") {
                         // Trigger the manage categories action
                         onManageCategories?()
                     } else {

@@ -19,18 +19,28 @@ struct StockList: View {
         case category = "Category"
         case price = "Price (Low to High)"
         case quantity = "Quantity (Low to High)"
-
+        
         var id: String { rawValue }
+        
+        // Localized display name for UI
+        var localizedTitle: String {
+            switch self {
+            case .alphabetical:
+                return String(localized: "Name")
+            case .category:
+                return String(localized: "Category")
+            case .price:
+                return String(localized: "Price (Low to High)")
+            case .quantity:
+                return String(localized: "Quantity (Low to High)")
+            }
+        }
     }
     @State private var currentSortOption: StockSortOption = .alphabetical
 
     
     private var allStockItems: [StockItem] {
-        if dummyDataManager.isDummyModeEnabled {
-            return dummyDataManager.getStockItems(from: modelContext)
-        } else {
-            return stockItemsQuery
-        }
+        return dummyDataManager.getStockItems(from: modelContext)
     }
     
     
@@ -65,7 +75,7 @@ struct StockList: View {
             
         case .category:
             let grouped = Dictionary(grouping: filteredItems) { item in
-                item.category?.name ?? "No Category"
+                item.category?.name ?? String(localized: "No Category")
             }
             return grouped.sorted { $0.key < $1.key }
             
@@ -176,7 +186,7 @@ struct StockList: View {
          
             
             
-            Text("Stock")
+            Text(String(localized: "Stock"))
                 .font(.title)
                 .padding(.horizontal,  15)
             
@@ -191,7 +201,7 @@ struct StockList: View {
               Menu {
                   Picker("Sort by", selection: $currentSortOption) {
                       ForEach(StockSortOption.allCases) { option in
-                          Text(option.rawValue).tag(option)
+                          Text(option.localizedTitle).tag(option)
                       }
                   }
               } label: {
@@ -225,16 +235,23 @@ struct StockList: View {
      
     }/// END
 
+    
   
     private var mainContentView: some View {
         Group {
             if allStockItems.isEmpty {
                 Spacer()
-                ContentUnavailableView("No Stock Items", systemImage: "shippingbox", description: Text("Tap \(Image(systemName: "plus.circle")) to add your first item.."))
+                ContentUnavailableView(
+                    String(localized: "No Stock Items"), 
+                    systemImage: "shippingbox", 
+                    description: Text(String(localized: "Tap ")) + 
+                                Text(Image(systemName: "plus.circle")) + 
+                                Text(String(localized: " to add your first item.."))
+                )
                 Spacer()
             } else if filteredItems.isEmpty {
                 Spacer()
-                ContentUnavailableView("No Results", systemImage: "magnifyingglass", description: Text("No stock items match your search."))
+                ContentUnavailableView(String(localized: "No Results"), systemImage: "magnifyingglass", description: Text(String(localized: "No stock items match your search.")))
                 Spacer()
             } else {
                 stockListView

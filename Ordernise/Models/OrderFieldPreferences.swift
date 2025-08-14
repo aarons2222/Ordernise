@@ -8,37 +8,18 @@
 import Foundation
 import SwiftData
 
-// MARK: - Custom Field Types
-enum OrderFieldType: String, Codable, CaseIterable {
-    case text = "text"
- 
- 
-    
-    var displayName: String {
-        switch self {
-        case .text: return "Text Field"
-        }
-    }
-    
-    var systemImage: String {
-        switch self {
-        case .text: return "textformat"        }
-    }
-}
 
 struct CustomOrderField: Codable, Equatable, Identifiable {
     var id = UUID()
     var name: String
     var placeholder: String
-    var fieldType: OrderFieldType
     var isRequired: Bool = false
     var isVisible: Bool = true
-    var dropdownOptions: [String] = [] // For dropdown type
+
     
-    init(name: String, placeholder: String, fieldType: OrderFieldType, isRequired: Bool = false) {
+    init(name: String, placeholder: String, isRequired: Bool = false) {
         self.name = name
         self.placeholder = placeholder
-        self.fieldType = fieldType
         self.isRequired = isRequired
     }
 }
@@ -59,17 +40,19 @@ enum BuiltInOrderField: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .orderDate: return "Order Date"
-        case .orderReference: return "Order Reference"
-        case .customerName: return "Customer Name"
-        case .orderStatus: return "Order Status"
-        case .platform: return "Platform"
-        case .shipping: return "Shipping"
-        case .sellingFees: return "Selling Fees"
-        case .additionalCosts: return "Additional Costs"
+        case .orderDate: return String(localized: "Order Date")
+        case .orderReference: return String(localized: "Order Reference")
+        case .customerName: return String(localized: "Customer Name")
+        case .orderStatus: return  String(localized: "Order Status")
+        case .platform: return String(localized: "Platform")
+        case .shipping: return String(localized: "Shipping")
+        case .sellingFees: return String(localized: "Selling Fees")
+        case .additionalCosts: return String(localized: "Additional Costs")
 
-        case .notes: return "Notes"
-        case .itemsSection: return "Items"
+            
+            
+        case .notes: return String(localized: "Notes")
+        case .itemsSection: return String(localized: "Items")
         }
     }
     
@@ -150,7 +133,7 @@ struct OrderFieldItem: Codable, Equatable, Identifiable {
         if isBuiltIn {
             return builtInField?.systemImage ?? "questionmark"
         } else {
-            return customField?.fieldType.systemImage ?? "questionmark"
+            return "textformat"
         }
     }
 }
@@ -201,24 +184,7 @@ struct OrderFieldPreferences: Codable, Equatable {
         ]
     }
     
-    /// Apply preset configuration
-//    private mutating func applyPreset(_ preset: Preset) {
-//        switch preset {
-//        case .minimal:
-//            setFieldVisibility(.shipping, visible: false)
-//            setFieldVisibility(.sellingFees, visible: false)
-//            setFieldVisibility(.additionalCosts, visible: false)
-//            setFieldVisibility(.notes, visible: false)
-//        case .shipping:
-//            setFieldVisibility(.sellingFees, visible: false)
-//            setFieldVisibility(.additionalCosts, visible: false)
-//            setFieldVisibility(.notes, visible: false)
-//        case .marketplace:
-//            // All fields visible (default)
-//            break
-//        }
-//    }
-//    
+
     /// Helper to set field visibility
     private mutating func setFieldVisibility(_ field: BuiltInOrderField, visible: Bool) {
         if let index = fieldItems.firstIndex(where: { $0.builtInField == field }) {

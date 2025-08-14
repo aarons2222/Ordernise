@@ -44,7 +44,7 @@ struct PlatformOptions: View {
     var body: some View {
         VStack {
             HeaderWithButton(
-                title: "Platform Options",
+                title: String(localized: "Platform Options"),
                 buttonContent: "plus.circle",
                 isButtonImage: false,
                 showTrailingButton: false,
@@ -58,10 +58,10 @@ struct PlatformOptions: View {
                 VStack {
                     HStack {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Choose which platforms are available in your workflow")
+                            Text(String(localized: "Choose which platforms are available in your workflow"))
                                 .font(.headline)
                              
-                            Text("At least one platform must remain enabled")
+                            Text(String(localized: "At least one platform must remain enabled"))
                                 .font(.subheadline)
                                 .foregroundColor(.orange)
                         }
@@ -112,17 +112,17 @@ struct PlatformOptions: View {
     
     private func platformDescription(for platform: Platform) -> String {
         switch platform {
-        case .ebay: return "Online auction and marketplace"
-        case .vinted: return "Second-hand fashion marketplace"
-        case .shopify: return "E-commerce platform"
-        case .etsy: return "Handmade and vintage marketplace"
-        case .amazon: return "Global e-commerce platform"
-        case .depop: return "Social shopping app"
-        case .poshmark: return "Fashion marketplace"
-        case .carboot: return "Car boot sales and local markets"
-        case .marketplace: return "Facebook marketplace"
-        case .gumtree: return "Local classified ads"
-        case .custom: return "Custom platform or other"
+        case .ebay: return String(localized: "Online auction and marketplace")
+        case .vinted: return String(localized: "Second-hand fashion marketplace")
+        case .shopify: return String(localized: "E-commerce platform")
+        case .etsy: return String(localized: "Handmade and vintage marketplace")
+        case .amazon: return String(localized: "Global e-commerce platform")
+        case .depop: return String(localized: "Social shopping app")
+        case .poshmark: return String(localized: "Fashion marketplace")
+        case .carboot: return String(localized: "Car boot sales and local markets")
+        case .marketplace: return String(localized: "Facebook marketplace")
+        case .gumtree: return String(localized: "Local classified ads")
+        case .custom: return String(localized: "Custom platform or other")
         }
     }
 }

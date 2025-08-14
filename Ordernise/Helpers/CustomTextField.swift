@@ -18,6 +18,7 @@ struct CustomTextField: View {
         HStack(spacing: 12) {
             Image(systemName: systemImage)
                 .foregroundColor(Color.appTint)
+                .font(.title2)
 
             if isSecure {
                 SecureField(placeholder, text: text)
