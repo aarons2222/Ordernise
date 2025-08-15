@@ -15,9 +15,9 @@ struct ListSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack{
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                SectionHeader(title: title)
+                    .padding(.vertical, 5)
+                    .padding(.leading, 0)
                 Spacer()
             }
             content()

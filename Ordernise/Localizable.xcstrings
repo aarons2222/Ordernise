@@ -50,28 +50,6 @@
     "%@: " : {
       "shouldTranslate" : false
     },
-    "%@: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@: %2$@"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
-    "%@: %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@: %2$lld"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
     "%@%@" : {
       "localizations" : {
         "en" : {
@@ -121,9 +99,6 @@
 
     },
     "30 Days = last 30 days, etc. Updated in real-time" : {
-
-    },
-    "Add" : {
 
     },
     "Add Category" : {
@@ -182,12 +157,6 @@
     },
     "Australian Dollar" : {
 
-    },
-    "Available" : {
-
-    },
-    "Available: %lld" : {
-      "shouldTranslate" : false
     },
     "Average Order Value" : {
 
@@ -249,9 +218,6 @@
 
     },
     "Choose which platforms are available in your workflow" : {
-
-    },
-    "Collected" : {
 
     },
     "Color" : {
@@ -338,6 +304,9 @@
 
     },
     "Delivered" : {
+
+    },
+    "Delivery" : {
 
     },
     "Depop" : {
@@ -864,16 +833,10 @@
     "Order has been recorded" : {
 
     },
-    "Order has been saved successfully" : {
-
-    },
     "Order Item" : {
 
     },
     "Order Reference" : {
-
-    },
-    "Order Saved" : {
 
     },
     "Order Settings" : {
@@ -937,6 +900,9 @@
 
     },
     "Pick a color to quickly recognise items in this this category" : {
+
+    },
+    "Pick up" : {
 
     },
     "Pick your favorite theme, or let the app follow your device settings." : {
@@ -1059,9 +1025,6 @@
 
     },
     "Second-hand fashion marketplace" : {
-
-    },
-    "Select Stock Items" : {
 
     },
     "Select which platforms are available in your order workflow." : {
@@ -1192,9 +1155,6 @@
 
     },
     "Toggle visibility on/off" : {
-
-    },
-    "Total" : {
 
     },
     "Total Income" : {

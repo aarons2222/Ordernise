@@ -34,10 +34,14 @@ struct OrderniseApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    
+
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.stockManager, StockManager(modelContext: sharedModelContainer.mainContext))
                 .task {
                     // Initialize the FieldPreferencesManager with the model context
                     FieldPreferencesManager.shared.setModelContext(sharedModelContainer.mainContext)

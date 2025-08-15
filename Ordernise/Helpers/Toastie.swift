@@ -182,6 +182,17 @@ public extension View {
     }
 }
 
+// MARK: - Toast Dismissal Helper
+@available(iOS 15.0, *)
+public extension Binding where Value == Toastie? {
+    /// Dismisses the current toast with animation
+    func dismissToast() {
+        withAnimation {
+            self.wrappedValue = nil
+        }
+    }
+}
+
 
 
 

@@ -20,7 +20,7 @@ struct SettingsView: View {
     
     @AppStorage("AppTheme") private var appTheme: AppTheme = .systemDefault
  
-    @State private var sectionHeaderLeadingPadding: CGFloat = 16
+
     
     var body: some View {
         
@@ -52,7 +52,7 @@ struct SettingsView: View {
                          
                         
                     SectionHeader(title: String(localized: "General"))
-                            .padding(.leading, sectionHeaderLeadingPadding)
+                          
                             
                             CustomCardView{
                                 
@@ -100,6 +100,7 @@ struct SettingsView: View {
                                 
                                 
                             }
+                            .padding(.bottom, 3)
                             
                             CustomCardView{
                             
@@ -145,7 +146,6 @@ struct SettingsView: View {
                      
 
                             SectionHeader(title: String(localized: "Workflow Settings"))
-                                .padding(.leading, sectionHeaderLeadingPadding)
                             
                             
                             
@@ -215,10 +215,10 @@ struct SettingsView: View {
 
                                     }
                                     
-                                }
+                                }.padding(.vertical, 3)
                             }
                             
-                            
+                         
                             
                             NavigationLink(destination: CategoryOptions().enableSwipeBack()) {
                                 CustomCardView{
@@ -269,7 +269,6 @@ struct SettingsView: View {
 
                             
                             SectionHeader(title: String(localized: "Form Fields"))
-                                .padding(.leading, sectionHeaderLeadingPadding)
                             
                             NavigationLink(destination: OrderFieldSettings()) {
                                 CustomCardView {
@@ -293,6 +292,7 @@ struct SettingsView: View {
 
                                     }
                                 }
+                                .padding(.bottom, 3)
                             }
                         
                             
@@ -346,7 +346,7 @@ struct SettingsView: View {
                   
                             
                             SectionHeader(title: String(localized: "Data"))
-                                .padding(.leading, sectionHeaderLeadingPadding)
+                            
 
                             
                             NavigationLink(destination: ExportDataView()) {
@@ -379,7 +379,7 @@ struct SettingsView: View {
                             
                             
                             SectionHeader(title: String(localized: "Appearance"))
-                                .padding(.leading, sectionHeaderLeadingPadding)
+                             
                             
                             
                             CustomCardView {
@@ -405,8 +405,14 @@ struct SettingsView: View {
                                     ) { size in
                                         RoundedRectangle(cornerRadius: 22.5)
                                             .fill(Color.appTint.gradient)
-                                            .padding(.horizontal, 4)
+                                   
                                     }
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.gray.opacity(0.1))
+                                            .stroke(Color.appTint, lineWidth: 3)
+                                    )
+                                 
                                     .padding(.vertical)
                                     
                                     
@@ -428,6 +434,7 @@ struct SettingsView: View {
                                 }
                                 
                             }
+                            .padding(.bottom, 3)
                             
                             CustomCardView {
                                 
@@ -470,7 +477,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading){
                      
                             SectionHeader(title: String(localized: "Support"))
-                                .padding(.leading, sectionHeaderLeadingPadding)
+                               
 
                             Button{
                                 self.showingSupport = true

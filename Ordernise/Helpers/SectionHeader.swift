@@ -9,6 +9,9 @@ import SwiftUI
 
 struct SectionHeader: View {
     
+    @State private var sectionHeaderLeadingPadding: CGFloat = 12
+  
+    
     let title: String
     
     
@@ -21,7 +24,7 @@ struct SectionHeader: View {
                 .foregroundColor(.text)
             
         }
-    
+        .padding(.leading, sectionHeaderLeadingPadding)
     }
     
 }

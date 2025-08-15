@@ -44,8 +44,16 @@ enum OrderFilter: String, CaseIterable {
 
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var dummyDataManager = DummyDataManager.shared
+    @Query(sort: \Order.date, order: .reverse) private var realOrders: [Order]
     
-    @Query(sort: \Order.date, order: .reverse) private var allOrders: [Order]
+    private var allOrders: [Order] {
+        if dummyDataManager.isDummyModeEnabled {
+            return dummyDataManager.getDummyOrders()
+        } else {
+            return realOrders
+        }
+    }
     
     @State private var showingAddOrder = false
     @State private var confirmDelete = false
@@ -58,9 +66,17 @@ struct OrderList: View {
     var filteredOrders: [Order] {
         // Filter by search text
         let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
-            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            // Search in order details
+            let orderMatches = order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+                              order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
+                              order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            
+            // Search in order items (stock item names)
+            let itemMatches = order.items.contains { orderItem in
+                orderItem.stockItem?.name.localizedCaseInsensitiveContains(searchText) == true
+            }
+            
+            return orderMatches || itemMatches
         }
         
         // Filter by selected status filter
@@ -157,10 +173,15 @@ struct OrderList: View {
                 ) { size in
                     Capsule()
                         .fill(Color.appTint.gradient)
-                        .padding(.horizontal, 10)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
+                .background(
+                    Capsule()
+                        .fill(Color.gray.opacity(0.1))
+                        .stroke(Color.appTint, lineWidth: 3)
+                )
                 .padding(.horizontal)
+                
               
                 
                 
@@ -204,7 +225,7 @@ struct OrderList: View {
                                             .swipeActions {
                                              
                                                 
-                                                Action(symbolImage: "trash.fill", tint: .white, background: .red) { resetPosition in
+                                                Action(symbolImage: "trash.fill", tint: .white, background: Color.red) { resetPosition in
                                                     orderToDelete = order
                                                     confirmDelete = true
                                                 }
@@ -213,7 +234,7 @@ struct OrderList: View {
                                                 selectedOrder = order
                                             }
                                         
-                                        Color.clear.frame(height: 15)
+                                        Color.clear.frame(height: 10)
                                     }
                                 }
                             }
@@ -267,16 +288,8 @@ struct OrderList: View {
     }
     
     private func sectionHeader(_ dateString: String) -> some View {
-        HStack {
-            Text(dateString)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .background(Color(.systemBackground))
+        SectionHeader(title: dateString)
+            .padding(10)
     }
     
     private func deleteOrder(_ order: Order) {

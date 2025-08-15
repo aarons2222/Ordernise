@@ -115,15 +115,6 @@ struct OrderCardView: View {
 
 
 
-extension Double {
-    func asCurrency(_ code: String = "GBP") -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = code
-        formatter.locale = Locale.current // Optional: customize for region
-        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
-    }
-}
 extension String {
     func capitalizedFirst() -> String {
         guard let first = self.first else { return self }

@@ -3,8 +3,16 @@ import SwiftData
 
 struct StockList: View {
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var dummyDataManager = DummyDataManager.shared
+    @Query(sort: \StockItem.name) private var realStockItems: [StockItem]
     
-    @Query(sort: \StockItem.name) private var allStockItems: [StockItem]
+    private var allStockItems: [StockItem] {
+        if dummyDataManager.isDummyModeEnabled {
+            return dummyDataManager.getDummyStockItems()
+        } else {
+            return realStockItems
+        }
+    }
     
     @State private var showingAddStock = false
     @State private var confirmDelete = false
@@ -35,7 +43,7 @@ struct StockList: View {
             }
         }
     }
-    @State private var currentSortOption: StockSortOption = .alphabetical
+    @AppStorage("stockListSortOption") private var currentSortOption: StockSortOption = .alphabetical
 
     
     var filteredItems: [StockItem] {
@@ -167,9 +175,9 @@ struct StockList: View {
                     Text("Delete")
                 }
                 
-                /// A cancellation button that appears with bold text.
+
                 Button("Cancel", role: .cancel) {
-                    // Perform cancellation
+
                 }
                 
           
@@ -264,10 +272,10 @@ struct StockList: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
                 ForEach(groupedItems, id: \.0) { groupName, items in
-                    SwiftUI.Section(header: sectionHeader(groupName)) {
+                    SwiftUI.Section(header:    sectionHeader(groupName)) {
                         ForEach(items) { item in
                             stockItemRow(item)
-                            Color.clear.frame(height: 15)
+                            Color.clear.frame(height: 10)
                         }
                     }
                 }
@@ -296,16 +304,13 @@ struct StockList: View {
     }
     
     private func sectionHeader(_ groupName: String) -> some View {
-        HStack {
-            Text(groupName)
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .background(Color(.systemBackground))
+        
+        
+        SectionHeader(title: groupName)
+            .padding(10)
+        
+        
+      
       
     }
 

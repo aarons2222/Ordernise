@@ -11,6 +11,7 @@ import SwiftData
 struct OrderDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.stockManager) private var stockManager
     @Query private var stockItems: [StockItem]
 
     
@@ -69,22 +70,17 @@ struct OrderDetailView: View {
     @State private var fieldPreferences = UserDefaults.standard.orderFieldPreferences
     @State private var customFieldValues: [UUID: String] = [:]
     
-    @State private var showingAddStock = false
-
-
-    
     // Computed property for Save button validation
     private var isSaveButtonDisabled: Bool {
-        // For new orders, validate required fields
-        if order == nil {
-            let hasValidCustomerName = !customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            let hasValidOrderItems = !viewModel.orderItems.filter { $0.isValid }.isEmpty
-            
-            return !(hasValidCustomerName && hasValidOrderItems)
-        }
+        // Apply same validation for both new and existing orders
+        let hasValidCustomerName = !customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let hasValidOrderItems = !viewModel.orderItems.filter { $0.isValid }.isEmpty
+        let isDisabled = !(hasValidCustomerName && hasValidOrderItems)
         
-        // For existing orders, always allow saving
-        return false
+        let orderType = order == nil ? "New order" : "Edit order"
+        print("🔍 [Save Button State] \(orderType) - Customer: '\(customerName)', Items: \(viewModel.orderItems.count), Valid Items: \(viewModel.orderItems.filter { $0.isValid }.count), Disabled: \(isDisabled)")
+        
+        return isDisabled
     }
     
     // Cost-related state variables
@@ -173,8 +169,16 @@ struct OrderDetailView: View {
     
     // Dynamic field rendering based on user preferences
     private var dynamicFieldsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            ForEach(fieldPreferences.visibleFields) { fieldItem in
+        let visibleFields = fieldPreferences.visibleFields
+        let _ = print("🔍 [OrderDetailView] visibleFields count: \(visibleFields.count)")
+        let _ = visibleFields.forEach { field in
+            if let builtIn = field.builtInField {
+                print("🔍 [OrderDetailView] visible field: \(builtIn.rawValue)")
+            }
+        }
+        
+        return VStack(alignment: .leading, spacing: 16) {
+            ForEach(visibleFields) { fieldItem in
                 fieldView(for: fieldItem)
             }
         }
@@ -255,16 +259,22 @@ struct OrderDetailView: View {
                             SegmentedControl(
                                 tabs: DeliveryMethod.allCases,
                                 activeTab: $deliveryMethod,
-                                height: 35,
+                                height: 45,
                                 font: .callout,
                                 activeTint: Color(UIColor.systemBackground),
                                 inActiveTint: .gray.opacity(0.8)
                             ) { size in
                                 RoundedRectangle(cornerRadius: 22.5)
                                     .fill(Color.appTint.gradient)
-                                    .padding(.horizontal, 4)
+                                
+                                   
                             }
-                         
+                            .background(
+                                Capsule()
+                                    .fill(Color.gray.opacity(0.1))
+                                    .stroke(Color.appTint, lineWidth: 4)
+                            )
+                            .padding(.horizontal, 3)
                       
                         
                     }
@@ -355,7 +365,8 @@ struct OrderDetailView: View {
                     if !validOrderItems.isEmpty {
                         ListSection(title: String(localized: "Items")) {
                             VStack {
-                                ForEach($viewModel.orderItems) { $orderItem in
+                                ForEach(validOrderItems.indices, id: \.self) { index in
+                                    let orderItem = validOrderItems[index]
                                     if let stockItem = orderItem.stockItem {
                                         VStack(alignment: .leading, spacing: 8) {
                                             HStack(alignment: .top) {
@@ -366,7 +377,7 @@ struct OrderDetailView: View {
                                                 
                                                 Spacer()
                                                 
-                                                Text(orderItem.totalPrice, format: .currency(code: stockItem.currency.rawValue.uppercased()))
+                                                Text(orderItem.totalPrice, format: localeManager.currencyFormatStyle)
                                                     .font(.subheadline)
                                                     .fontWeight(.semibold)
                                                     .foregroundColor(.secondary)
@@ -375,35 +386,36 @@ struct OrderDetailView: View {
                                      
                                         }
                                         .padding(.vertical, 6)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            // Find the index in the full viewModel.orderItems array
+                                            if let fullIndex = viewModel.orderItems.firstIndex(where: { $0.id == orderItem.id }) {
+                                                currentOrderItemIndex = fullIndex
+                                                showingStockItemPicker = true
+                                            }
+                                        }
                                     }
                                 }
                             }
+                        }.onAppear(){
+                            print("validOrderItems \(validOrderItems)")
+
                         }
                     }
                     
-                    if stockItems.isEmpty{
-                        
-                        GlobalButton(
-                            title: "Create new stock item",
-                            showIcon: true,
-                            icon: "plus.circle",
-                            action: {
-                                self.showingAddStock = true
-                            }
-                        )
-                        
-                    }else{
-                        
-                        
-                        GlobalButton(
-                            title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? String(localized: "Add items") : String(localized: "Edit items"),
-                            showIcon: true,
-                            icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",
-                            action: {
-                                addOrderItemWithPicker()
-                            }
-                        )
-                    }
+                    // Add Items Button (always present)
+                    GlobalButton(
+                        title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? String(localized: "Add items") : String(localized: "Edit items"),
+                        showIcon: true,
+                        icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",
+                        action: {
+                            addOrderItemWithPicker()
+                        }
+                    )
+                }
+                .onAppear(){
+                    print("🎯 [OrderDetailView] Rendering itemsSection case")
+
                 }
             }
         } else if let customField = fieldItem.customField {
@@ -454,6 +466,7 @@ struct OrderDetailView: View {
                     showLeadingButton: true,
                     isButtonDisabled: isSaveButtonDisabled,
                     onButtonTap: {
+                        print("🔥 [OrderDetailView] Save button tapped!")
                         saveOrder()
                     }
                 )
@@ -544,7 +557,7 @@ struct OrderDetailView: View {
                         // Profit
                         HStack {
                             Spacer()
-                            Text("\(String(localized: "Profit: "))\(orderProfit, format: localeManager.currencyFormatStyle)")
+                            Text("\(String(localized: "Profit: "))\(localeManager.formatCurrency(orderProfit))")
                                 .font(.subheadline)
                                 .foregroundColor(orderProfit >= 0 ? .green : .red)
                                 .fontWeight(.medium)
@@ -588,29 +601,56 @@ struct OrderDetailView: View {
             .padding(.bottom, 10)
 
         }
-        
-        .fullScreenCover(isPresented: $showingAddStock) {
-            StockItemDetailView(mode: .add)
-        }
-        
-        
         .fullScreenCover(isPresented: $showingOrderFieldSettings) {
             OrderFieldSettings()
         }
         .sheet(isPresented: $showingStockItemPicker) {
-            StockItemPickerView { stockItem, quantity in
-                if let index = currentOrderItemIndex {
-                    viewModel.orderItems[index].stockItem = stockItem
-                    viewModel.orderItems[index].quantity = quantity
-                } else {
-                    // Add new item
+            let existingQuantities: [StockItem.ID: Int] = {
+                var quantities: [StockItem.ID: Int] = [:]
+                for orderItem in viewModel.orderItems {
+                    if let stockItem = orderItem.stockItem {
+                        quantities[stockItem.id] = orderItem.quantity
+                    }
+                }
+                return quantities
+            }()
+            
+            OrderItemPickerView(
+                stockItems: stockItems,
+                existingQuantities: existingQuantities
+            ) { stockItem, quantity in
+                print("📦 [Order Item Update] Item: \(stockItem.name), Quantity: \(quantity)")
+                
+                let oldQuantity = existingQuantities[stockItem.id] ?? 0
+                let quantityDiff = quantity - oldQuantity
+                
+                // Update pending allocation in StockManager (don't update actual stock yet)
+                stockManager?.setPendingAllocation(for: stockItem, quantity: quantityDiff)
+                print("  - Pending allocation updated: \(stockItem.name), diff: \(quantityDiff)")
+                
+                // Find if item already exists in the order
+                if let existingIndex = viewModel.orderItems.firstIndex(where: { $0.stockItem?.id == stockItem.id }) {
+                    if quantity == 0 {
+                        // Remove item if quantity is 0
+                        print("  - Removing existing item at index \(existingIndex)")
+                        viewModel.orderItems.remove(at: existingIndex)
+                    } else {
+                        // Update existing item quantity
+                        print("  - Updating existing item at index \(existingIndex)")
+                        viewModel.orderItems[existingIndex].quantity = quantity
+                    }
+                } else if quantity > 0 {
+                    // Add new item only if quantity > 0
+                    print("  - Adding new item to order")
                     var newOrderItem = OrderItemEntry()
                     newOrderItem.stockItem = stockItem
                     newOrderItem.quantity = quantity
+                    newOrderItem.isFromExistingOrder = true  // Mark as existing to bypass stock validation
                     viewModel.orderItems.append(newOrderItem)
                 }
-                showingStockItemPicker = false
-                currentOrderItemIndex = nil
+                
+                print("  - viewModel.orderItems count after: \(viewModel.orderItems.count)")
+                print("  - Valid items count: \(viewModel.orderItems.filter { $0.isValid }.count)")
             }
         }
         .onAppear {
@@ -620,6 +660,8 @@ struct OrderDetailView: View {
                 loadOrderData()
                 hasLoadedInitialData = true
             }
+            // Clear any lingering pending changes from previous sessions
+            stockManager?.clearPendingChanges()
             // Refresh field preferences when view appears
             fieldPreferences = UserDefaults.standard.orderFieldPreferences
         }
@@ -631,6 +673,8 @@ struct OrderDetailView: View {
         }
         .toastieView(toast: $toastie)
         .onDisappear {
+            // Clear pending changes if view is dismissed without saving
+            stockManager?.clearPendingChanges()
             // Clear toast error state when view disappears to prevent showing error again
             toastie = nil
         }
@@ -771,12 +815,6 @@ struct OrderDetailView: View {
     }
     
     
-    func formatAsCurrency(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount)"
-    }
 
     
     private func addOrderItem() {
@@ -800,28 +838,35 @@ struct OrderDetailView: View {
 
     
     private func saveOrder() {
+        print("🚀 [OrderDetailView] saveOrder() called")
         let validOrderItems = viewModel.orderItems.filter { $0.isValid }
+        print("📋 [OrderDetailView] Valid order items count: \(validOrderItems.count)")
         
-        // Validation checks as safety net (button should be disabled for invalid data)
+        // Validation checks for both new and existing orders
+        var missingFields = [String]()
+        
+        if customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            missingFields.append(String(localized: "Customer Name"))
+        }
+        
+        if validOrderItems.isEmpty {
+            missingFields.append(String(localized: "Order Item"))
+        }
+        
+        if !missingFields.isEmpty {
+            let orderType = order == nil ? "new order" : "existing order"
+            print("❌ [OrderDetailView] Validation failed for \(orderType) - missing fields: \(missingFields)")
+            errorTitle = String(localized: "Missing Required Fields")
+            errorSubTitle = "\(String(localized: "Please fill in: "))\(missingFields.joined(separator: ", "))"
+            
+            toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
+            return
+        }
+        
         if order == nil {
-            var missingFields = [String]()
-            
-            if customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                missingFields.append(String(localized: "Customer Name"))
-            }
-            
-            if validOrderItems.isEmpty {
-                missingFields.append(String(localized: "Order Item"))
-            }
-            
-            if !missingFields.isEmpty {
-                errorTitle = String(localized: "Missing Required Fields")
-                errorSubTitle = "\(String(localized: "Please fill in: "))\(missingFields.joined(separator: ", "))"
-                
-       
-                toastie = Toastie(type: .error, title: errorTitle, message: errorSubTitle)
-                return
-            }
+            print("📝 [OrderDetailView] Creating new order")
+        } else {
+            print("✏️ [OrderDetailView] Editing existing order")
         }
         
   
@@ -909,6 +954,48 @@ struct OrderDetailView: View {
             print("  - Order Profit: \(orderProfit)")
             print("💾 [OrderDetailView] ----------------------")
             
+            // Handle stock changes using StockManager
+            if let stockManager = stockManager {
+                // For existing orders, calculate stock adjustments by comparing old vs new quantities
+                var stockAdjustments: [StockItem.ID: Int] = [:]
+                
+                // Count old quantities (restore to stock)
+                for item in existingOrder.items {
+                    if let stockItem = item.stockItem {
+                        stockAdjustments[stockItem.id, default: 0] += item.quantity
+                    }
+                }
+                
+                // Subtract new quantities (allocate from stock)
+                for orderItemEntry in validOrderItems {
+                    if let stockItem = orderItemEntry.stockItem {
+                        stockAdjustments[stockItem.id, default: 0] -= orderItemEntry.quantity
+                    }
+                }
+                
+                // Apply stock adjustments (positive = return to stock, negative = remove from stock)
+                for (stockItemId, adjustment) in stockAdjustments {
+                    if let stockItem = stockItems.first(where: { $0.id == stockItemId }) {
+                        print("📦 [Stock Update via StockManager] Item: \(stockItem.name)")
+                        print("  - Old quantity: \(stockItem.quantityAvailable)")
+                        print("  - Adjustment: \(adjustment)")
+                        do {
+                            try stockManager.updateStockForOrderChange(
+                                stockItem: stockItem, 
+                                oldQuantity: 0, 
+                                newQuantity: -adjustment  // Negative because we want to apply the adjustment
+                            )
+                            print("  - New quantity: \(stockItem.quantityAvailable)")
+                        } catch {
+                            print("❌ [Stock Update] Failed to update stock for \(stockItem.name): \(error)")
+                        }
+                    }
+                }
+                
+                // Clear any pending changes since we've handled them manually
+                stockManager.clearPendingChanges()
+            }
+            
             // Remove existing order items
             for item in existingOrder.items {
                 modelContext.delete(item)
@@ -963,15 +1050,20 @@ struct OrderDetailView: View {
                 attributes: attributesToSave
             )
             
-            // Add order items and reduce stock quantities
+            // Add order items
             for orderItemEntry in validOrderItems {
                 let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem)
                 orderItem.order = newOrder
                 newOrder.items.append(orderItem)
-                
-                // Reduce stock quantity
-                if let stockItem = orderItemEntry.stockItem {
-                    stockItem.quantityAvailable -= orderItemEntry.quantity
+            }
+            
+            // Commit pending stock changes using StockManager
+            if let stockManager = stockManager {
+                do {
+                    try stockManager.commitPendingChanges()
+                    print("📦 [New Order] Successfully committed stock changes via StockManager")
+                } catch {
+                    print("❌ [New Order] Failed to commit stock changes: \(error)")
                 }
             }
             
@@ -986,6 +1078,13 @@ struct OrderDetailView: View {
         do {
             try modelContext.save()
             print("✅ [OrderDetailView] Save completed successfully")
+            
+            // Verify stock quantities after save
+            print("📦 [Post-Save Stock Check]")
+            for stockItem in stockItems {
+                print("  - \(stockItem.name): \(stockItem.quantityAvailable) units")
+            }
+            
             print("  - Final @State values after modelContext.save():")
             print("    - shippingCost: \(shippingCost)")
             print("    - sellingFees: \(sellingFees)")
@@ -998,10 +1097,17 @@ struct OrderDetailView: View {
             print("    - Net Order Total: \(netOrderTotal)")
             print("    - Order Profit: \(orderProfit)")
             
-            toastie = Toastie(type: .success, title: String(localized: "Order Saved"), message: String(localized: "Order has been saved successfully"))
-            dismiss()
+          
+    
+         
+           
+                    dismissWithCleanup()
+                
+            
+      
         } catch {
-            print("Failed to save order: \(error)")
+            print("❌ [OrderDetailView] Failed to save order: \(error)")
+         
         }
     }
 }
@@ -1012,17 +1118,17 @@ struct OrderDetailView: View {
 
 
 enum DeliveryMethod: String, CaseIterable, Identifiable, Codable {
-    case collected = "Collected"
-    case shipped = "Shipped"
+    case collected = "Pick up"
+    case shipped = "Delivery"
 
     var id: String { self.rawValue }
     
     var localizedName: String {
         switch self {
         case .collected:
-            return String(localized: "Collected")
+            return String(localized: "Pick up")
         case .shipped:
-            return String(localized: "Shipped")
+            return String(localized: "Delivery")
         }
     }
 }

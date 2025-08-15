@@ -257,14 +257,25 @@ class LocaleManager: ObservableObject {
         }
     }
     
-    /// Gets the currency format style for formatting numbers
-    var currencyFormatStyle: FloatingPointFormatStyle<Double>.Currency {
-        FloatingPointFormatStyle<Double>.Currency(code: currentCurrency.rawValue)
+    /// Gets a simple currency formatter that shows just the symbol
+    func formatCurrency(_ amount: Double) -> String {
+        let symbol = getCurrencySymbol(for: currentCurrency)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        let numberString = formatter.string(from: NSNumber(value: amount)) ?? String(format: "%.2f", amount)
+        return "\(symbol)\(numberString)"
     }
     
-    /// Gets currency format style for a specific currency
+    /// Gets the currency format style for formatting numbers (kept for compatibility)
+    var currencyFormatStyle: FloatingPointFormatStyle<Double>.Currency {
+        return FloatingPointFormatStyle<Double>.Currency(code: currentCurrency.rawValue)
+    }
+    
+    /// Gets currency format style for a specific currency (kept for compatibility)
     func getCurrencyFormatStyle(for currency: Currency) -> FloatingPointFormatStyle<Double>.Currency {
-        FloatingPointFormatStyle<Double>.Currency(code: currency.rawValue)
+        return FloatingPointFormatStyle<Double>.Currency(code: currency.rawValue)
     }
     
     // MARK: - Locale Management

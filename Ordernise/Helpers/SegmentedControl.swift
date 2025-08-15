@@ -56,7 +56,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                              Text("\(displayText) \(extraText)")
                                  .lineLimit(1)
                                  .minimumScaleFactor(0.7)
-                                 .padding(.horizontal, 4)
+                              
                          } else {
                              Text(displayText)
                             
@@ -98,7 +98,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                 }
             }
             .background {
-                RoundedRectangle(cornerRadius: 30)
+                Capsule()
                     .fill(.ultraThinMaterial)
                     .ignoresSafeArea()
             }

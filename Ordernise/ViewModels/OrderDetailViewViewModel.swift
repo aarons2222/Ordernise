@@ -13,11 +13,18 @@ class OrderDetailViewViewModel: ObservableObject {
         let id = UUID()
         var stockItem: StockItem?
         var quantity: Int = 1
+        var isFromExistingOrder: Bool = false
     
         
         var isValid: Bool {
             guard let item = stockItem else { return false }
-            return quantity > 0 && quantity <= item.quantityAvailable
+            // For existing order items, only check quantity > 0
+            // For new items, check both quantity > 0 and stock availability
+            if isFromExistingOrder {
+                return quantity > 0
+            } else {
+                return quantity > 0 && quantity <= item.quantityAvailable
+            }
         }
         
         var hasInsufficientStock: Bool {
@@ -101,7 +108,8 @@ class OrderDetailViewViewModel: ObservableObject {
             
                 let entry = OrderItemEntry(
                     stockItem: stockItem,
-                    quantity: orderItem.quantity
+                    quantity: orderItem.quantity,
+                    isFromExistingOrder: true
                 )
                 loadedItems.append(entry)
                 

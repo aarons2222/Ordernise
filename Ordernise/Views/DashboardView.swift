@@ -233,63 +233,61 @@ struct DashboardView: View {
     // MARK: - UI Components
     
     private var salesByCategoryChart: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(String(localized: "Sales by Category"))
-                    .font(.headline)
-                    .fontWeight(.regular)
-                    .foregroundColor(.primary)
-                    .underline()
-                Spacer()
+        
+        CustomCardView{
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(String(localized: "Sales by Category"))
+                        .font(.headline)
+                        .fontWeight(.regular)
+                        .foregroundColor(.primary)
+                        .underline()
+                    Spacer()
+                    
                 
-                Image(systemName: "chart.pie")
-                    .font(.title2)
-                    .foregroundColor(.accentColor)
-            }
-            .padding(.bottom, 20)
-          
+                }
+                .padding(.bottom, 20)
+                
                 Chart(salesByCategory) { data in
                     SectorMark(
                         angle: .value("Revenue", data.revenue),
                         innerRadius: 70,
                         angularInset: 1
                     )
-                    .cornerRadius(5) 
+                    .cornerRadius(5)
                     .foregroundStyle(data.color)
                 }
                 .frame(height: 250)
                 .animation(.easeInOut(duration: 0.1), value: salesByCategory)
-            
-            
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(Array(salesByCategory.enumerated()), id: \.element.id) { index, data in
-                    if !data.category.isEmpty {
-                        HStack {
-                            Image(systemName: "largecircle.fill.circle")
-                                .font(.body)
-                                .foregroundStyle(data.color)
-                            
-                            Text(data.category.capitalized)
-                                .font(.body)
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                            
-                            Text("\(calculatePercentage(data.revenue), specifier: "%.1f")%")
-                                .font(.footnote)
-                                .foregroundColor(.gray)
+                
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(salesByCategory.enumerated()), id: \.element.id) { index, data in
+                        if !data.category.isEmpty {
+                            HStack {
+                                Image(systemName: "largecircle.fill.circle")
+                                    .font(.body)
+                                    .foregroundStyle(data.color)
+                                
+                                Text(data.category.capitalized)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                
+                                Spacer()
+                                
+                                Text("\(calculatePercentage(data.revenue), specifier: "%.1f")%")
+                                    .font(.footnote)
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
                 }
+                .padding(.vertical, 8)
             }
-            .padding(.vertical, 8)
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray6))
-        )
-        .padding(.horizontal)
+       
+      
     }
 
     
@@ -305,8 +303,12 @@ struct DashboardView: View {
         ) { size in
             RoundedRectangle(cornerRadius: 22.5)
                 .fill(Color.appTint.gradient)
-                .padding(.horizontal, 4)
+             
         }
+        .background(
+            Capsule()
+                .stroke(Color.appTint, lineWidth: 3)
+        )
         .padding(.horizontal)
     }
     
@@ -321,7 +323,7 @@ struct DashboardView: View {
                 title: String(localized: "Sales"),
                 value: "\(totalSales)",
                 subtitle: String(localized: "Completed Orders"),
-                icon: "cart.fill",
+                icon: "cart",
                 color: .blue
             )
             
@@ -330,7 +332,7 @@ struct DashboardView: View {
                 title: String(localized: "Revenue"),
                 value: totalRevenue.formatted(localeManager.currencyFormatStyle),
                 subtitle: String(localized: "Total Income"),
-                icon: "dollarsign.circle.fill",
+                icon: "\(localeManager.currencySymbolName)",
                 color: .green
             )
             
@@ -427,28 +429,29 @@ struct DashboardView: View {
         let color: Color
         
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Image(systemName: icon)
-                        .foregroundColor(color)
-                        .font(.title2)
-                    Spacer()
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(value)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+            CustomCardView{
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: icon)
+                            .foregroundColor(color)
+                            .font(.title2)
+                        Spacer()
+                    }
                     
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(value)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
+           
+                
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
         }
     }
 }

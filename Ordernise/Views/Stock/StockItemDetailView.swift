@@ -11,6 +11,7 @@ import SwiftData
 struct StockItemDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.stockManager) private var stockManager
     @Query(sort: \Category.name) private var categories: [Category]
     
     // Using direct fetch instead of @Query to avoid SwiftData macro issues
@@ -273,11 +274,14 @@ struct StockItemDetailView: View {
                 .padding(.horizontal, 20)
                 
             case .quantityAvailable:
-                CustomCardView {
+             
+                VStack(alignment: .leading, spacing: 4) {
+                    SectionHeader(title: String(localized: "Quantity"))
+                        .padding(.leading, 0)
+                    
                     HStack {
-                        Text(String(localized: "Quantity"))
-                            .font(.headline)
-                            .foregroundColor(.secondary)
+                       
+                      
                         
                         Spacer()
                         
@@ -310,15 +314,24 @@ struct StockItemDetailView: View {
                             .buttonStyle(.plain)
                         }
                     }
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 20)
+                    .background(
+                        Capsule()
+                            .fill(Color.gray.opacity(0.1))
+                            .stroke(Color.appTint, lineWidth: 2)
+                    )
                 }
-                .padding(.vertical, 5)
-                .padding(.horizontal, 20)
                 
+                    .padding(20)
+                
+             
             case .category:
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(String(localized: "Category"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    
+                    SectionHeader(title: String(localized: "Category"))
+                        .padding(.leading, 0)
+                 
                     
                     if categories.isEmpty {
                         GlobalButton(title: String(localized: "Add Category"), showIcon: true, icon: "plus.circle") {
@@ -474,18 +487,33 @@ struct StockItemDetailView: View {
         if let existingItem = stockItem {
             // Edit existing item
             existingItem.name = name
-            existingItem.quantityAvailable = quantity
             existingItem.price = price
             existingItem.cost = cost
             existingItem.currency = localeManager.currentCurrency
             existingItem.category = selectedCategory
+            
             // Save custom field values to attributes
             existingItem.attributes = customFieldValues
+            
+            // Update stock quantity through StockManager (single source of truth)
+            if let stockManager = stockManager {
+                do {
+                    try stockManager.setStockQuantity(for: existingItem, quantity: quantity)
+                } catch {
+                    print("❌ Failed to update stock quantity: \(error)")
+                    toastie = Toastie(type: .error, title: "Error", message: "Failed to update stock quantity")
+                    return
+                }
+            } else {
+                // Fallback if StockManager not available
+                existingItem.quantityAvailable = quantity
+            }
+            
         } else {
-            // Add new item
+            // Add new item with zero initial stock - StockManager will set the actual quantity
             let newItem = StockItem(
                 name: name,
-                quantityAvailable: quantity,
+                quantityAvailable: 0,
                 price: price,
                 cost: cost,
                 currency: localeManager.currentCurrency,
@@ -493,11 +521,32 @@ struct StockItemDetailView: View {
             )
             newItem.category = selectedCategory
             modelContext.insert(newItem)
+            
+            // Set actual stock quantity through StockManager (single source of truth)
+            if let stockManager = stockManager {
+                do {
+                    try stockManager.setStockQuantity(for: newItem, quantity: quantity)
+                } catch {
+                    print("❌ Failed to set stock quantity: \(error)")
+                    toastie = Toastie(type: .error, title: "Error", message: "Failed to set stock quantity")
+                    return
+                }
+            } else {
+                // Fallback if StockManager not available
+                newItem.quantityAvailable = quantity
+            }
         }
 
         do {
             try modelContext.save()
+            
+     
                 dismiss()
+            
+            
+            
+            
+        
        
         } catch {
             print("Failed to save stock item: \(error)")
