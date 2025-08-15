@@ -3,9 +3,8 @@ import SwiftData
 
 struct StockList: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var dummyDataManager = DummyDataManager.shared
     
-    @Query private var stockItemsQuery: [StockItem]
+    @Query(sort: \StockItem.name) private var allStockItems: [StockItem]
     
     @State private var showingAddStock = false
     @State private var confirmDelete = false
@@ -39,20 +38,20 @@ struct StockList: View {
     @State private var currentSortOption: StockSortOption = .alphabetical
 
     
-    private var allStockItems: [StockItem] {
-        return dummyDataManager.getStockItems(from: modelContext)
-    }
-    
-    
     var filteredItems: [StockItem] {
-        let filtered = dummyDataManager.searchStockItems(allStockItems, searchText: searchText)
+        // Filter by search text
+        let filtered = searchText.isEmpty ? allStockItems : allStockItems.filter { item in
+            item.name.localizedCaseInsensitiveContains(searchText) ||
+            item.category?.name.localizedCaseInsensitiveContains(searchText) == true
+        }
 
+        // Sort based on current option
         switch currentSortOption {
         case .alphabetical:
             return filtered.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         case .category:
             return filtered.sorted {
-                let c0 = $0.category?.name ?? ""  // or .rawValue if enum
+                let c0 = $0.category?.name ?? ""
                 let c1 = $1.category?.name ?? ""
                 return c0.localizedCaseInsensitiveCompare(c1) == .orderedAscending
             }
@@ -148,6 +147,8 @@ struct StockList: View {
                // searchSection
                 mainContentView
             }
+            
+            
             .fullScreenCover(isPresented: $showingAddStock) {
                 StockItemDetailView(mode: .add)
             }

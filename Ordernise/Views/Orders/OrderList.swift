@@ -44,9 +44,8 @@ enum OrderFilter: String, CaseIterable {
 
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var dummyDataManager = DummyDataManager.shared
     
-    @Query private var ordersQuery: [Order]
+    @Query(sort: \Order.date, order: .reverse) private var allOrders: [Order]
     
     @State private var showingAddOrder = false
     @State private var confirmDelete = false
@@ -56,14 +55,16 @@ struct OrderList: View {
     @State private var selectedFilter: OrderFilter = .received
     @Binding var searchText: String
     
-    private var allOrders: [Order] {
-        return dummyDataManager.getOrders(from: modelContext)
-    }
- 
     var filteredOrders: [Order] {
-        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
+        // Filter by search text
+        let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
+            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+        }
         
-        return searchFilteredOrders.filter { order in
+        // Filter by selected status filter
+        return searchFiltered.filter { order in
             selectedFilter.matchesOrder(order)
         }
     }
@@ -86,13 +87,21 @@ struct OrderList: View {
     
     // Computed properties for order counts
     private var receivedOrdersCount: Int {
-        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
-        return searchFilteredOrders.filter { OrderFilter.received.matchesOrder($0) }.count
+        let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
+            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+        }
+        return searchFiltered.filter { OrderFilter.received.matchesOrder($0) }.count
     }
     
     private var completedOrdersCount: Int {
-        let searchFilteredOrders = dummyDataManager.searchOrders(allOrders, searchText: searchText)
-        return searchFilteredOrders.filter { OrderFilter.completed.matchesOrder($0) }.count
+        let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
+            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+        }
+        return searchFiltered.filter { OrderFilter.completed.matchesOrder($0) }.count
     }
     
     // Helper function to get count text for tab
@@ -215,8 +224,6 @@ struct OrderList: View {
                   
                 }
             }
-            
-            
             
             .alert( String(localized: "Confirm deletion"), isPresented: $confirmDelete, actions: {
                 

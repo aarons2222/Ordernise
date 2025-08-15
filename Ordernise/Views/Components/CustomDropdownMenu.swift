@@ -51,9 +51,10 @@ struct CustomDropdownMenu<T: Hashable>: View {
                     }
                     
                     if let optionToColor = optionToColor {
-                        let iconName = optionToString(selection) == "Manage Categories..." ? "plus.circle" : "largecircle.fill.circle"
+                        let optionString = optionToString(selection)
+                        let iconName = optionString == "Manage Categories..." ? "pencil.circle" : (optionString == "Add Category..." ? "plus.circle" : "largecircle.fill.circle")
                         Image(systemName: iconName)
-                            .foregroundColor( optionToString(selection) == "Manage Categories..." ? Color.appTint : optionToColor(selection))
+                            .foregroundColor((optionString == "Manage Categories..." || optionString == "Add Category...") ? Color.appTint : optionToColor(selection))
                              .frame(width: 28, height: 28)
                     }
                     
@@ -103,9 +104,10 @@ struct CustomDropdownMenu<T: Hashable>: View {
                                 
                                 
                                 if let optionToColor = optionToColor {
-                                    let iconName = optionToString(option) == "Manage Categories..." ? "plus.circle" : "largecircle.fill.circle"
+                                    let optionString = optionToString(option)
+                                    let iconName = optionString == "Manage Categories..." ? "pencil.circle" : (optionString == "Add Category..." ? "plus.circle" : "largecircle.fill.circle")
                                     Image(systemName: iconName)
-                                        .foregroundStyle(optionToColor(option))
+                                        .foregroundStyle((optionString == "Manage Categories..." || optionString == "Add Category...") ? Color.appTint : optionToColor(option))
                                         .frame(width: 28, height: 28)
                                 }
                                 

@@ -359,7 +359,11 @@ struct AddCustomStockFieldContent: View {
                 }
                 
                 GlobalButton(title: isEditMode ? "Update" : "Save", backgroundColor: isEmpty ?  Color.gray.opacity(0.6) : Color.appTint) {
-                    addField()
+                    
+                    
+                        addField()
+                    
+                 
                 }
                 .disabled(isEmpty)
             }

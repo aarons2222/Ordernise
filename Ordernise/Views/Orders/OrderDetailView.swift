@@ -69,6 +69,10 @@ struct OrderDetailView: View {
     @State private var fieldPreferences = UserDefaults.standard.orderFieldPreferences
     @State private var customFieldValues: [UUID: String] = [:]
     
+    @State private var showingAddStock = false
+
+
+    
     // Computed property for Save button validation
     private var isSaveButtonDisabled: Bool {
         // For new orders, validate required fields
@@ -241,60 +245,77 @@ struct OrderDetailView: View {
                     
                 case .shipping:
                     // Combined delivery and shipping section
-                    VStack(spacing: 16) {
-                        // Delivery picker in its own stable section
-                        HStack {
-                            Spacer()
-                            DeliveryPicker(selection: $deliveryMethod)
-                            Spacer()
-                        }
+                VStack(spacing: 16) {
+                    ListSection(title: String(localized: "Shipping Method")) {
+                
+                       
+                            
+                            
+                            
+                            SegmentedControl(
+                                tabs: DeliveryMethod.allCases,
+                                activeTab: $deliveryMethod,
+                                height: 35,
+                                font: .callout,
+                                activeTint: Color(UIColor.systemBackground),
+                                inActiveTint: .gray.opacity(0.8)
+                            ) { size in
+                                RoundedRectangle(cornerRadius: 22.5)
+                                    .fill(Color.appTint.gradient)
+                                    .padding(.horizontal, 4)
+                            }
+                         
+                      
                         
-                        // Conditional shipping fields
-                        if deliveryMethod != .collected {
-                            VStack(spacing: 16) {
-                                ListSection(title: String(localized: "Shipping Method")) {
-                                    CustomTextField(
-                                        text: $shippingMethod,
-                                        placeholder: String(localized: "e.g. Standard, Express, Pickup"),
-                                        systemImage: "envelope.front",
-                                        isSecure: false
-                                    )
-                                    .focused($focusedField, equals: true)
-                                }
-                                
-                                ListSection(title: String(localized: "Tracking")) {
-                                    CustomTextField(
-                                        text: $trackingReference,
-                                        placeholder: String(localized: "Tracking Reference"),
-                                        systemImage: "number",
-                                        isSecure: false
-                                    )
-                                    .focused($focusedField, equals: true)
-                                }
-                                
-                                ListSection(title: String(localized: "Customer Shipping Charge")) {
-                                    CustomNumberField(
-                                        value: (mode.isEditable || isEditMode) ? $customerShippingCharge : .constant(customerShippingCharge),
-                                        placeholder: String(localized: "Amount charged to customer"),
-                                        systemImage: localeManager.currencySymbolName
-                                    )
-                                    .focused($focusedField, equals: mode.isEditable || isEditMode)
-                                }
-                                
-                                ListSection(title: String(localized: "Shipping Costs")) {
-                                    CustomNumberField(
-                                        value: {
-                                            let isEditable = (mode.isEditable || isEditMode)
-                                            print("🔗 [OrderDetailView] Shipping Cost binding - isEditable: \(isEditable), mode: \(mode), isEditMode: \(isEditMode)")
-                                            return isEditable ? $shippingCost : .constant(shippingCost)
-                                        }(),
-                                        placeholder: String(localized: "Shipping Costs"),
-                                        systemImage: localeManager.currencySymbolName
-                                    )
-                                    .focused($focusedField, equals: mode.isEditable || isEditMode)
-                                }
+                    }
+                    // Conditional shipping fields
+                    if deliveryMethod != .collected {
+                   
+                        
+                        VStack(spacing: 16) {
+                            ListSection(title: String(localized: "Shipping Method")) {
+                                CustomTextField(
+                                    text: $shippingMethod,
+                                    placeholder: String(localized: "e.g. Standard, Express, Pickup"),
+                                    systemImage: "envelope.front",
+                                    isSecure: false
+                                )
+                                .focused($focusedField, equals: true)
+                            }
+                            
+                            ListSection(title: String(localized: "Tracking")) {
+                                CustomTextField(
+                                    text: $trackingReference,
+                                    placeholder: String(localized: "Tracking Reference"),
+                                    systemImage: "number",
+                                    isSecure: false
+                                )
+                                .focused($focusedField, equals: true)
+                            }
+                            
+                            ListSection(title: String(localized: "Customer Shipping Charge")) {
+                                CustomNumberField(
+                                    value: (mode.isEditable || isEditMode) ? $customerShippingCharge : .constant(customerShippingCharge),
+                                    placeholder: String(localized: "Amount charged to customer"),
+                                    systemImage: localeManager.currencySymbolName
+                                )
+                                .focused($focusedField, equals: mode.isEditable || isEditMode)
+                            }
+                            
+                            ListSection(title: String(localized: "Shipping Costs")) {
+                                CustomNumberField(
+                                    value: {
+                                        let isEditable = (mode.isEditable || isEditMode)
+                                        print("🔗 [OrderDetailView] Shipping Cost binding - isEditable: \(isEditable), mode: \(mode), isEditMode: \(isEditMode)")
+                                        return isEditable ? $shippingCost : .constant(shippingCost)
+                                    }(),
+                                    placeholder: String(localized: "Shipping Costs"),
+                                    systemImage: localeManager.currencySymbolName
+                                )
+                                .focused($focusedField, equals: mode.isEditable || isEditMode)
                             }
                         }
+                    }
                     }
                     
                 case .sellingFees:
@@ -360,15 +381,29 @@ struct OrderDetailView: View {
                         }
                     }
                     
-                    // Add Items Button (always present)
-                    GlobalButton(
-                        title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? String(localized: "Add items") : String(localized: "Edit items"),
-                        showIcon: true,
-                        icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",
-                        action: {
-                            addOrderItemWithPicker()
-                        }
-                    )
+                    if stockItems.isEmpty{
+                        
+                        GlobalButton(
+                            title: "Create new stock item",
+                            showIcon: true,
+                            icon: "plus.circle",
+                            action: {
+                                self.showingAddStock = true
+                            }
+                        )
+                        
+                    }else{
+                        
+                        
+                        GlobalButton(
+                            title: viewModel.orderItems.filter { $0.isValid }.isEmpty ? String(localized: "Add items") : String(localized: "Edit items"),
+                            showIcon: true,
+                            icon: viewModel.orderItems.filter { $0.isValid }.isEmpty ? "plus.circle" : "pencil.circle",
+                            action: {
+                                addOrderItemWithPicker()
+                            }
+                        )
+                    }
                 }
             }
         } else if let customField = fieldItem.customField {
@@ -517,7 +552,7 @@ struct OrderDetailView: View {
                     }
                     .padding(.horizontal)
                     
-                    Color.clear.frame(height: 40)
+                    Color.clear.frame(height: 50)
                 }
            
               
@@ -553,6 +588,12 @@ struct OrderDetailView: View {
             .padding(.bottom, 10)
 
         }
+        
+        .fullScreenCover(isPresented: $showingAddStock) {
+            StockItemDetailView(mode: .add)
+        }
+        
+        
         .fullScreenCover(isPresented: $showingOrderFieldSettings) {
             OrderFieldSettings()
         }
@@ -969,3 +1010,19 @@ struct OrderDetailView: View {
     OrderDetailView(mode: .add)
 }
 
+
+enum DeliveryMethod: String, CaseIterable, Identifiable, Codable {
+    case collected = "Collected"
+    case shipped = "Shipped"
+
+    var id: String { self.rawValue }
+    
+    var localizedName: String {
+        switch self {
+        case .collected:
+            return String(localized: "Collected")
+        case .shipped:
+            return String(localized: "Shipped")
+        }
+    }
+}

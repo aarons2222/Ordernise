@@ -169,7 +169,7 @@ class DummyDataManager: ObservableObject {
     /// Get monthly sales data for charts
     func getMonthlySalesData(from context: ModelContext?) -> [(month: String, revenue: Double, profit: Double)] {
         let orders = getOrders(from: context)
-        let calendar = Calendar.current
+      //  let calendar = Calendar.current
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM yyyy"
         

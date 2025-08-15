@@ -125,14 +125,14 @@ struct DashboardView: View {
         }
         
         // Fallback colors for uncategorized items
-        let fallbackColors: [Color] = [
-            .blue, .green, .orange, .purple, .red, 
-            .pink, .cyan, .mint, .indigo, .teal
-        ]
-        
+//        let fallbackColors: [Color] = [
+//            .blue, .green, .orange, .purple, .red, 
+//            .pink, .cyan, .mint, .indigo, .teal
+//        ]
+//        
         var result: [CategorySalesData] = []
         var uncategorizedRevenue: Double = 0
-        var fallbackColorIndex = 0
+      //  var fallbackColorIndex = 0
         
         for (category, revenue) in categoryRevenue {
             if let category = category {

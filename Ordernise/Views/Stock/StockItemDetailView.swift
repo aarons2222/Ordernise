@@ -53,6 +53,7 @@ struct StockItemDetailView: View {
     @State private var selectedCategory: Category?
     
     @State private var isEditMode = false
+    @State private var showingAddCategory = false
     @State private var showingStockFieldSettings = false
     
     // Custom field values storage
@@ -60,6 +61,17 @@ struct StockItemDetailView: View {
     
     // Navigation to CategoryOptions
     @State private var showingCategoryOptions = false
+    
+    
+    
+    @State private var newCategoryName = ""
+    
+    @State private var newCategoryColor = "#007AFF"
+    
+    
+    
+
+
     
     
     // Field preferences for dynamic field rendering
@@ -106,24 +118,7 @@ struct StockItemDetailView: View {
     var body: some View {
         NavigationStack {
             
-            
-            
-            
-            
-            
-            
-      
-            
-             
-                   
-
-
-            
-            
             VStack{
-                
-             
-                
                 
                 HeaderWithButton(
                     title: mode.title,
@@ -138,15 +133,6 @@ struct StockItemDetailView: View {
                         
                     }
                 )
-          
-             
-                       
-                    
-           
-   
-
-            
-            
                 ScrollView {
                     // Dynamic field rendering based on user preferences
                     VStack(alignment: .leading, spacing: 16) {
@@ -180,6 +166,72 @@ struct StockItemDetailView: View {
              }
             
    
+             .GenericSheet(
+                 isPresented: $showingAddCategory,
+                 title: String(localized: "Add Category"),
+                 showButton: false,
+                 action: {
+                     print("Continue tapped")
+                 }
+             ) {
+                 
+                 
+                 VStack(spacing: 30){
+                     
+                     
+                     
+                     CustomTextField(text: $newCategoryName, placeholder: String(localized: "Category Name"), systemImage: "plus.square.on.square")
+                         .padding(.top, 20)
+                     
+                     
+                     CustomCardView{
+                         
+                         
+                         HStack {
+                             VStack(alignment: .leading, spacing: 8) {
+                                 
+                                 Text(String(localized: "Color"))
+                                     .font(.headline)
+                                     .foregroundColor(.text)
+                                 
+                                 Text(String(localized: "Pick a color to quickly recognise items in this this category"))
+                                     .font(.subheadline)
+                                     .foregroundColor(.secondary)
+                                 
+                                 
+                             }
+                             Spacer()
+                             ColorPicker("", selection: Binding(
+                                get: { Color(hex: newCategoryColor) ?? Color.appTint },
+                                set: { color in
+                                    newCategoryColor = color.toHex()
+                                }
+                             ))
+                             .labelsHidden()
+                         }
+                     }
+                     
+                     
+                     
+                     Spacer()
+                     
+                     let isEmpty = newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty
+                     
+                     
+                     
+                     
+                     
+                     GlobalButton(title: String(localized: "Save"), backgroundColor: isEmpty ? Color.gray.opacity(0.6) : Color.appTint) {
+                         saveCategory()
+                     }
+                     .disabled(isEmpty)
+                     
+                     
+                 }
+                 
+                 
+        
+             }
     
         }
         .onAppear {
@@ -264,13 +316,13 @@ struct StockItemDetailView: View {
                 
             case .category:
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(String(localized: "Quantity"))
+                    Text(String(localized: "Category"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
                     if categories.isEmpty {
-                        GlobalButton(title: String(localized: "Create Categories"), showIcon: true, icon: "plus.circle") {
-                            showingCategoryOptions = true
+                        GlobalButton(title: String(localized: "Add Category"), showIcon: true, icon: "plus.circle") {
+                            showingAddCategory = true
                         }
                     } else {
                         CategoryPicker(
@@ -278,6 +330,9 @@ struct StockItemDetailView: View {
                             categories: categories,
                             onManageCategories: {
                                 showingCategoryOptions = true
+                            },
+                            onAddCategory: {
+                                showingAddCategory = true
                             }
                         )
                     }
@@ -331,6 +386,31 @@ struct StockItemDetailView: View {
       
  
         }
+    
+    
+    
+    private func saveCategory() {
+   
+            // Create new category
+            let category = Category(
+                name: newCategoryName.trimmingCharacters(in: .whitespaces),
+                colorHex: newCategoryColor
+            )
+            modelContext.insert(category)
+      
+        
+        do {
+            try modelContext.save()
+            // Auto-select the newly created category
+            selectedCategory = category
+            showingAddCategory = false
+            newCategoryName = ""
+            newCategoryColor = "#007AFF"
+        } catch {
+            print("Failed to save category: \(error)")
+        }
+    }
+    
     
 
     private func loadItemData() {
@@ -417,7 +497,8 @@ struct StockItemDetailView: View {
 
         do {
             try modelContext.save()
-            dismiss()
+                dismiss()
+       
         } catch {
             print("Failed to save stock item: \(error)")
         }

@@ -13,28 +13,51 @@ struct CategoryPicker: View {
     let categories: [Category]
     let onManageCategories: (() -> Void)?
     
-    // Create a "None" category for the dropdown
-    private var noneCategory: Category {
-        Category(name: String(localized: "None"), colorHex: "#808080") // Gray color in hex
-    }
+    let onAddCategory: (() -> Void)?
     
     // Create a "Manage Categories" option for the dropdown
     private var manageCategoriesOption: Category {
         Category(name: String(localized: "Manage Categories..."), colorHex: "#007AFF") // Blue color in hex
     }
     
-    // All options including None and Manage Categories
-    private var allOptions: [Category] {
-        if let _ = onManageCategories {
-            return [noneCategory] + categories + [manageCategoriesOption]
-        } else {
-            return [noneCategory] + categories
-        }
+    
+    private var addCategoryOption: Category {
+        Category(name: String(localized: "Add Category..."), colorHex: "#007AFF")
+        
+
     }
     
-    // Current selection (convert nil to noneCategory)
+    
+    
+    // All options including categories and action options
+    private var allOptions: [Category] {
+        var options = categories
+        
+        if let _ = onAddCategory {
+            options.append(addCategoryOption)
+        }
+        
+        if let _ = onManageCategories {
+            options.append(manageCategoriesOption)
+        }
+        
+        return options
+    }
+    
+    // Current selection - auto-select latest (last) category if none selected
     private var currentSelection: Category {
-        selection ?? noneCategory
+        if let selection = selection {
+            return selection
+        } else if let latestCategory = categories.last {
+            // Auto-select the latest (last) category if none is selected
+            DispatchQueue.main.async {
+                self.selection = latestCategory
+            }
+            return latestCategory
+        } else {
+            // Fallback to a placeholder category if no categories exist
+            return Category(name: String(localized: "No Category"), colorHex: "#808080")
+        }
     }
     
     var body: some View {
@@ -44,12 +67,12 @@ struct CategoryPicker: View {
             selection: Binding<Category>(
                 get: { currentSelection },
                 set: { newValue in
-                    // If "None" is selected, set selection to nil
-                    if newValue.name == String(localized: "None") {
-                        selection = nil
-                    } else if newValue.name == String(localized: "Manage Categories...") {
+                    if newValue.name == String(localized: "Manage Categories...") {
                         // Trigger the manage categories action
                         onManageCategories?()
+                    }else if newValue.name == String(localized: "Add Category...") {
+                        // Trigger the manage categories action
+                        onAddCategory?()
                     } else {
                         selection = newValue
                     }
