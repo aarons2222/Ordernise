@@ -7,21 +7,37 @@
 
 import SwiftUI
 
+
 struct SectionHeader: View {
     
     @State private var sectionHeaderLeadingPadding: CGFloat = 12
   
     
     let title: String
-    
+    var isRequired: Bool? = false
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .font(.body)
-                .fontWeight(.regular)
-                .foregroundColor(.text)
+            
+            HStack{
+                Text(title)
+                    .font(.body)
+                    .fontWeight(.regular)
+                    .foregroundColor(.text)
+             
+                if isRequired == true {
+                    
+                    Text("*")
+                        .font(.title3)
+                        .fontWeight(.regular)
+                        .foregroundColor(.appTint)
+                        .padding(.bottom, 5)
+                        .padding(.leading, -5)
+                    
+                }
+            }
+            
             
         }
         .padding(.leading, sectionHeaderLeadingPadding)

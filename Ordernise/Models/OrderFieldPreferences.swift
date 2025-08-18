@@ -32,6 +32,7 @@ enum BuiltInOrderField: String, Codable, CaseIterable {
     case orderStatus = "orderStatus"
     case platform = "platform"
     case shipping = "shipping"
+    case orderCompletionDate = "orderCompletionDate"
     case sellingFees = "sellingFees"
     case additionalCosts = "additionalCosts"
 
@@ -46,6 +47,7 @@ enum BuiltInOrderField: String, Codable, CaseIterable {
         case .orderStatus: return  String(localized: "Order Status")
         case .platform: return String(localized: "Platform")
         case .shipping: return String(localized: "Shipping")
+        case .orderCompletionDate: return String(localized: "Order Completion Date")
         case .sellingFees: return String(localized: "Selling Fees")
         case .additionalCosts: return String(localized: "Additional Costs")
 
@@ -73,6 +75,7 @@ enum BuiltInOrderField: String, Codable, CaseIterable {
         case .orderStatus: return "checklist"
         case .platform: return "square.stack.3d.down.forward"
         case .shipping: return "truck.box.badge.clock"
+        case .orderCompletionDate: return "calendar.badge.clock"
         case .sellingFees, .additionalCosts: return "dollarsign.circle"
         case .notes: return "text.alignleft"
         case .itemsSection: return "list.bullet.rectangle"
@@ -178,9 +181,9 @@ struct OrderFieldPreferences: Codable, Equatable {
             OrderFieldItem(builtInField: .shipping, isVisible: true, sortOrder: 5),
             OrderFieldItem(builtInField: .sellingFees, isVisible: true, sortOrder: 6),
             OrderFieldItem(builtInField: .additionalCosts, isVisible: true, sortOrder: 7),
-
-            OrderFieldItem(builtInField: .notes, isVisible: true, sortOrder: 8),
-            OrderFieldItem(builtInField: .itemsSection, isVisible: true, sortOrder: 9)
+            OrderFieldItem(builtInField: .orderCompletionDate, isVisible: true, sortOrder: 8),
+            OrderFieldItem(builtInField: .notes, isVisible: true, sortOrder: 9),
+            OrderFieldItem(builtInField: .itemsSection, isVisible: true, sortOrder: 10)
         ]
     }
     

@@ -281,7 +281,7 @@ struct StockItemDetailView: View {
                     
                     HStack {
                        
-                      
+                      Text(String(localized: "Quantity"))
                         
                         Spacer()
                         

@@ -18,8 +18,9 @@ struct HeaderWithButton: View {
     let showLeadingButton: Bool
     let isButtonDisabled: Bool
     let onButtonTap: (() -> Void)?
+    let onLeadingButtonTap: (() -> Void)?
     
-    init(title: String, buttonContent: String, isButtonImage: Bool = false, showTrailingButton: Bool = true, showLeadingButton: Bool = true, isButtonDisabled: Bool = false, onButtonTap: (() -> Void)? = nil) {
+    init(title: String, buttonContent: String, isButtonImage: Bool = false, showTrailingButton: Bool = true, showLeadingButton: Bool = true, isButtonDisabled: Bool = false, onButtonTap: (() -> Void)? = nil, onLeadingButtonTap: (() -> Void)? = nil) {
         self.title = title
         self.buttonContent = buttonContent
         self.isButtonImage = isButtonImage
@@ -27,6 +28,7 @@ struct HeaderWithButton: View {
         self.showLeadingButton = showLeadingButton
         self.isButtonDisabled = isButtonDisabled
         self.onButtonTap = onButtonTap
+        self.onLeadingButtonTap = onLeadingButtonTap
     }
     
     
@@ -38,7 +40,11 @@ struct HeaderWithButton: View {
         HStack(alignment: .center) {
             if showLeadingButton {
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    if let onLeadingButtonTap = onLeadingButtonTap {
+                        onLeadingButtonTap()
+                    } else {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }) {
                     Image(systemName: "chevron.backward.circle")
                         .font(.title)

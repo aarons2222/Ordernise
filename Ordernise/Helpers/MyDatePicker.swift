@@ -10,6 +10,18 @@ import SwiftUI
 
 struct MyDatePicker: View {
     @Binding var selectedDate: Date
+    var showFutureDate: Bool = false
+    
+    private var dateRange: PartialRangeThrough<Date> {
+        if showFutureDate {
+            // Allow up to 10 years in the future
+            let maxDate = Calendar.current.date(byAdding: .year, value: 10, to: Date()) ?? Date()
+            return ...maxDate
+        } else {
+            // Only allow up to today
+            return ...Date()
+        }
+    }
 
     var body: some View {
         
@@ -31,8 +43,11 @@ struct MyDatePicker: View {
         // Put the actual DataPicker here with overlay
         .overlay {
             DatePicker(
-                selection: $selectedDate,
-                in: ...Date(),
+                selection: Binding(
+                    get: { selectedDate },
+                    set: { selectedDate = $0 }
+                ),
+                in: dateRange,
                 displayedComponents: .date) {
                     
                 }

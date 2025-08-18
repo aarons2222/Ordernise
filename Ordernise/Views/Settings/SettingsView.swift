@@ -90,6 +90,10 @@ struct SettingsView: View {
                                             Text(localeManager.getCurrencySymbol(for: localeManager.currentCurrency))
                                                 .font(.title)
                                                 .foregroundStyle(Color.appTint)
+                                            
+                                            
+                                            
+                                            
                                             Image(systemName: "chevron.up.chevron.down")
                                                 .font(.title3)
                                                 .tint(Color.appTint)
@@ -409,8 +413,8 @@ struct SettingsView: View {
                                     }
                                     .background(
                                         Capsule()
-                                            .fill(Color.gray.opacity(0.1))
-                                            .stroke(Color.appTint, lineWidth: 3)
+                                            .fill(.thinMaterial)
+                                            .stroke(Color.appTint, lineWidth: 2)
                                     )
                                  
                                     .padding(.vertical)

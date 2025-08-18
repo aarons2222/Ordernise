@@ -27,6 +27,12 @@
     " to add your first order." : {
 
     },
+    "@%@" : {
+
+    },
+    "*" : {
+
+    },
     "%.1f%%" : {
       "shouldTranslate" : false
     },
@@ -74,6 +80,16 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "%lld items • Total: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld items • Total: %2$@"
+          }
+        }
+      }
     },
     "%lld x %@" : {
       "localizations" : {
@@ -232,7 +248,16 @@
     "Completed Orders" : {
 
     },
+    "Completion Countdown" : {
+
+    },
+    "Completion date has passed" : {
+
+    },
     "Confirm deletion" : {
+
+    },
+    "Cost:" : {
 
     },
     "CSV Export" : {
@@ -256,6 +281,9 @@
 
     },
     "Current stock value (quantity × price)" : {
+
+    },
+    "Custom Attributes" : {
 
     },
     "Custom platform or other" : {
@@ -628,6 +656,9 @@
         }
       }
     },
+    "Financial Summary" : {
+
+    },
     "Form Fields" : {
 
     },
@@ -656,6 +687,9 @@
 
     },
     "Important Notes" : {
+
+    },
+    "In Progress" : {
 
     },
     "Instagram" : {
@@ -749,6 +783,9 @@
         }
       }
     },
+    "Method:" : {
+
+    },
     "Missing Required Fields" : {
 
     },
@@ -774,6 +811,9 @@
 
     },
     "No Orders" : {
+
+    },
+    "No Orders Found" : {
 
     },
     "No orders in selected range" : {
@@ -815,6 +855,12 @@
     "Order" : {
 
     },
+    "Order #%@" : {
+
+    },
+    "Order Completion Date" : {
+
+    },
     "ORDER DATA" : {
 
     },
@@ -833,7 +879,13 @@
     "Order has been recorded" : {
 
     },
+    "Order Info" : {
+
+    },
     "Order Item" : {
+
+    },
+    "Order Items" : {
 
     },
     "Order Reference" : {
@@ -961,6 +1013,9 @@
     "Profit: " : {
 
     },
+    "Qty: %lld" : {
+
+    },
     "Quantity" : {
 
     },
@@ -1052,6 +1107,9 @@
 
     },
     "Shipping Costs" : {
+
+    },
+    "Shipping Information" : {
 
     },
     "Shipping Method" : {
@@ -1151,6 +1209,9 @@
     "Time Filters" : {
 
     },
+    "Time until completion date" : {
+
+    },
     "To:" : {
 
     },
@@ -1187,6 +1248,9 @@
     "Tracking Reference" : {
 
     },
+    "Tracking:" : {
+
+    },
     "Turkish Lira" : {
 
     },
@@ -1197,6 +1261,9 @@
 
     },
     "Unnamed Item" : {
+
+    },
+    "until %@" : {
 
     },
     "Update" : {

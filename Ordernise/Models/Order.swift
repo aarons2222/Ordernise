@@ -11,7 +11,7 @@ import SwiftData
 @Model
 class Order {
     var id: UUID
-    var date: Date
+    var orderReceivedDate: Date
     var orderReference: String?
     var customerName: String?
     var status: OrderStatus
@@ -25,6 +25,7 @@ class Order {
     var trackingReference: String?
     var customerShippingCharge: Double
     var additionalCostNotes: String?
+    var orderCompletionDate: Date?
     var deliveryMethod: DeliveryMethod?
     
     // Financial metrics
@@ -39,7 +40,7 @@ class Order {
 
     init(
         id: UUID = UUID(),
-        date: Date,
+        orderReceivedDate: Date,
         orderReference: String? = nil,
         customerName: String? = nil,
         status: OrderStatus = .received,
@@ -52,13 +53,14 @@ class Order {
         trackingReference: String? = nil,
         customerShippingCharge: Double = 0.0,
         additionalCostNotes: String? = nil,
+        orderCompletionDate: Date? = nil,
         deliveryMethod: DeliveryMethod = .collected,
         revenue: Double = 0.0,
         profit: Double = 0.0,
         attributes: [String: String] = [:]
     ) {
         self.id = id
-        self.date = date
+        self.orderReceivedDate = orderReceivedDate
         self.customerName = customerName
         self.orderReference = orderReference
         self.status = status
@@ -71,6 +73,7 @@ class Order {
         self.trackingReference = trackingReference
         self.customerShippingCharge = customerShippingCharge
         self.additionalCostNotes = additionalCostNotes
+        self.orderCompletionDate = orderCompletionDate
         self.deliveryMethod = deliveryMethod
         self.revenue = revenue
         self.profit = profit

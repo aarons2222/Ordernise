@@ -126,8 +126,8 @@ struct ExportDataView: View {
         let endDate = selectedDateRange == .customRange ? customEndDate : dateRange.end
         
         return allOrders.filter { order in
-            if let start = startDate, order.date < start { return false }
-            if let end = endDate, order.date > end { return false }
+            if let start = startDate, order.orderReceivedDate < start { return false }
+            if let end = endDate, order.orderReceivedDate > end { return false }
             return true
         }
     }
@@ -461,7 +461,7 @@ struct ExportDataView: View {
         private func getOrderBuiltInFieldValue(order: Order, field: BuiltInOrderField) -> String {
             switch field {
             case .orderDate:
-                return order.date.formatted(.dateTime.year().month().day())
+                return order.orderReceivedDate.formatted(.dateTime.year().month().day())
             case .orderReference:
                 return order.orderReference?.isEmpty == false ? order.orderReference! : String(localized: "N/A")
             case .customerName:
@@ -480,9 +480,11 @@ struct ExportDataView: View {
                 return order.additionalCostNotes ?? ""
             case .itemsSection:
                 return "\(order.items.count) " + String(localized: "items")
+            case .orderCompletionDate:
+                return order.orderCompletionDate?.formatted(.dateTime.year().month().day()) ?? String(localized: "N/A")
             }
         }
-        
+
         private func generateStockItemsCSV() -> String {
             var csv = String(localized: "STOCK ITEMS DATA") + "\n"
             

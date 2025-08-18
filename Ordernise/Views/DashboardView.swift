@@ -68,19 +68,19 @@ struct DashboardView: View {
         case .thirtyDays:
             // Last 30 days from now
             let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now) ?? now
-            filtered = allOrders.filter { $0.date >= thirtyDaysAgo && $0.date <= now }
+            filtered = allOrders.filter { $0.orderReceivedDate >= thirtyDaysAgo && $0.orderReceivedDate <= now }
         case .sixMonths:
             // Last 6 months from now
             let sixMonthsAgo = calendar.date(byAdding: .month, value: -6, to: now) ?? now
-            filtered = allOrders.filter { $0.date >= sixMonthsAgo && $0.date <= now }
+            filtered = allOrders.filter { $0.orderReceivedDate >= sixMonthsAgo && $0.orderReceivedDate <= now }
         case .twelveMonths:
             // Last 12 months from now
             let twelveMonthsAgo = calendar.date(byAdding: .month, value: -12, to: now) ?? now
-            filtered = allOrders.filter { $0.date >= twelveMonthsAgo && $0.date <= now }
+            filtered = allOrders.filter { $0.orderReceivedDate >= twelveMonthsAgo && $0.orderReceivedDate <= now }
         }
         
         // Sort by date descending (most recent first)
-        return filtered.sorted { $0.date > $1.date }
+        return filtered.sorted { $0.orderReceivedDate > $1.orderReceivedDate }
     }
     
     // Calculate metrics
@@ -186,8 +186,9 @@ struct DashboardView: View {
                 }
             )
             
-            if !allOrders.isEmpty {
+            if allOrders.count > 5  {
                 timeFramePicker
+                    .padding(.top, 8)
                 
             }
             
@@ -255,7 +256,7 @@ struct DashboardView: View {
                         angularInset: 1
                     )
                     .cornerRadius(5)
-                    .foregroundStyle(data.color)
+                    .foregroundStyle(data.color.gradient)
                 }
                 .frame(height: 250)
                 .animation(.easeInOut(duration: 0.1), value: salesByCategory)
@@ -267,7 +268,7 @@ struct DashboardView: View {
                             HStack {
                                 Image(systemName: "largecircle.fill.circle")
                                     .font(.body)
-                                    .foregroundStyle(data.color)
+                                    .foregroundStyle(data.color.gradient)
                                 
                                 Text(data.category.capitalized)
                                     .font(.body)
@@ -307,7 +308,8 @@ struct DashboardView: View {
         }
         .background(
             Capsule()
-                .stroke(Color.appTint, lineWidth: 3)
+                .fill(.thinMaterial)
+                .stroke(Color.appTint, lineWidth: 2)
         )
         .padding(.horizontal)
     }
@@ -323,7 +325,7 @@ struct DashboardView: View {
                 title: String(localized: "Sales"),
                 value: "\(totalSales)",
                 subtitle: String(localized: "Completed Orders"),
-                icon: "cart",
+                icon: "checkmark.circle",
                 color: .blue
             )
             
@@ -343,7 +345,7 @@ struct DashboardView: View {
                 title: String(localized: "Profit"),
                 value: totalProfit.formatted(localeManager.currencyFormatStyle),
                 subtitle: String(localized: "Net Profit"),
-                icon: "chart.line.uptrend.xyaxis",
+                icon: "chart.line.uptrend.xyaxis.circle",
                 color: totalProfit >= 0 ? .green : .red
             )
             

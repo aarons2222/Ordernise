@@ -99,7 +99,7 @@ class DummyDataGenerator {
             let finalDate = calendar.date(byAdding: .hour, value: orderData.hourOffset, to: orderDate) ?? orderDate
          
             let order = Order(
-                date: finalDate,
+                orderReceivedDate: finalDate,
                 orderReference: orderData.reference,
                 customerName: orderData.customerName,
                 status: orderData.status,
@@ -203,7 +203,7 @@ class DummyDataGenerator {
             
             // Continue with remaining orders to reach 100...
             // I'll add a condensed version for the remaining 75 orders
-        ] + generateRemainingHardcodedOrders()
+        ] + generateRemainingHardcodedOrders() + generateFutureOrders()
     }
     
     private func generateRemainingHardcodedOrders() -> [HardcodedOrderData] {
@@ -247,6 +247,44 @@ class DummyDataGenerator {
         }
         
         return remainingOrders
+    }
+    
+    private func generateFutureOrders() -> [HardcodedOrderData] {
+        // Generate future orders with "received" status but not concluded
+        let futureCustomers = ["Alex Thompson", "Jessica Lee", "Marcus Wilson", "Sophie Clark", "Daniel Rodriguez", "Emma Davis", "Ryan Martinez", "Olivia Garcia", "Lucas Anderson", "Maya Patel"]
+        let platforms: [Platform] = [.amazon, .ebay, .etsy, .marketplace, .vinted]
+        let productKeywords = ["iPhone", "Jordan", "Sneakers", "Watch", "Headphones", "Jacket", "Tablet", "Camera", "Bag", "Sunglasses"]
+        
+        var futureOrders: [HardcodedOrderData] = []
+        
+        // Generate 8 future orders spread over the next 2 weeks
+        for i in 0..<8 {
+            let orderNum = 101 + i // Continue from where other orders end
+            let daysInFuture = -((i % 4) + 1) // -1, -2, -3, -4 days (future dates)
+            let hourOffset = (i * 3 + 8) % 24 // Spread throughout the day
+            
+            futureOrders.append(HardcodedOrderData(
+                daysAgo: daysInFuture, // Negative values for future dates
+                hourOffset: hourOffset,
+                reference: String(format: "ORD-%03d", orderNum),
+                customerName: futureCustomers[i % futureCustomers.count],
+                status: .received, // Received but not concluded
+                platform: platforms[i % platforms.count],
+                shippingCost: 0.0, // Not yet processed
+                sellingFees: 0.0, // Not yet processed
+                additionalCosts: 0.0,
+                shippingMethod: "", // Not yet determined
+                trackingReference: nil, // Not yet shipped
+                customerShippingCharge: 0.0,
+                deliveryMethod: .collected, // Default, not yet determined
+                revenue: 0.0, // Not yet concluded
+                profit: 0.0, // Not yet concluded
+                productKeyword: productKeywords[i % productKeywords.count],
+                quantity: Int.random(in: 1...2)
+            ))
+        }
+        
+        return futureOrders
     }
     
     private func generateRandomDateWithinYear() -> Date {
@@ -433,7 +471,7 @@ class DummyDataGenerator {
         let profit = totalRevenue - totalCost - sellingFees
         
         let order = Order(
-            date: date,
+            orderReceivedDate: date,
             orderReference: generateOrderReference(index: index, platform: platforms.randomElement()!),
             customerName: customerNames.randomElement()!,
             status: generateRealisticStatus(for: date),

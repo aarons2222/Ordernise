@@ -45,15 +45,15 @@ class DummyDataManager: ObservableObject {
             let calendar = Calendar.current
             let now = Date()
             
-            let todayOrders = _dummyOrders?.filter { calendar.isDate($0.date, inSameDayAs: now) } ?? []
+            let todayOrders = _dummyOrders?.filter { calendar.isDate($0.orderReceivedDate, inSameDayAs: now) } ?? []
             let weekStart = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
-            let weekOrders = _dummyOrders?.filter { $0.date >= weekStart } ?? []
+            let weekOrders = _dummyOrders?.filter { $0.orderReceivedDate >= weekStart } ?? []
             
             print("DEBUG: Generated \(todayOrders.count) orders for TODAY")
             print("DEBUG: Generated \(weekOrders.count) orders for THIS WEEK")
             
             for order in todayOrders.prefix(3) {
-                print("DEBUG: Today order - Date: \(order.date), Status: \(order.status), Revenue: \(order.revenue)")
+                print("DEBUG: Today order - Date: \(order.orderReceivedDate), Status: \(order.status), Revenue: \(order.revenue)")
             }
         }
         return _dummyOrders ?? []
@@ -92,7 +92,7 @@ class DummyDataManager: ObservableObject {
             return getDummyOrders()
         } else {
             guard let context = context else { return [] }
-            let descriptor = FetchDescriptor<Order>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+            let descriptor = FetchDescriptor<Order>(sortBy: [SortDescriptor(\.orderReceivedDate, order: .reverse)])
             return (try? context.fetch(descriptor)) ?? []
         }
     }
@@ -176,7 +176,7 @@ class DummyDataManager: ObservableObject {
         var monthlyData: [String: (revenue: Double, profit: Double)] = [:]
         
         for order in orders {
-            let monthKey = formatter.string(from: order.date)
+            let monthKey = formatter.string(from: order.orderReceivedDate)
             if monthlyData[monthKey] == nil {
                 monthlyData[monthKey] = (0, 0)
             }

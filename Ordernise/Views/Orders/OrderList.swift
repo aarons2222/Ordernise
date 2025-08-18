@@ -19,6 +19,7 @@ extension DateFormatter {
 
 enum OrderFilter: String, CaseIterable {
     case received = "Received"
+    case inProgress = "In Progress"
     case completed = "Completed"
     
     // Localized display name for UI
@@ -26,6 +27,8 @@ enum OrderFilter: String, CaseIterable {
         switch self {
         case .received:
             return String(localized: "Received")
+        case .inProgress:
+            return String(localized: "In Progress")
         case .completed:
             return String(localized: "Completed")
         }
@@ -34,7 +37,9 @@ enum OrderFilter: String, CaseIterable {
     func matchesOrder(_ order: Order) -> Bool {
         switch self {
         case .received:
-            return [.received, .pending, .processing, .shipped, .onHold].contains(order.status)
+            return [.received].contains(order.status)
+        case .inProgress:
+            return [.pending, .processing, .shipped, .onHold].contains(order.status)
         case .completed:
             return [.delivered, .fulfilled, .canceled, .failed, .refunded, .returned].contains(order.status)
         }
@@ -45,7 +50,7 @@ enum OrderFilter: String, CaseIterable {
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var dummyDataManager = DummyDataManager.shared
-    @Query(sort: \Order.date, order: .reverse) private var realOrders: [Order]
+    @Query(sort: \Order.orderReceivedDate, order: .reverse) private var realOrders: [Order]
     
     private var allOrders: [Order] {
         if dummyDataManager.isDummyModeEnabled {
@@ -59,6 +64,8 @@ struct OrderList: View {
     @State private var confirmDelete = false
     @State private var selectedOrder: Order?
     @State private var orderToDelete: Order?
+    @State private var showingOrderCalendar = false
+
  
     @State private var selectedFilter: OrderFilter = .received
     @Binding var searchText: String
@@ -88,7 +95,7 @@ struct OrderList: View {
     var groupedOrders: [(String, [Order])] {
         let grouped = Dictionary(grouping: filteredOrders) { order in
             // Format date to show just the date part for grouping
-            DateFormatter.dateOnly.string(from: order.date)
+            DateFormatter.dateOnly.string(from: order.orderReceivedDate)
         }
         
         // Sort groups by date (newest first)
@@ -120,18 +127,79 @@ struct OrderList: View {
         return searchFiltered.filter { OrderFilter.completed.matchesOrder($0) }.count
     }
     
+    // Computed properties for order counts
+    private var inProgressOrdersCount: Int {
+        let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
+            order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
+            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+        }
+        return searchFiltered.filter { OrderFilter.inProgress.matchesOrder($0) }.count
+    }
+    
+    
+    
     // Helper function to get count text for tab
     private func countText(for filter: OrderFilter) -> String {
         switch filter {
         case .received:
             return "(\(receivedOrdersCount))"
+        case .inProgress:
+            return "(\(inProgressOrdersCount))"
         case .completed:
             return "(\(completedOrdersCount))"
         }
     }
     
     
-    
+    private var headerSection: some View {
+        
+        
+        HStack(alignment: .center) {
+            
+            
+            
+            
+            Text(String(localized: "Orders"))
+                .font(.title)
+                .padding(.horizontal,  15)
+            
+            Spacer()
+            
+            
+            
+            
+            Button(action: {
+                self.showingOrderCalendar = true
+            }) {
+                
+                Image(systemName: "calendar.circle")
+                    .font(.title)
+                    .foregroundColor(.appTint)
+                
+            }
+            .padding(.trailing, 8)
+            
+            
+            
+            
+            
+            Button(action: {
+                showingAddOrder = true
+            }) {
+                
+                Image(systemName: "plus.circle")
+                    .font(.title)
+                    .foregroundColor(.appTint)
+                
+            }
+            .padding(.trailing)
+            
+        }
+        .frame(height: 50)
+        
+        
+    }
     
     
     var body: some View {
@@ -143,19 +211,23 @@ struct OrderList: View {
         NavigationStack {
             
             VStack {
+                headerSection
+//
+//                HeaderWithButton(
+//                    title: String(localized: "Orders"),
+//                    buttonContent: "plus.circle",
+//                    isButtonImage: true,
+//                    showTrailingButton: true,
+//                    showLeadingButton: false,
+//                    onButtonTap: {
+//                   
+//                        showingAddOrder = true
+//                    }
+//                )
+//                
+//                
+//                
                 
-                
-                HeaderWithButton(
-                    title: String(localized: "Orders"),
-                    buttonContent: "plus.circle",
-                    isButtonImage: true,
-                    showTrailingButton: true,
-                    showLeadingButton: false,
-                    onButtonTap: {
-                   
-                        showingAddOrder = true
-                    }
-                )
                 
                 
 
@@ -177,8 +249,8 @@ struct OrderList: View {
                 }
                 .background(
                     Capsule()
-                        .fill(Color.gray.opacity(0.1))
-                        .stroke(Color.appTint, lineWidth: 3)
+                        .fill(.thinMaterial)
+                        .stroke(Color.appTint, lineWidth: 2)
                 )
                 .padding(.horizontal)
                 
@@ -275,6 +347,9 @@ struct OrderList: View {
                     OrderDetailView(mode: .add)
                 }
             }
+            .fullScreenCover(isPresented: $showingOrderCalendar) {
+                OrderCalendarView()
+            }
             .fullScreenCover(item: $selectedOrder) { selectedOrder in
                 ZStack{
                     Color(.systemBackground)
@@ -289,7 +364,9 @@ struct OrderList: View {
     
     private func sectionHeader(_ dateString: String) -> some View {
         SectionHeader(title: dateString)
-            .padding(10)
+               .frame(maxWidth: .infinity, alignment: .leading)
+               .padding(10)
+               .background(Color(.systemBackground))
     }
     
     private func deleteOrder(_ order: Order) {

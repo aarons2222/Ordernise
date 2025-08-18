@@ -56,7 +56,8 @@ struct OrderDetailView: View {
     // ViewModel for centralized state management
     @StateObject private var viewModel = OrderDetailViewViewModel()
     
-    @State private var date = Date()
+    @State private var orderReceivedDate = Date()
+    @State private var orderCompletionDate = Date()
     @State private var orderReference = ""
     @State private var customerName = ""
     @State private var status: OrderStatus = .received
@@ -64,6 +65,7 @@ struct OrderDetailView: View {
     @State private var customPlatformText = ""
     @State private var isEditMode = false
     @State private var showingStockItemPicker = false
+
     @State private var currentOrderItemIndex: Int?
     @State private var showingOrderFieldSettings = false
     // Field preferences - reactive to UserDefaults changes
@@ -193,7 +195,7 @@ struct OrderDetailView: View {
                     HStack() {
                         Text(String(localized: "Order Date"))
                         Spacer()
-                        MyDatePicker(selectedDate: $date)
+                        MyDatePicker(selectedDate: $orderReceivedDate, showFutureDate: false)
                     }
                     
                 case .orderReference:
@@ -208,7 +210,7 @@ struct OrderDetailView: View {
                     }
                     
                 case .customerName:
-                    ListSection(title: String(localized: "Customer Name")) {
+                ListSection(title: String(localized: "Customer Name"), isRequired: true, content: {
                         CustomTextField(
                             text: $customerName,
                             placeholder: String(localized: "Customer Name"),
@@ -216,7 +218,7 @@ struct OrderDetailView: View {
                             isSecure: false
                         )
                         .focused($focusedField, equals: true)
-                    }
+                    })
                     
                 case .orderStatus:
                     ListSection(title: String(localized: "Order Status")) {
@@ -271,13 +273,14 @@ struct OrderDetailView: View {
                             }
                             .background(
                                 Capsule()
-                                    .fill(Color.gray.opacity(0.1))
-                                    .stroke(Color.appTint, lineWidth: 4)
+                                    .fill(.thinMaterial)
+                                    .stroke(Color.appTint, lineWidth: 2)
                             )
                             .padding(.horizontal, 3)
                       
                         
                     }
+                    
                     // Conditional shipping fields
                     if deliveryMethod != .collected {
                    
@@ -417,6 +420,13 @@ struct OrderDetailView: View {
                     print("🎯 [OrderDetailView] Rendering itemsSection case")
 
                 }
+            case .orderCompletionDate:
+                HStack() {
+                    Text(String(localized: "Order Completion Date"))
+                    Spacer()
+                    MyDatePicker(selectedDate: $orderCompletionDate, showFutureDate: true)
+                }
+                
             }
         } else if let customField = fieldItem.customField {
             // Render custom field
@@ -604,6 +614,7 @@ struct OrderDetailView: View {
         .fullScreenCover(isPresented: $showingOrderFieldSettings) {
             OrderFieldSettings()
         }
+      
         .sheet(isPresented: $showingStockItemPicker) {
             let existingQuantities: [StockItem.ID: Int] = {
                 var quantities: [StockItem.ID: Int] = [:]
@@ -748,7 +759,7 @@ struct OrderDetailView: View {
             print("  - Customer Shipping Charge: \(existingOrder.customerShippingCharge)")
             print("  - Additional Cost Notes: '\(existingOrder.additionalCostNotes ?? "nil")'")
             
-            date = existingOrder.date
+            orderReceivedDate = existingOrder.orderReceivedDate
             orderReference = existingOrder.orderReference ?? ""
             customerName = existingOrder.customerName ?? ""
             status = existingOrder.status
@@ -764,6 +775,7 @@ struct OrderDetailView: View {
             additionalCostNotes = existingOrder.additionalCostNotes ?? ""
             deliveryMethod = existingOrder.deliveryMethod ?? .collected
             
+            orderCompletionDate = existingOrder.orderCompletionDate ?? Date()
 
             
             print("📊 [OrderDetailView] State variables after loading:")
@@ -907,7 +919,7 @@ struct OrderDetailView: View {
             }
             
             // Update existing order
-            existingOrder.date = date
+            existingOrder.orderReceivedDate = orderReceivedDate
             existingOrder.orderReference = orderReference.isEmpty ? nil : orderReference
             existingOrder.customerName = customerName.isEmpty ? nil : customerName
             existingOrder.status = status
@@ -922,6 +934,7 @@ struct OrderDetailView: View {
             existingOrder.customerShippingCharge = customerShippingCharge
             existingOrder.additionalCostNotes = additionalCostNotes.isEmpty ? nil : additionalCostNotes
             existingOrder.deliveryMethod = deliveryMethod
+            existingOrder.orderCompletionDate = orderCompletionDate
             
             // Save custom field values to attributes
             var attributesToSave: [String: String] = [:]
@@ -1033,7 +1046,7 @@ struct OrderDetailView: View {
             }
             
             let newOrder = Order(
-                date: date,
+                orderReceivedDate: orderReceivedDate,
                 orderReference: orderReference.isEmpty ? nil : orderReference,
                 customerName: customerName.isEmpty ? nil : customerName,
                 status: status,
@@ -1042,10 +1055,8 @@ struct OrderDetailView: View {
                 shippingCost: shippingCost,
                 sellingFees: sellingFees,
                 additionalCosts: additionalCosts,
-                shippingMethod: shippingMethod.isEmpty ? nil : shippingMethod,
-                trackingReference: trackingReference.isEmpty ? nil : trackingReference,
-                customerShippingCharge: customerShippingCharge,
-                additionalCostNotes: additionalCostNotes.isEmpty ? nil : additionalCostNotes,
+                shippingMethod: shippingMethod.isEmpty ? nil : shippingMethod, trackingReference: trackingReference.isEmpty ? nil : trackingReference,
+                customerShippingCharge: customerShippingCharge, additionalCostNotes: additionalCostNotes.isEmpty ? nil : additionalCostNotes, orderCompletionDate: orderCompletionDate,
                 deliveryMethod: deliveryMethod,
                 attributes: attributesToSave
             )

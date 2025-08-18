@@ -56,6 +56,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                              Text("\(displayText) \(extraText)")
                                  .lineLimit(1)
                                  .minimumScaleFactor(0.7)
+                             
                               
                          } else {
                              Text(displayText)
@@ -97,11 +98,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                     }
                 }
             }
-            .background {
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                    .ignoresSafeArea()
-            }
+         
             .preference(key: SizeKey.self, value: size)
             .onPreferenceChange(SizeKey.self) { size in
                 if let index = tabs.firstIndex(of: activeTab) {

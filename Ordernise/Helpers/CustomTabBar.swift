@@ -23,11 +23,20 @@ struct CustomTabBar: View {
     /// Search Bar Properties
     @State private var isSearchExpanded: Bool = false
     @FocusState private var isKeyboardActive: Bool
+    /// Dynamic color observation
+    @AppStorage("userTintHex") private var userTintHex: String = "#ACCDFF"
+    
+    // Computed property for reactive app tint color
+    private var appTintColor: Color {
+        Color(hex: userTintHex) ?? .color1
+    }
+    
     // Computed property for search bar visibility
     private var showsSearchBar: Bool {
         // List the tabs that should have search
         return activeTab == .orders || activeTab == .stock
     }
+    
    
     
     
@@ -131,7 +140,7 @@ struct CustomTabBar: View {
         }
         .foregroundStyle(
             (activeTab == tab && !isSearchExpanded) || isSearchExpanded
-            ? Color.appTint
+            ? appTintColor
             : Color.gray.opacity(0.8)
         )
         .frame(width: width, height: height)
