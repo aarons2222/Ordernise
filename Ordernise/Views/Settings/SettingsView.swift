@@ -12,6 +12,7 @@ struct SettingsView: View {
     
     @StateObject private var localeManager = LocaleManager.shared
     @StateObject private var dummyDataManager = DummyDataManager.shared
+    @StateObject private var notificationManager = NotificationManager.shared
     @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     @State private var selectedColor: Color = .color1
     
@@ -222,6 +223,41 @@ struct SettingsView: View {
                                 }.padding(.vertical, 3)
                             }
                             
+                            
+                            
+                            
+                            NavigationLink(destination: ShippingCompanyOptions()) {
+                                
+                                CustomCardView {
+                                    
+                                    HStack{
+                                        
+                                        
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text(String(localized: "Shipping Companies"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            
+                                            
+                                            Text(String(localized: "Select which shipping companies are available in your order workflow."))
+                                            
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                            
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+
+                                    }
+                                    
+                                }.padding(.vertical, 3)
+                            }
                          
                             
                             NavigationLink(destination: CategoryOptions().enableSwipeBack()) {
@@ -479,6 +515,41 @@ struct SettingsView: View {
                         
                         
                         VStack(alignment: .leading){
+                      
+                            SectionHeader(title: String(localized: "Testing"))
+                            
+                            CustomCardView {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(String(localized: "Test Notification"))
+                                            .font(.headline)
+                                            .foregroundColor(.text)
+                                        
+                                        Text(String(localized: "Send a test notification in 1 minute to verify notification permissions"))
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Button {
+                                        Task {
+                                            await scheduleTestNotification()
+                                        }
+                                    } label: {
+                                        Image(systemName: "bell.badge")
+                                            .font(.title2)
+                                            .foregroundColor(.white)
+                                            .frame(width: 40, height: 40)
+                                            .background(Color.appTint)
+                                            .clipShape(Circle())
+                                    }
+                                }
+                            }
+                        }
+                        
+                        VStack(alignment: .leading){
                      
                             SectionHeader(title: String(localized: "Support"))
                                
@@ -536,6 +607,33 @@ struct SettingsView: View {
             .fullScreenCover(isPresented: $showingSupport) {
                 SupportView()
             }
+    }
+    
+    private func scheduleTestNotification() async {
+        // Request permission first if needed
+        let granted = await notificationManager.requestPermission()
+        
+        guard granted else {
+            print("❌ Notification permission denied")
+            return
+        }
+        
+        // Schedule test notification in 1 minute
+        let testDate = Date().addingTimeInterval(60) // 1 minute from now
+        
+        let notificationId = await notificationManager.scheduleOrderCompletionReminder(
+            orderId: UUID(),
+            orderReference: "TEST-001",
+            customerName: "Test Customer",
+            completionDate: testDate,
+            timeBeforeCompletion: 0 // No offset, notification at exact time
+        )
+        
+        if notificationId != nil {
+            print("✅ Test notification scheduled for 1 minute from now")
+        } else {
+            print("❌ Failed to schedule test notification")
+        }
     }
     
 

@@ -86,10 +86,12 @@ struct StockItemDetailView: View {
         // Price is required and must be greater than 0
         let hasValidPrice = price > 0
         
+        let hasValidCost = cost > 0
+        
         // For new items, quantity must be greater than 0
         let hasValidQuantity = stockItem != nil || quantity > 0
         
-        return !(hasValidName && hasValidPrice && hasValidQuantity)
+        return !(hasValidName && hasValidPrice && hasValidQuantity && hasValidCost)
     }
     
 
@@ -468,13 +470,21 @@ struct StockItemDetailView: View {
             missingFields.append("Name")
         }
 
+        
+        if stockItem == nil && quantity <= 0 {
+            missingFields.append("Quantity")
+        }
+        
+        
         if price == 0 {
             missingFields.append("Price")
         }
 
-        if stockItem == nil && quantity <= 0 {
-            missingFields.append("Quantity")
+        
+        if cost == 0 {
+            missingFields.append("Cost")
         }
+
 
         if !missingFields.isEmpty {
             errorTitle = "Missing Required Fields"

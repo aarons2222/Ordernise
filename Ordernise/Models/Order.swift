@@ -21,12 +21,18 @@ class Order {
     var shippingCost: Double
     var sellingFees: Double
     var additionalCosts: Double
+    var shippingCompany: String?
     var shippingMethod: String?
     var trackingReference: String?
     var customerShippingCharge: Double
     var additionalCostNotes: String?
     var orderCompletionDate: Date?
     var deliveryMethod: DeliveryMethod?
+    
+    // Reminder settings
+    var reminderEnabled: Bool?
+    var reminderTimeBeforeCompletion: TimeInterval?
+    var reminderNotificationId: String?
     
     // Financial metrics
     var revenue: Double
@@ -49,12 +55,16 @@ class Order {
         shippingCost: Double = 0.0,
         sellingFees: Double = 0.0,
         additionalCosts: Double = 0.0,
+        shippingCompany: String? = nil,
         shippingMethod: String? = nil,
         trackingReference: String? = nil,
         customerShippingCharge: Double = 0.0,
         additionalCostNotes: String? = nil,
         orderCompletionDate: Date? = nil,
         deliveryMethod: DeliveryMethod = .collected,
+        reminderEnabled: Bool? = nil,
+        reminderTimeBeforeCompletion: TimeInterval? = nil,
+        reminderNotificationId: String? = nil,
         revenue: Double = 0.0,
         profit: Double = 0.0,
         attributes: [String: String] = [:]
@@ -69,12 +79,16 @@ class Order {
         self.shippingCost = shippingCost
         self.sellingFees = sellingFees
         self.additionalCosts = additionalCosts
+        self.shippingCompany = shippingCompany
         self.shippingMethod = shippingMethod
         self.trackingReference = trackingReference
         self.customerShippingCharge = customerShippingCharge
         self.additionalCostNotes = additionalCostNotes
         self.orderCompletionDate = orderCompletionDate
         self.deliveryMethod = deliveryMethod
+        self.reminderEnabled = reminderEnabled
+        self.reminderTimeBeforeCompletion = reminderTimeBeforeCompletion
+        self.reminderNotificationId = reminderNotificationId
         self.revenue = revenue
         self.profit = profit
         self.attributes = attributes

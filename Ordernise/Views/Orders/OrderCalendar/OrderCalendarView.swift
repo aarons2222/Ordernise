@@ -56,14 +56,20 @@ struct OrderCalendarView: View {
             }
             
             
-            let dateComponents = extraDate()
 
-            Text("\(dateComponents[1]) \(dateComponents[0])")
+            
+            
+            let date = getCurrentMonth()
+            let headerText = date.formatted(.dateTime.month(.wide).year())
+
+            Text(headerText)
                 .font(.title)
                 .lineLimit(2)
                 .minimumScaleFactor(0.2)
                 .truncationMode(.tail)
-                .padding(.horizontal,  5)
+                .padding(.horizontal, 5)
+                .id(headerText) // forces SwiftUI to treat it as new when the text changes
+                .animation(.easeInOut(duration: 0.25), value: headerText)
             
             Spacer()
             

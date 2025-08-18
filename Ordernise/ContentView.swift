@@ -203,7 +203,7 @@ extension String {
 
 struct ThemeSwitcher<Content: View>: View{
     @ViewBuilder var content: Content
-    @AppStorage("AppTheme") private var appTheme: AppTheme = .dark
+    @AppStorage("AppTheme") private var appTheme: AppTheme = .systemDefault
     
     var body: some View {
         content

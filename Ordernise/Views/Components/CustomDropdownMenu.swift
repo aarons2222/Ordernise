@@ -211,6 +211,54 @@ struct PlatformDropdownMenu: View {
     }
 }
 
+// Custom dropdown specifically for Shipping Company
+struct ShippingCompanyDropdownMenu: View {
+    @Binding var selection: ShippingCompany
+    
+    private func shippingCompanyIcon(for company: ShippingCompany) -> Image {
+        switch company {
+        case .royalMail:
+            return Image(systemName: "envelope.badge")
+        case .evri:
+            return Image(systemName: "box.truck")
+        case .yodel:
+            return Image(systemName: "shippingbox")
+        case .dpd:
+            return Image(systemName: "truck.box")
+        case .dhl:
+            return Image(systemName: "airplane")
+        case .ups:
+            return Image(systemName: "box.truck.fill")
+        case .fedex:
+            return Image(systemName: "airplane.departure")
+        case .postNL:
+            return Image(systemName: "envelope.fill")
+        case .laPoste:
+            return Image(systemName: "envelope.circle")
+        case .deutschePost:
+            return Image(systemName: "envelope.arrow.triangle.branch")
+        case .usps:
+            return Image(systemName: "building.columns")
+        case .canadaPost:
+            return Image(systemName: "leaf")
+        case .purolator:
+            return Image(systemName: "speedometer")
+        case .custom:
+            return Image(systemName: "wrench.adjustable")
+        }
+    }
+    
+    var body: some View {
+        CustomDropdownMenu(
+            title: "Shipping Company",
+            options: ShippingCompany.enabledShippingCompanies,
+            selection: $selection,
+            optionToString: { $0.rawValue },
+            optionToImage: { shippingCompanyIcon(for: $0) }
+        )
+    }
+}
+
 #Preview {
     VStack {
         StatusDropdownMenu(selection: .constant(.received))

@@ -28,6 +28,8 @@ struct OrderDetailView: View {
     // AppStorage for remembering user preferences
     @AppStorage("lastSelectedPlatform") private var lastSelectedPlatform: String = Platform.amazon.rawValue
     @AppStorage("lastCustomPlatformText") private var lastCustomPlatformText: String = ""
+    @AppStorage("lastSelectedShippingCompany") private var lastSelectedShippingCompany: String = ShippingCompany.royalMail.rawValue
+    @AppStorage("lastCustomShippingCompanyText") private var lastCustomShippingCompanyText: String = ""
     
     enum Mode {
         case add
@@ -63,6 +65,8 @@ struct OrderDetailView: View {
     @State private var status: OrderStatus = .received
     @State private var platform: Platform = Platform.enabledPlatforms.first ?? .amazon
     @State private var customPlatformText = ""
+    @State private var selectedShippingCompany: ShippingCompany = ShippingCompany.enabledShippingCompanies.first ?? .royalMail
+    @State private var customShippingCompanyText = ""
     @State private var isEditMode = false
     @State private var showingStockItemPicker = false
 
@@ -71,6 +75,11 @@ struct OrderDetailView: View {
     // Field preferences - reactive to UserDefaults changes
     @State private var fieldPreferences = UserDefaults.standard.orderFieldPreferences
     @State private var customFieldValues: [UUID: String] = [:]
+    
+    // Reminder state variables
+    @State private var reminderEnabled = false
+    @State private var reminderTimePeriod: ReminderTimePeriod = .oneDay
+    @StateObject private var notificationManager = NotificationManager.shared
     
     // Computed property for Save button validation
     private var isSaveButtonDisabled: Bool {
@@ -89,6 +98,7 @@ struct OrderDetailView: View {
     @State private var shippingCost = 0.0
     @State private var sellingFees = 0.0
     @State private var additionalCosts = 0.0
+    @State private var shippingCompany = ""
     @State private var shippingMethod = ""
     @State private var trackingReference = ""
     @State private var customerShippingCharge = 0.0
@@ -190,106 +200,148 @@ struct OrderDetailView: View {
     private func fieldView(for fieldItem: OrderFieldItem) -> some View {
         if fieldItem.isBuiltIn, let builtInField = fieldItem.builtInField {
             switch builtInField {
-                    
-                case .orderDate:
-                    HStack() {
-                        Text(String(localized: "Order Date"))
-                        Spacer()
-                        MyDatePicker(selectedDate: $orderReceivedDate, showFutureDate: false)
-                    }
-                    
-                case .orderReference:
-                    ListSection(title: String(localized: "Order Reference")) {
-                        CustomTextField(
-                            text: $orderReference,
-                            placeholder: String(localized: "Order Reference"),
-                            systemImage: "number",
-                            isSecure: false
-                        )
-                        .focused($focusedField, equals: true)
-                    }
-                    
-                case .customerName:
+                
+            case .orderDate:
+                HStack() {
+                    Text(String(localized: "Order Date"))
+                    Spacer()
+                    MyDatePicker(selectedDate: $orderReceivedDate, showFutureDate: false)
+                }
+                
+            case .orderReference:
+                ListSection(title: String(localized: "Order Reference")) {
+                    CustomTextField(
+                        text: $orderReference,
+                        placeholder: String(localized: "Order Reference"),
+                        systemImage: "number",
+                        isSecure: false
+                    )
+                    .focused($focusedField, equals: true)
+                }
+                
+            case .customerName:
                 ListSection(title: String(localized: "Customer Name"), isRequired: true, content: {
+                    CustomTextField(
+                        text: $customerName,
+                        placeholder: String(localized: "Customer Name"),
+                        systemImage: "person",
+                        isSecure: false
+                    )
+                    .focused($focusedField, equals: true)
+                })
+                
+            case .orderStatus:
+                ListSection(title: String(localized: "Order Status")) {
+                    StatusDropdownMenu(selection: $status)
+                }
+            case .platform:
+                ListSection(title: String(localized: "Platform")) {
+                    PlatformDropdownMenu(selection: $platform)
+                        .onChange(of: platform) { oldValue, newValue in
+                            // Save the selected platform for future orders
+                            lastSelectedPlatform = newValue.rawValue
+                        }
+                    
+                    // Show text field when Custom is selected
+                    if platform == .custom {
+                        Spacer(minLength: 10)
                         CustomTextField(
-                            text: $customerName,
-                            placeholder: String(localized: "Customer Name"),
-                            systemImage: "person",
+                            text: $customPlatformText,
+                            placeholder: String(localized: "Enter platform name"),
+                            systemImage: "square.stack.3d.down.forward",
                             isSecure: false
                         )
                         .focused($focusedField, equals: true)
-                    })
-                    
-                case .orderStatus:
-                    ListSection(title: String(localized: "Order Status")) {
-                        StatusDropdownMenu(selection: $status)
-                    }
-                case .platform:
-                    ListSection(title: String(localized: "Platform")) {
-                        PlatformDropdownMenu(selection: $platform)
-                            .onChange(of: platform) { oldValue, newValue in
-                                // Save the selected platform for future orders
-                                lastSelectedPlatform = newValue.rawValue
-                            }
-                        
-                        // Show text field when Custom is selected
-                        if platform == .custom {
-                            Spacer(minLength: 10)
-                            CustomTextField(
-                                text: $customPlatformText,
-                                placeholder: String(localized: "Enter platform name"),
-                                systemImage: "square.stack.3d.down.forward",
-                                isSecure: false
-                            )
-                            .focused($focusedField, equals: true)
-                            .onChange(of: customPlatformText) { oldValue, newValue in
-                                // Save the custom platform text
-                                lastCustomPlatformText = newValue
-                            }
+                        .onChange(of: customPlatformText) { oldValue, newValue in
+                            // Save the custom platform text
+                            lastCustomPlatformText = newValue
                         }
                     }
-                    
-                case .shipping:
-                    // Combined delivery and shipping section
+                }
+                
+            case .shipping:
+                // Combined delivery and shipping section
                 VStack(spacing: 16) {
                     ListSection(title: String(localized: "Shipping Method")) {
-                
-                       
+                        
+                        
+                        
+                        
+                        
+                        SegmentedControl(
+                            tabs: DeliveryMethod.allCases,
+                            activeTab: $deliveryMethod,
+                            height: 45,
+                            font: .callout,
+                            activeTint: Color(UIColor.systemBackground),
+                            inActiveTint: .gray.opacity(0.8)
+                        ) { size in
+                            RoundedRectangle(cornerRadius: 22.5)
+                                .fill(Color.appTint.gradient)
                             
                             
-                            
-                            SegmentedControl(
-                                tabs: DeliveryMethod.allCases,
-                                activeTab: $deliveryMethod,
-                                height: 45,
-                                font: .callout,
-                                activeTint: Color(UIColor.systemBackground),
-                                inActiveTint: .gray.opacity(0.8)
-                            ) { size in
-                                RoundedRectangle(cornerRadius: 22.5)
-                                    .fill(Color.appTint.gradient)
-                                
-                                   
-                            }
-                            .background(
-                                Capsule()
-                                    .fill(.thinMaterial)
-                                    .stroke(Color.appTint, lineWidth: 2)
-                            )
-                            .padding(.horizontal, 3)
-                      
+                        }
+                        .background(
+                            Capsule()
+                                .fill(.thinMaterial)
+                                .stroke(Color.appTint, lineWidth: 2)
+                        )
+                        .padding(.horizontal, 3)
+                        
                         
                     }
                     
                     // Conditional shipping fields
                     if deliveryMethod != .collected {
-                   
+                        
                         
                         VStack(spacing: 16) {
+                            
+                            ListSection(title: String(localized: "Shipping Company")) {
+                                ShippingCompanyDropdownMenu(selection: $selectedShippingCompany)
+                                    .onChange(of: selectedShippingCompany) { oldValue, newValue in
+                                        // Save the selected shipping company for future orders
+                                        lastSelectedShippingCompany = newValue.rawValue
+                                        // Convert enum to string for existing shippingCompany variable
+                                        if newValue == .custom {
+                                            shippingCompany = customShippingCompanyText
+                                        } else {
+                                            shippingCompany = newValue.rawValue
+                                        }
+                                    }
+                                
+                                // Show text field when Custom is selected
+                                if selectedShippingCompany == .custom {
+                                    Spacer(minLength: 10)
+                                    CustomTextField(
+                                        text: $customShippingCompanyText,
+                                        placeholder: String(localized: "Enter shipping company name"),
+                                        systemImage: "envelope.front",
+                                        isSecure: false
+                                    )
+                                    .focused($focusedField, equals: true)
+                                    .onChange(of: customShippingCompanyText) { oldValue, newValue in
+                                        // Save the custom shipping company text
+                                        lastCustomShippingCompanyText = newValue
+                                        // Update the shippingCompany string variable
+                                        shippingCompany = newValue
+                                    }
+                                }
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
                             ListSection(title: String(localized: "Shipping Method")) {
                                 CustomTextField(
                                     text: $shippingMethod,
-                                    placeholder: String(localized: "e.g. Standard, Express, Pickup"),
+                                    placeholder: String(localized: "e.g. Standard, Express, Next Day"),
                                     systemImage: "envelope.front",
                                     isSecure: false
                                 )
@@ -329,10 +381,10 @@ struct OrderDetailView: View {
                             }
                         }
                     }
-                    }
-                    
-                case .sellingFees:
-                    ListSection(title: String(localized: "Selling Fees")) {
+                }
+                
+            case .sellingFees:
+                ListSection(title: String(localized: "Selling Fees")) {
                     CustomNumberField(
                         value: (mode.isEditable || isEditMode) ? $sellingFees : .constant(sellingFees),
                         placeholder: String(localized: "Selling Fees"),
@@ -351,7 +403,7 @@ struct OrderDetailView: View {
                     .focused($focusedField, equals: mode.isEditable || isEditMode)
                 }
                 
-
+                
             case .notes:
                 ListSection(title: String(localized: "Notes")) {
                     CustomTextEditor(text: $additionalCostNotes,
@@ -386,7 +438,7 @@ struct OrderDetailView: View {
                                                     .foregroundColor(.secondary)
                                             }
                                             
-                                     
+                                            
                                         }
                                         .padding(.vertical, 6)
                                         .contentShape(Rectangle())
@@ -402,7 +454,7 @@ struct OrderDetailView: View {
                             }
                         }.onAppear(){
                             print("validOrderItems \(validOrderItems)")
-
+                            
                         }
                     }
                     
@@ -418,19 +470,84 @@ struct OrderDetailView: View {
                 }
                 .onAppear(){
                     print("🎯 [OrderDetailView] Rendering itemsSection case")
-
+                    
                 }
             case .orderCompletionDate:
-                HStack() {
-                    Text(String(localized: "Order Completion Date"))
-                    Spacer()
-                    MyDatePicker(selectedDate: $orderCompletionDate, showFutureDate: true)
+                VStack(spacing: 16) {
+                    HStack() {
+                        Text(String(localized: "Order Completion Date"))
+                        Spacer()
+                        MyDatePicker(selectedDate: $orderCompletionDate, showFutureDate: true)
+                    }
+                    
+                    // Show reminder toggle only if completion date is set and in the future
+                    if orderCompletionDate > Date() {
+                        
+                        
+                        CustomCardView{
+                            VStack(spacing: 12) {
+                                // Reminder toggle
+                                HStack {
+                                    Image(systemName: "bell")
+                                        .foregroundColor(Color.appTint)
+                                        .font(.title2)
+                                    
+                                    Text(String(localized: "Set Reminder"))
+                                        .font(.body)
+                                    Spacer()
+                                    Toggle("", isOn: $reminderEnabled)
+                                        .tint(.appTint)
+                                        .labelsHidden()
+                                }
+                                
+                                // Time period picker (only show when reminder is enabled)
+                                if reminderEnabled {
+                                    HStack {
+                                        Image(systemName: "clock")
+                                            .foregroundColor(Color.appTint)
+                                            .font(.title2)
+                                        Text(String(localized: "Remind me"))
+                                            .font(.body)
+                                        Spacer()
+                                        Picker("Reminder Time", selection: $reminderTimePeriod) {
+                                            ForEach(ReminderTimePeriod.allCases) { period in
+                                                Text(period.localizedName)
+                                                    .tag(period)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                        .tint(.appTint)
+                                    }
+                                    
+                                    // Permission warning if not authorized
+                                    if notificationManager.authorizationStatus != .authorized {
+                                        HStack {
+                                            Image(systemName: "exclamationmark.triangle")
+                                                .foregroundColor(.orange)
+                                            Text(String(localized: "Notification permission required"))
+                                                .font(.caption)
+                                                .foregroundColor(.orange)
+                                            Spacer()
+                                            Button(String(localized: "Enable")) {
+                                                Task {
+                                                    await notificationManager.requestPermission()
+                                                }
+                                            }
+                                            .font(.caption)
+                                            .buttonStyle(.borderless)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(10)
+                        }
+                    }
                 }
-                
-            }
-        } else if let customField = fieldItem.customField {
-            // Render custom field
-            customFieldView(for: customField)
+            } }
+        else if let customField = fieldItem.customField {
+                // Render custom field
+                customFieldView(for: customField)
+            
         }
     }
     
@@ -477,7 +594,9 @@ struct OrderDetailView: View {
                     isButtonDisabled: isSaveButtonDisabled,
                     onButtonTap: {
                         print("🔥 [OrderDetailView] Save button tapped!")
-                        saveOrder()
+                        Task {
+                            await saveOrder()
+                        }
                     }
                 )
                 
@@ -754,6 +873,7 @@ struct OrderDetailView: View {
             print("  - Shipping Cost: \(existingOrder.shippingCost)")
             print("  - Selling Fees: \(existingOrder.sellingFees)")
             print("  - Additional Costs: \(existingOrder.additionalCosts)")
+            print("  - Shipping Comapny: '\(existingOrder.shippingCompany ?? "nil")'")
             print("  - Shipping Method: '\(existingOrder.shippingMethod ?? "nil")'")
             print("  - Tracking Reference: '\(existingOrder.trackingReference ?? "nil")'")
             print("  - Customer Shipping Charge: \(existingOrder.customerShippingCharge)")
@@ -769,6 +889,20 @@ struct OrderDetailView: View {
             shippingCost = existingOrder.shippingCost
             sellingFees = existingOrder.sellingFees
             additionalCosts = existingOrder.additionalCosts
+            shippingCompany = existingOrder.shippingCompany ?? ""
+            
+            // Set selectedShippingCompany enum based on the string value
+            if let company = existingOrder.shippingCompany,
+               let matchingCompany = ShippingCompany.allCases.first(where: { $0.rawValue == company }) {
+                selectedShippingCompany = matchingCompany
+            } else if let existingCompany = existingOrder.shippingCompany, !existingCompany.isEmpty {
+                // If it's a custom company name, set to custom and store the text
+                selectedShippingCompany = .custom
+                customShippingCompanyText = existingCompany
+            } else {
+                selectedShippingCompany = ShippingCompany.enabledShippingCompanies.first ?? .royalMail
+            }
+            
             shippingMethod = existingOrder.shippingMethod ?? ""
             trackingReference = existingOrder.trackingReference ?? ""
             customerShippingCharge = existingOrder.customerShippingCharge
@@ -776,6 +910,13 @@ struct OrderDetailView: View {
             deliveryMethod = existingOrder.deliveryMethod ?? .collected
             
             orderCompletionDate = existingOrder.orderCompletionDate ?? Date()
+            
+            // Load reminder settings
+            reminderEnabled = existingOrder.reminderEnabled ?? false
+            if let timeBeforeCompletion = existingOrder.reminderTimeBeforeCompletion,
+               let timePeriod = ReminderTimePeriod.allCases.first(where: { $0.timeInterval == timeBeforeCompletion }) {
+                reminderTimePeriod = timePeriod
+            }
 
             
             print("📊 [OrderDetailView] State variables after loading:")
@@ -783,6 +924,7 @@ struct OrderDetailView: View {
             print("  - shippingCost state: \(shippingCost)")
             print("  - sellingFees state: \(sellingFees)")
             print("  - additionalCosts state: \(additionalCosts)")
+            print("  - shippingCompany state: '\(shippingCompany)'")
             print("  - shippingMethod state: '\(shippingMethod)'")
             print("  - trackingReference state: '\(trackingReference)'")
             print("  - customerShippingCharge state: \(customerShippingCharge)")
@@ -846,10 +988,42 @@ struct OrderDetailView: View {
         viewModel.orderItems.removeAll { $0.id == orderItem.id }
     }
     
+    private func handleReminderScheduling(for order: Order) async {
+        // Cancel existing reminder if any
+        if let existingNotificationId = order.reminderNotificationId {
+            notificationManager.cancelReminder(notificationId: existingNotificationId)
+            order.reminderNotificationId = nil
+        }
+        
+        // Schedule new reminder if enabled and completion date is set
+        if reminderEnabled,
+           let completionDate = order.orderCompletionDate,
+           completionDate > Date() {
+            
+            let notificationId = await notificationManager.scheduleOrderCompletionReminder(
+                orderId: order.id,
+                orderReference: order.orderReference,
+                customerName: order.customerName,
+                completionDate: completionDate,
+                timeBeforeCompletion: reminderTimePeriod.timeInterval
+            )
+            
+            // Store the notification ID and reminder settings
+            order.reminderEnabled = true
+            order.reminderTimeBeforeCompletion = reminderTimePeriod.timeInterval
+            order.reminderNotificationId = notificationId
+            
+            print("✅ [OrderDetailView] Scheduled reminder for order \(order.id)")
+        } else {
+            // Disable reminder
+            order.reminderEnabled = false
+            order.reminderTimeBeforeCompletion = nil
+            order.reminderNotificationId = nil
+            print("🔕 [OrderDetailView] Reminder disabled for order \(order.id)")
+        }
+    }
 
-
-    
-    private func saveOrder() {
+    private func saveOrder() async {
         print("🚀 [OrderDetailView] saveOrder() called")
         let validOrderItems = viewModel.orderItems.filter { $0.isValid }
         print("📋 [OrderDetailView] Valid order items count: \(validOrderItems.count)")
@@ -880,9 +1054,7 @@ struct OrderDetailView: View {
         } else {
             print("✏️ [OrderDetailView] Editing existing order")
         }
-        
-  
-        
+
         if let existingOrder = order {
             print("💾 [OrderDetailView] Saving existing order changes:")
             print("  - Order ID: \(existingOrder.id)")
@@ -891,6 +1063,7 @@ struct OrderDetailView: View {
             print("    - shippingCost: \(shippingCost)")
             print("    - sellingFees: \(sellingFees)")
             print("    - additionalCosts: \(additionalCosts)")
+            print("    - shippingCompany: '\(shippingCompany)'")
             print("    - shippingMethod: '\(shippingMethod)'")
             print("    - trackingReference: '\(trackingReference)'")
             print("    - additionalCostNotes: '\(additionalCostNotes)'")
@@ -929,12 +1102,16 @@ struct OrderDetailView: View {
             existingOrder.shippingCost = shippingCost
             existingOrder.sellingFees = sellingFees
             existingOrder.additionalCosts = additionalCosts
+            existingOrder.shippingCompany = shippingCompany.isEmpty ? nil : shippingCompany
             existingOrder.shippingMethod = shippingMethod.isEmpty ? nil : shippingMethod
             existingOrder.trackingReference = trackingReference.isEmpty ? nil : trackingReference
             existingOrder.customerShippingCharge = customerShippingCharge
             existingOrder.additionalCostNotes = additionalCostNotes.isEmpty ? nil : additionalCostNotes
             existingOrder.deliveryMethod = deliveryMethod
             existingOrder.orderCompletionDate = orderCompletionDate
+            
+            // Handle reminder scheduling
+            await handleReminderScheduling(for: existingOrder)
             
             // Save custom field values to attributes
             var attributesToSave: [String: String] = [:]
@@ -951,6 +1128,7 @@ struct OrderDetailView: View {
             print("  - existingOrder.shippingCost: \(existingOrder.shippingCost)")
             print("  - existingOrder.sellingFees: \(existingOrder.sellingFees)")
             print("  - existingOrder.additionalCosts: \(existingOrder.additionalCosts)")
+            print("  - existingOrder.shippingCompany: '\(existingOrder.shippingCompany ?? "nil")'")
             print("  - existingOrder.shippingMethod: '\(existingOrder.shippingMethod ?? "nil")'")
             print("  - existingOrder.trackingReference: '\(existingOrder.trackingReference ?? "nil")'")
             print("  - existingOrder.additionalCostNotes: '\(existingOrder.additionalCostNotes ?? "nil")'")
@@ -1055,10 +1233,14 @@ struct OrderDetailView: View {
                 shippingCost: shippingCost,
                 sellingFees: sellingFees,
                 additionalCosts: additionalCosts,
-                shippingMethod: shippingMethod.isEmpty ? nil : shippingMethod, trackingReference: trackingReference.isEmpty ? nil : trackingReference,
-                customerShippingCharge: customerShippingCharge, additionalCostNotes: additionalCostNotes.isEmpty ? nil : additionalCostNotes, orderCompletionDate: orderCompletionDate,
+                shippingCompany: shippingCompany.isEmpty ? nil : shippingCompany,
+                shippingMethod: shippingMethod.isEmpty ? nil : shippingMethod,
+                trackingReference: trackingReference.isEmpty ? nil : trackingReference,
+                customerShippingCharge: customerShippingCharge,
+                additionalCostNotes: additionalCostNotes.isEmpty ? nil : additionalCostNotes,
+                orderCompletionDate: orderCompletionDate,
                 deliveryMethod: deliveryMethod,
-                attributes: attributesToSave
+                reminderEnabled: reminderEnabled, reminderTimeBeforeCompletion: reminderTimePeriod.timeInterval, attributes: attributesToSave
             )
             
             // Add order items
@@ -1077,6 +1259,10 @@ struct OrderDetailView: View {
                     print("❌ [New Order] Failed to commit stock changes: \(error)")
                 }
             }
+            
+            // Handle reminder scheduling for new order
+            
+            await handleReminderScheduling(for: newOrder)
             
             // Calculate and set revenue and profit automatically
             newOrder.revenue = newOrder.itemsTotal + newOrder.customerShippingCharge
@@ -1128,18 +1314,3 @@ struct OrderDetailView: View {
 }
 
 
-enum DeliveryMethod: String, CaseIterable, Identifiable, Codable {
-    case collected = "Pick up"
-    case shipped = "Delivery"
-
-    var id: String { self.rawValue }
-    
-    var localizedName: String {
-        switch self {
-        case .collected:
-            return String(localized: "Pick up")
-        case .shipped:
-            return String(localized: "Delivery")
-        }
-    }
-}

@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct OrderniseApp: App {
+    
+    @Environment(\.scenePhase) private var scenePhase
+
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             StockItem.self,
@@ -38,9 +42,11 @@ struct OrderniseApp: App {
     
 
 
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+            
                 .environment(\.stockManager, StockManager(modelContext: sharedModelContainer.mainContext))
                 .task {
                     // Initialize the FieldPreferencesManager with the model context
@@ -55,5 +61,15 @@ struct OrderniseApp: App {
                 }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) {
+                   if scenePhase == .active {
+                       // Clear badge every time app becomes active
+                       UNUserNotificationCenter.current().setBadgeCount(0) { error in
+                           if let error = error {
+                               print("Failed to clear badge: \(error)")
+                           }
+                       }
+                   }
+               }
     }
 }

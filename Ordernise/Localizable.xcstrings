@@ -105,10 +105,31 @@
     "• %@" : {
       "shouldTranslate" : false
     },
+    "1 day before" : {
+
+    },
+    "1 hour before" : {
+
+    },
+    "1 week before" : {
+
+    },
+    "2 days before" : {
+
+    },
+    "4 hours before" : {
+
+    },
     "6 Months" : {
 
     },
+    "12 hours before" : {
+
+    },
     "12 Months" : {
+
+    },
+    "15 minutes before" : {
 
     },
     "30 Days" : {
@@ -168,6 +189,9 @@
     "At least one platform must remain enabled" : {
 
     },
+    "At least one shipping company must remain enabled" : {
+
+    },
     "At least one status must remain enabled" : {
 
     },
@@ -183,7 +207,13 @@
     "British Pound" : {
 
     },
+    "Canadian courier service" : {
+
+    },
     "Canadian Dollar" : {
+
+    },
+    "Canadian postal service" : {
 
     },
     "Cancel" : {
@@ -234,6 +264,9 @@
 
     },
     "Choose which platforms are available in your workflow" : {
+
+    },
+    "Choose which shipping companies are available in your workflow" : {
 
     },
     "Color" : {
@@ -290,6 +323,9 @@
 
     },
     "Custom Range" : {
+
+    },
+    "Custom shipping company or other" : {
 
     },
     "Customer Name" : {
@@ -386,7 +422,7 @@
     "e.g. Handling fee, Tax, Insurance" : {
 
     },
-    "e.g. Standard, Express, Pickup" : {
+    "e.g. Standard, Express, Next Day" : {
 
     },
     "eBay" : {
@@ -421,6 +457,9 @@
     "Email Error" : {
 
     },
+    "Enable" : {
+
+    },
     "Enter item cost" : {
 
     },
@@ -431,6 +470,9 @@
 
     },
     "Enter platform name" : {
+
+    },
+    "Enter shipping company name" : {
 
     },
     "Etsy" : {
@@ -451,6 +493,9 @@
       }
     },
     "Euro" : {
+
+    },
+    "European parcel delivery" : {
 
     },
     "Excel Export" : {
@@ -665,6 +710,9 @@
     "Format: CSV" : {
 
     },
+    "French postal service" : {
+
+    },
     "From:" : {
 
     },
@@ -674,10 +722,16 @@
     "General" : {
 
     },
+    "German postal service" : {
+
+    },
     "Get support here" : {
 
     },
     "Global e-commerce platform" : {
+
+    },
+    "Global shipping and logistics" : {
 
     },
     "Handed over to carrier" : {
@@ -708,6 +762,12 @@
           }
         }
       }
+    },
+    "International courier service" : {
+
+    },
+    "International express delivery" : {
+
     },
     "Inventory" : {
 
@@ -798,6 +858,9 @@
     "Net Profit" : {
 
     },
+    "Netherlands postal service" : {
+
+    },
     "New Order" : {
 
     },
@@ -837,6 +900,9 @@
     "Notes" : {
 
     },
+    "Notification permission required" : {
+
+    },
     "Number of completed orders (fulfilled or delivered)" : {
 
     },
@@ -861,6 +927,9 @@
     "Order Completion Date" : {
 
     },
+    "Order Completion Reminder" : {
+
+    },
     "ORDER DATA" : {
 
     },
@@ -875,6 +944,16 @@
     },
     "Order Fields" : {
 
+    },
+    "Order for %@ is due to complete on %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Order for %1$@ is due to complete on %2$@"
+          }
+        }
+      }
     },
     "Order has been recorded" : {
 
@@ -1037,6 +1116,12 @@
     "Refunded" : {
 
     },
+    "Remind me" : {
+
+    },
+    "Reminder Time" : {
+
+    },
     "Required" : {
 
     },
@@ -1085,6 +1170,9 @@
     "Select which platforms are available in your order workflow." : {
 
     },
+    "Select which shipping companies are available in your order workflow." : {
+
+    },
     "Select which statuses are available in your order workflow." : {
 
     },
@@ -1094,7 +1182,13 @@
     "Selling Fees: -" : {
 
     },
+    "Send a test notification in 1 minute to verify notification permissions" : {
+
+    },
     "Sent back by customer" : {
+
+    },
+    "Set Reminder" : {
 
     },
     "Settings" : {
@@ -1104,6 +1198,15 @@
 
     },
     "Shipping" : {
+
+    },
+    "Shipping Companies" : {
+
+    },
+    "Shipping Company" : {
+
+    },
+    "Shipping Company Options" : {
 
     },
     "Shipping Costs" : {
@@ -1158,6 +1261,12 @@
 
     },
     "Temporarily paused" : {
+
+    },
+    "Test Notification" : {
+
+    },
+    "Testing" : {
 
     },
     "The RealReal" : {
@@ -1254,6 +1363,15 @@
     "Turkish Lira" : {
 
     },
+    "UK delivery network" : {
+
+    },
+    "UK parcel delivery service" : {
+
+    },
+    "UK postal service" : {
+
+    },
     "Uncategorized" : {
 
     },
@@ -1270,6 +1388,9 @@
 
     },
     "US Dollar" : {
+
+    },
+    "US postal service" : {
 
     },
     "Use realistic test data instead of your actual business data" : {
