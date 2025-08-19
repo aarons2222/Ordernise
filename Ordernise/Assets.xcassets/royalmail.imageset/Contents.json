@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "Royal_Mail_logo_2024.svg.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "Royal_Mail_logo_2024.svg 1.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "Royal_Mail_logo_2024.svg 2.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

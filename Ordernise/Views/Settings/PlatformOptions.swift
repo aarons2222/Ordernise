@@ -9,6 +9,38 @@ import SwiftUI
 
 struct PlatformOptions: View {
     
+ 
+    
+    private func platformIcon(for platform: Platform) -> Image {
+        switch platform {
+        case .amazon:
+            return Image("amazon")
+        case .ebay:
+            return Image("ebay")
+        case .carboot:
+            return Image(systemName: "car.side.rear.open")
+        case .depop:
+            return Image("depop")
+        case .shopify:
+            return Image("shopify")
+        case .etsy:
+            return Image("etsy")
+        case .custom:
+            return Image(systemName: "wrench.adjustable")
+        case .vinted:
+            return Image("vinted")
+        case .poshmark:
+            return Image("poshmark")
+        case .marketplace:
+            return Image("facebook")
+        case .gumtree:
+            return Image("gumtree")
+        }
+    }
+    
+    
+    
+    
     // Platform Settings - Default to all enabled
     @AppStorage("enabledPlatforms") private var enabledPlatformsData: Data = {
         let defaultPlatforms = Platform.allCases.map { $0.rawValue }
@@ -79,13 +111,30 @@ struct PlatformOptions: View {
                                     get: { isPlatformEnabled(platform) },
                                     set: { _ in togglePlatform(platform) }
                                 )) {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(platform.rawValue)
-                                            .font(.headline)
+                                    
+                                    
+                                    
+                                    
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        
+                                        HStack(spacing: 10){
+                                            platformIcon(for: platform)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 32, height: 32)
+                                                .cornerRadius(8)
+                                            
+                                            Text(platform.rawValue)
+                                                .font(.headline)
+                                        }
                                         Text(platformDescription(for: platform))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                     }
+                                    
+                                    
+                                    
+                                
                                 }
                                 .tint(Color.appTint)
                                 .disabled(enabledPlatforms.count == 1 && isPlatformEnabled(platform))

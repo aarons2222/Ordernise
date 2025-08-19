@@ -207,9 +207,6 @@
     "British Pound" : {
 
     },
-    "Canadian courier service" : {
-
-    },
     "Canadian Dollar" : {
 
     },
@@ -248,10 +245,16 @@
     "Category" : {
 
     },
+    "Category Assignment" : {
+
+    },
     "Category Name" : {
 
     },
     "Charges:" : {
+
+    },
+    "Chart Breakdown" : {
 
     },
     "Chinese Yuan" : {
@@ -291,6 +294,9 @@
 
     },
     "Cost:" : {
+
+    },
+    "Count" : {
 
     },
     "CSV Export" : {
@@ -775,6 +781,9 @@
     "Item Cost" : {
 
     },
+    "Item Count" : {
+
+    },
     "Item Name" : {
 
     },
@@ -794,6 +803,9 @@
 
     },
     "Items with 5 or fewer units remaining" : {
+
+    },
+    "Items without a category are grouped as 'Uncategorized'" : {
 
     },
     "Japanese Yen" : {
@@ -1027,6 +1039,9 @@
     "Pending Orders" : {
 
     },
+    "Percentages based on quantity of items sold in each category" : {
+
+    },
     "Pick a color to customise the app's look - some colours may make some UI elements unreadable." : {
 
     },
@@ -1167,6 +1182,9 @@
     "Second-hand fashion marketplace" : {
 
     },
+    "Select Category" : {
+
+    },
     "Select which platforms are available in your order workflow." : {
 
     },
@@ -1222,6 +1240,9 @@
 
     },
     "Shipping: -" : {
+
+    },
+    "Shows percentage of items sold by category, not monetary value" : {
 
     },
     "Social shopping app" : {

@@ -12,13 +12,13 @@ import Charts
 struct CategorySalesData: Identifiable, Equatable {
     let id = UUID()
     let category: String
-    let revenue: Double
+    let count: Int
     let color: Color
     
     static func == (lhs: CategorySalesData, rhs: CategorySalesData) -> Bool {
         lhs.id == rhs.id &&
         lhs.category == rhs.category &&
-        lhs.revenue == rhs.revenue
+        lhs.count == rhs.count
     }
 }
 
@@ -117,55 +117,60 @@ struct DashboardView: View {
     }
     
     private var salesByCategory: [CategorySalesData] {
-        let categoryRevenue = Dictionary(grouping: filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }) { order in
-            // Get category object from the first order item
-            order.items.first?.stockItem?.category
-        }.compactMapValues { orders in
-            orders.isEmpty ? nil : orders.reduce(0.0) { $0 + $1.revenue }
+        let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
+        
+        // Dictionary to accumulate item count by category
+        var categoryItemCount: [Category?: Int] = [:]
+        
+        // Count all items sold by category
+        for order in completedOrders {
+            for orderItem in order.items {
+                let itemCategory = orderItem.stockItem?.category
+                let itemQuantity = orderItem.quantity
+                
+                if let existingCount = categoryItemCount[itemCategory] {
+                    categoryItemCount[itemCategory] = existingCount + itemQuantity
+                } else {
+                    categoryItemCount[itemCategory] = itemQuantity
+                }
+            }
         }
         
-        // Fallback colors for uncategorized items
-//        let fallbackColors: [Color] = [
-//            .blue, .green, .orange, .purple, .red, 
-//            .pink, .cyan, .mint, .indigo, .teal
-//        ]
-//        
         var result: [CategorySalesData] = []
-        var uncategorizedRevenue: Double = 0
-      //  var fallbackColorIndex = 0
+        var uncategorizedCount: Int = 0
         
-        for (category, revenue) in categoryRevenue {
+        for (category, count) in categoryItemCount {
             if let category = category {
                 // Use the actual category color
                 result.append(CategorySalesData(
                     category: category.name,
-                    revenue: revenue,
+                    count: count,
                     color: category.color
                 ))
             } else {
-                // Accumulate uncategorized revenue
-                uncategorizedRevenue += revenue
+                // Accumulate uncategorized count
+                uncategorizedCount += count
             }
         }
         
         // Add uncategorized items if any
-        if uncategorizedRevenue > 0 {
+        if uncategorizedCount > 0 {
             result.append(CategorySalesData(
                 category: String(localized: "Uncategorized"),
-                revenue: uncategorizedRevenue,
+                count: uncategorizedCount,
                 color: .gray
             ))
         }
         
         return result
-            .filter { $0.revenue > 0 }
-            .sorted { $0.revenue > $1.revenue }
+            .filter { $0.count > 0 }
+            .sorted { $0.count > $1.count }
     }
     
-    private func calculatePercentage(_ revenue: Double) -> Double {
-        let total = salesByCategory.reduce(0) { $0 + $1.revenue }
+    private func calculatePercentage(_ count: Int) -> Double {
+        let total = salesByCategory.reduce(0) { $0 + $1.count }
         guard total > 0 else { return 0 }
-        let percentage = (revenue / total) * 100
+        let percentage = (Double(count) / Double(total)) * 100
         return (percentage * 10).rounded() / 10
     }
 
@@ -251,7 +256,7 @@ struct DashboardView: View {
                 
                 Chart(salesByCategory) { data in
                     SectorMark(
-                        angle: .value("Revenue", data.revenue),
+                        angle: .value("Count", data.count),
                         innerRadius: 70,
                         angularInset: 1
                     )
@@ -276,7 +281,7 @@ struct DashboardView: View {
                                 
                                 Spacer()
                                 
-                                Text("\(calculatePercentage(data.revenue), specifier: "%.1f")%")
+                                Text("\(calculatePercentage(data.count), specifier: "%.1f")%")
                                     .font(.footnote)
                                     .foregroundColor(.gray)
                             }
@@ -509,6 +514,21 @@ struct DashboardInfoSheet: View {
                         VStack(alignment: .leading, spacing: 8) {
                             InfoRow(title: String(localized: "Total Value"), description: String(localized: "Current stock value (quantity × price)"))
                             InfoRow(title: String(localized: "Low Stock"), description: String(localized: "Items with 5 or fewer units remaining"))
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Sales by Category Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label(String(localized: "Sales by Category"), systemImage: "chart.pie")
+                            .font(.headline)
+                            .foregroundColor(.appTint)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            InfoRow(title: String(localized: "Chart Breakdown"), description: String(localized: "Shows percentage of items sold by category, not monetary value"))
+                            InfoRow(title: String(localized: "Item Count"), description: String(localized: "Percentages based on quantity of items sold in each category"))
+                            InfoRow(title: String(localized: "Category Assignment"), description: String(localized: "Items without a category are grouped as 'Uncategorized'"))
                         }
                     }
                     

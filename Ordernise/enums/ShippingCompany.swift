@@ -25,7 +25,6 @@ enum ShippingCompany: String, Codable, Identifiable, CaseIterable {
     // North America
     case usps = "USPS"
     case canadaPost = "Canada Post"
-    case purolator = "Purolator"
     
     // Other
     case custom = "Custom"

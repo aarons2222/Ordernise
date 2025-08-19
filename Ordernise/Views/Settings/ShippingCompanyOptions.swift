@@ -9,6 +9,42 @@ import SwiftUI
 
 struct ShippingCompanyOptions: View {
     
+    
+    private func getIcon(for company: ShippingCompany) -> Image {
+        switch company {
+        case .royalMail:
+            return Image("royalmail")
+        case .evri:
+            return Image("evri")
+        case .yodel:
+            return Image("yodel")
+        case .dpd:
+            return Image("dpd")
+        case .dhl:
+            return Image("dhl")
+        case .ups:
+            return Image("ups")
+        case .fedex:
+            return Image("fedex")
+        case .postNL:
+            return Image("postnl")
+        case .laPoste:
+            return Image("laposte")
+        case .deutschePost:
+            return Image("deutschepost")
+        case .usps:
+            return Image("usps")
+        case .canadaPost:
+            return Image("canadapost")
+    
+        case .custom:
+            return Image(systemName: "wrench.adjustable")
+        }
+    }
+    
+    
+    
+    
     // Shipping Company Settings - Default to all enabled
     @AppStorage("enabledShippingCompanies") private var enabledShippingCompaniesData: Data = {
         let defaultCompanies = ShippingCompany.allCases.map { $0.rawValue }
@@ -79,9 +115,24 @@ struct ShippingCompanyOptions: View {
                                     get: { isShippingCompanyEnabled(company) },
                                     set: { _ in toggleShippingCompany(company) }
                                 )) {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(company.rawValue)
-                                            .font(.headline)
+                                    
+                                    
+                                 
+                                    
+                                    
+                                    
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        
+                                        HStack(spacing: 10){
+                                            getIcon(for: company)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 32, height: 32)
+                                                .cornerRadius(8)
+                                            
+                                            Text(company.rawValue)
+                                                .font(.headline)
+                                        }
                                         Text(shippingCompanyDescription(for: company))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
@@ -124,7 +175,6 @@ struct ShippingCompanyOptions: View {
         case .deutschePost: return String(localized: "German postal service")
         case .usps: return String(localized: "US postal service")
         case .canadaPost: return String(localized: "Canadian postal service")
-        case .purolator: return String(localized: "Canadian courier service")
         case .custom: return String(localized: "Custom shipping company or other")
         }
     }

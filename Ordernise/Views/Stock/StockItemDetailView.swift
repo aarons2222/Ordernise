@@ -463,6 +463,11 @@ struct StockItemDetailView: View {
 
     
     private func saveItem() {
+        // Debug category selection
+        print("🔍 [StockItemDetailView] Saving item with category:")
+        print("  - selectedCategory: \(selectedCategory?.name ?? "nil")")
+        print("  - selectedCategory ID: \(selectedCategory?.id.uuidString ?? "nil")")
+        
         // Validation checks as safety net (button should be disabled for invalid data)
         var missingFields = [String]()
 

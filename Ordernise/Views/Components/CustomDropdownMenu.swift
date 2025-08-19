@@ -48,6 +48,7 @@ struct CustomDropdownMenu<T: Hashable>: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 32, height: 32)
+                            .cornerRadius(8)
                     }
                     
                     if let optionToColor = optionToColor {
@@ -100,6 +101,7 @@ struct CustomDropdownMenu<T: Hashable>: View {
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 32, height: 32)
                                         .foregroundColor((option as? Platform) == .custom ? Color.appTint : nil)
+                                        .cornerRadius(8)
                                 }
                                 
                                 
@@ -218,31 +220,30 @@ struct ShippingCompanyDropdownMenu: View {
     private func shippingCompanyIcon(for company: ShippingCompany) -> Image {
         switch company {
         case .royalMail:
-            return Image(systemName: "envelope.badge")
+            return Image("royalmail")
         case .evri:
-            return Image(systemName: "box.truck")
+            return Image("evri")
         case .yodel:
-            return Image(systemName: "shippingbox")
+            return Image("yodel")
         case .dpd:
-            return Image(systemName: "truck.box")
+            return Image("dpd")
         case .dhl:
-            return Image(systemName: "airplane")
+            return Image("dhl")
         case .ups:
-            return Image(systemName: "box.truck.fill")
+            return Image("ups")
         case .fedex:
-            return Image(systemName: "airplane.departure")
+            return Image("fedex")
         case .postNL:
-            return Image(systemName: "envelope.fill")
+            return Image("postnl")
         case .laPoste:
-            return Image(systemName: "envelope.circle")
+            return Image("laposte")
         case .deutschePost:
-            return Image(systemName: "envelope.arrow.triangle.branch")
+            return Image("deutschepost")
         case .usps:
-            return Image(systemName: "building.columns")
+            return Image("usps")
         case .canadaPost:
-            return Image(systemName: "leaf")
-        case .purolator:
-            return Image(systemName: "speedometer")
+            return Image("canadapost")
+    
         case .custom:
             return Image(systemName: "wrench.adjustable")
         }

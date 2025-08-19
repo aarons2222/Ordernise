@@ -44,19 +44,13 @@ struct CategoryPicker: View {
         return options
     }
     
-    // Current selection - auto-select latest (last) category if none selected
+    // Current selection - use actual selection or show placeholder
     private var currentSelection: Category {
         if let selection = selection {
             return selection
-        } else if let latestCategory = categories.last {
-            // Auto-select the latest (last) category if none is selected
-            DispatchQueue.main.async {
-                self.selection = latestCategory
-            }
-            return latestCategory
         } else {
-            // Fallback to a placeholder category if no categories exist
-            return Category(name: String(localized: "No Category"), colorHex: "#808080")
+            // Show placeholder without auto-selecting anything
+            return Category(name: String(localized: "Select Category"), colorHex: "#808080")
         }
     }
     
