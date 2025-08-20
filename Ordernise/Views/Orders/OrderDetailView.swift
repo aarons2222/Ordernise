@@ -78,7 +78,7 @@ struct OrderDetailView: View {
     
     // Reminder state variables
     @State private var reminderEnabled = false
-    @State private var reminderTimePeriod: ReminderTimePeriod = .oneDay
+    @State private var reminderTimePeriod: ReminderTimePeriod = .fifteenMinutes
     @StateObject private var notificationManager = NotificationManager.shared
     
     // Computed property for Save button validation
@@ -478,6 +478,14 @@ struct OrderDetailView: View {
                         Text(String(localized: "Order Completion Date"))
                         Spacer()
                         MyDatePicker(selectedDate: $orderCompletionDate, showFutureDate: true)
+                            .onChange(of: orderCompletionDate) { oldValue, newValue in
+                                // Set time to 8:00 AM when date changes
+                                let calendar = Calendar.current
+                                let dateComponents = calendar.dateComponents([.year, .month, .day], from: newValue)
+                                if let date8AM = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: calendar.date(from: dateComponents) ?? newValue) {
+                                    orderCompletionDate = date8AM
+                                }
+                            }
                     }
                     
                     // Show reminder toggle only if completion date is set and in the future
@@ -519,6 +527,48 @@ struct OrderDetailView: View {
                                         .tint(.appTint)
                                     }
                                     
+                                    // Show when notification will be sent
+                                    let notificationDate = orderCompletionDate.addingTimeInterval(-reminderTimePeriod.timeInterval)
+                                    
+                                    if notificationDate > Date() {
+                                        HStack(alignment: .top, spacing: 12) {
+                                            Image(systemName: "calendar.badge.clock")
+                                                .foregroundColor(Color.appTint)
+                                                .font(.title2)
+                                            
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(String(localized: "You'll be reminded on"))
+                                                    .font(.body)
+                                                
+                                                HStack(spacing: 4) {
+                                                    Text(notificationDate, style: .date)
+                                                    Text("at")
+                                                    Text(notificationDate, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+                                                }
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.primary)
+                                            }
+                                            
+                                            Spacer()
+                                        }
+                                        .padding(.top, 15)
+
+                                    } else {
+                                        HStack {
+                                            Image(systemName: "exclamationmark.triangle")
+                                                .foregroundColor(.orange)
+                                                .font(.title2)
+                                            
+                                            Text(String(localized: "Reminder time would be in the past"))
+                                                .font(.caption)
+                                                .foregroundColor(.orange)
+                                            
+                                            Spacer()
+                                        }
+                                        .padding(.top, 15)
+                                    }
+                                    
                                     // Permission warning if not authorized
                                     if notificationManager.authorizationStatus != .authorized {
                                         HStack {
@@ -539,7 +589,7 @@ struct OrderDetailView: View {
                                     }
                                 }
                             }
-                            .padding(10)
+                          
                         }
                     }
                 }

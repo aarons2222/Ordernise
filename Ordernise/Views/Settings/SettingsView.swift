@@ -33,7 +33,7 @@ struct SettingsView: View {
                 
                 
                 HeaderWithButton(
-                    title: String(localized: "Settings"),
+                    title: String(localized: "Settings", table: "Settings"),
                     buttonContent: "line.3.horizontal.decrease.circle",
                     isButtonImage: true,
                     showTrailingButton: false,
@@ -52,7 +52,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading){
                          
                         
-                    SectionHeader(title: String(localized: "General"))
+                    SectionHeader(title: String(localized: "General", table: "Settings"))
                           
                             
                             CustomCardView{
@@ -61,11 +61,11 @@ struct SettingsView: View {
                                 HStack{
                                     
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text(String(localized: "Currency"))
+                                        Text(String(localized: "Currency", table: "Settings"))
                                             .font(.headline)
                                             .foregroundColor(.text)
                                         
-                                        Text(String(localized: "This currency will be used for new stock items"))
+                                        Text(String(localized: "This currency will be used for new stock items", table: "Settings"))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                         
@@ -79,21 +79,24 @@ struct SettingsView: View {
                                             Button {
                                                 localeManager.setCurrency(currency)
                                             } label: {
-                                                Text(" \(localeManager.getCurrencySymbol(for: currency))  \(localeManager.getCurrencyDisplayName(for: currency))")
-                                                    .font(.title2)
-                                                
-                                                
+                                                HStack {
+                                                    Image(systemName: localeManager.getCurrencySymbolName(for: currency))
+                                                        .font(.title2)
+                                                        .foregroundColor(.appTint)
+                                                    
+                                                    Text(" \(localeManager.getCurrencyDisplayName(for: currency))")
+                                                        .font(.title2)
+                                                }
                                             }
                                         }
                                     } label: {
-                                        HStack(spacing: 4) {
+                                        HStack(spacing: 8) {
                                             
-                                            Text(localeManager.getCurrencySymbol(for: localeManager.currentCurrency))
+                                            Image(systemName: localeManager.getCurrencySymbolName(for: localeManager.currentCurrency))
                                                 .font(.title)
                                                 .foregroundStyle(Color.appTint)
                                             
-                                            
-                                            
+                                   
                                             
                                             Image(systemName: "chevron.up.chevron.down")
                                                 .font(.title3)
@@ -107,37 +110,7 @@ struct SettingsView: View {
                             }
                             .padding(.bottom, 3)
                             
-                            CustomCardView{
-                            
-                            HStack {
-                                VStack(alignment: .leading, spacing: 8) {
-                                 
-                                        Text(String(localized: "Dummy Mode"))
-                                            .font(.headline)
-                                            .foregroundColor(.text)
-                                        
-                                   
-                                
-                                    
-                                    Text(dummyDataManager.isDummyModeEnabled ? 
-                                        String(localized: "Using 100 test orders from the last year for demonstration purposes") : 
-                                        String(localized: "Use realistic test data instead of your actual business data"))
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                        .multilineTextAlignment(.leading)
-                                }
-                                
-                                Spacer()
-                                
-                               
-                                    Toggle("", isOn: $dummyDataManager.isDummyModeEnabled)
-                                        .labelsHidden()
-                                        .tint(Color.appTint)
-                                    
-                              
-                                
-                            }
-                        }
+                     
                         
                         
                         
@@ -156,19 +129,19 @@ struct SettingsView: View {
                             
                             NavigationLink(destination: OrderStatusOptions()) {
                                 
-                                CustomCardView(String(localized: "Order Settings")) {
+                                CustomCardView(String(localized: "Order Settings", table: "Settings")) {
                                     
                                     HStack(alignment: .center){
                                         
                                         
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Order Status Options"))
+                                            Text(String(localized: "Order Status Options", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
                                             
                                             
-                                            Text(String(localized: "Select which statuses are available in your order workflow."))
+                                            Text(String(localized: "Select which statuses are available in your order workflow.", table: "Settings"))
                                             
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
@@ -198,13 +171,13 @@ struct SettingsView: View {
                                         
                                         
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Platform Options"))
+                                            Text(String(localized: "Platform Options", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
                                             
                                             
-                                            Text(String(localized: "Select which platforms are available in your order workflow."))
+                                            Text(String(localized: "Select which platforms are available in your order workflow.", table: "Settings"))
                                             
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
@@ -266,11 +239,11 @@ struct SettingsView: View {
                                     HStack{
                                         
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Categories"))
+                                            Text(String(localized: "Categories", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Text(String(localized: "Organise your stock items by category to keep things easy to find."))
+                                            Text(String(localized: "Organise your stock items by category to keep things easy to find.", table: "Settings"))
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                                 .multilineTextAlignment(.leading)
@@ -308,17 +281,17 @@ struct SettingsView: View {
                   
 
                             
-                            SectionHeader(title: String(localized: "Form Fields"))
+                            SectionHeader(title: String(localized: "Form Fields", table: "Settings"))
                             
                             NavigationLink(destination: OrderFieldSettings()) {
                                 CustomCardView {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Order Fields"))
+                                            Text(String(localized: "Order Fields", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Text(String(localized: "Customise which fields are shown when creating and editing orders"))
+                                            Text(String(localized: "Customise which fields are shown when creating and editing orders", table: "Settings"))
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                                 .multilineTextAlignment(.leading)
@@ -343,11 +316,11 @@ struct SettingsView: View {
                                 CustomCardView {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Stock Fields"))
+                                            Text(String(localized: "Stock Fields", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Text(String(localized: "Customise which fields are shown when creating and editing stock items."))
+                                            Text(String(localized: "Customise which fields are shown when creating and editing stock items.", table: "Settings"))
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                                 .multilineTextAlignment(.leading)
@@ -385,7 +358,7 @@ struct SettingsView: View {
                             
                   
                             
-                            SectionHeader(title: String(localized: "Data"))
+                            SectionHeader(title: String(localized: "Data", table: "Settings"))
                             
 
                             
@@ -393,11 +366,11 @@ struct SettingsView: View {
                                 CustomCardView {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Export Data"))
+                                            Text(String(localized: "Export Data", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Text(String(localized: "Export your orders and inventory data to Excel or CSV format for analysis and backup."))
+                                            Text(String(localized: "Export your orders and inventory data to Excel or CSV format for analysis and backup.", table: "Settings"))
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                                 .multilineTextAlignment(.leading)
@@ -418,19 +391,19 @@ struct SettingsView: View {
                       
                             
                             
-                            SectionHeader(title: String(localized: "Appearance"))
+                            SectionHeader(title: String(localized: "Appearance", table: "Settings"))
                              
                             
                             
                             CustomCardView {
                                 
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text(String(localized: "App Theme"))
+                                    Text(String(localized: "App Theme", table: "Settings"))
                                         .font(.headline)
                                         .foregroundColor(.text)
                                     
                                     
-                                    Text(String(localized: "Pick your favorite theme, or let the app follow your device settings."))
+                                    Text(String(localized: "Pick your favorite theme, or let the app follow your device settings.", table: "Settings"))
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
@@ -486,11 +459,11 @@ struct SettingsView: View {
                                 
                                 HStack {
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text(String(localized: "App Tint"))
+                                        Text(String(localized: "App Tint", table: "Settings"))
                                             .font(.headline)
                                             .foregroundColor(.text)
                                         
-                                        Text(String(localized: "Pick a color to customise the app's look - some colours may make some UI elements unreadable."))
+                                        Text(String(localized: "Pick a color to customise the app's look - some colours may make some UI elements unreadable.", table: "Settings"))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                             .multilineTextAlignment(.leading)
@@ -516,16 +489,22 @@ struct SettingsView: View {
                         
                         VStack(alignment: .leading){
                       
-                            SectionHeader(title: String(localized: "Testing"))
+                            SectionHeader(title: String(localized: "Testing", table: "Settings"))
                             
                             CustomCardView {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text(String(localized: "Test Notification"))
-                                            .font(.headline)
-                                            .foregroundColor(.text)
+                                     
+                                            Text(String(localized: "Dummy Mode", table: "Settings"))
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                       
+                                    
                                         
-                                        Text(String(localized: "Send a test notification in 1 minute to verify notification permissions"))
+                                        Text(dummyDataManager.isDummyModeEnabled ?
+                                            String(localized: "Using 100 test orders from the last year for demonstration purposes", table: "Settings") :
+                                            String(localized: "Use realistic test data instead of your actual business data", table: "Settings"))
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                             .multilineTextAlignment(.leading)
@@ -533,25 +512,20 @@ struct SettingsView: View {
                                     
                                     Spacer()
                                     
-                                    Button {
-                                        Task {
-                                            await scheduleTestNotification()
-                                        }
-                                    } label: {
-                                        Image(systemName: "bell.badge")
-                                            .font(.title2)
-                                            .foregroundColor(.white)
-                                            .frame(width: 40, height: 40)
-                                            .background(Color.appTint)
-                                            .clipShape(Circle())
-                                    }
+                                   
+                                        Toggle("", isOn: $dummyDataManager.isDummyModeEnabled)
+                                            .labelsHidden()
+                                            .tint(Color.appTint)
+                                        
+                                  
+                                    
                                 }
                             }
                         }
                         
                         VStack(alignment: .leading){
                      
-                            SectionHeader(title: String(localized: "Support"))
+                            SectionHeader(title: String(localized: "Support", table: "Settings"))
                                
 
                             Button{
@@ -562,11 +536,11 @@ struct SettingsView: View {
                                 CustomCardView {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 8) {
-                                            Text(String(localized: "Support"))
+                                            Text(String(localized: "Support", table: "Settings"))
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Text(String(localized: "Get support here"))
+                                            Text(String(localized: "Get support here", table: "Settings"))
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                                 .multilineTextAlignment(.leading)

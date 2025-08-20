@@ -2,7 +2,6 @@
   "sourceLanguage" : "en",
   "strings" : {
     "App Theme" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31,7 +30,6 @@
       }
     },
     "App Tint" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -60,7 +58,6 @@
       }
     },
     "Appearance" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -233,6 +230,9 @@
         }
       }
     },
+    "Categories" : {
+
+    },
     "Chinese Yuan" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -321,7 +321,6 @@
       }
     },
     "Currency" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -349,8 +348,16 @@
         }
       }
     },
+    "Customise which fields are shown when creating and editing orders" : {
+
+    },
+    "Customise which fields are shown when creating and editing stock items." : {
+
+    },
+    "Data" : {
+
+    },
     "Dummy Mode" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -436,8 +443,19 @@
         }
       }
     },
+    "Export Data" : {
+
+    },
+    "Export your orders and inventory data to Excel or CSV format for analysis and backup." : {
+
+    },
+    "Form Fields" : {
+
+    },
+    "General" : {
+
+    },
     "Get support here" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -494,8 +512,10 @@
         }
       }
     },
+    "Order Fields" : {
+
+    },
     "Order Settings" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -524,7 +544,6 @@
       }
     },
     "Order Status Options" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -552,8 +571,10 @@
         }
       }
     },
+    "Organise your stock items by category to keep things easy to find." : {
+
+    },
     "Pick a color to customise the app's look - some colours may make some UI elements unreadable." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -582,7 +603,6 @@
       }
     },
     "Pick your favorite theme, or let the app follow your device settings." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -611,7 +631,6 @@
       }
     },
     "Platform Options" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -669,7 +688,6 @@
       }
     },
     "Select which platforms are available in your order workflow." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -698,7 +716,6 @@
       }
     },
     "Select which statuses are available in your order workflow." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -761,8 +778,10 @@
         }
       }
     },
+    "Stock Fields" : {
+
+    },
     "Support" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -819,8 +838,10 @@
         }
       }
     },
+    "Testing" : {
+
+    },
     "This currency will be used for new stock items" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -907,7 +928,6 @@
       }
     },
     "Use realistic test data instead of your actual business data" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -936,7 +956,6 @@
       }
     },
     "Using 100 test orders from the last year for demonstration purposes" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
