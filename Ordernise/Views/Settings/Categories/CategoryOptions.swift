@@ -69,7 +69,7 @@ struct CategoryOptions: View {
                             LazyVStack(spacing: 12) {
                                 
                                 
-                                ForEach(categories) { category in
+                                ForEach(categories.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }) { category in
                                     CategoryRow(category: category)
                                         .onTapGesture {
                                             categoryToEdit = category

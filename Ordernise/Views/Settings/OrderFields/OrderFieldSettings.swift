@@ -234,8 +234,9 @@ struct DraggableOrderFieldRow: View {
             Text(fieldItem.displayName)
                         .font(.body)
                         .foregroundColor(.text)
-                    
-                 
+                        .layoutPriority(1)
+                        .minimumScaleFactor(0.1)
+
             
             
             Spacer()

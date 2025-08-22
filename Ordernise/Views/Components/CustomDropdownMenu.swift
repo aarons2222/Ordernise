@@ -179,28 +179,31 @@ struct PlatformDropdownMenu: View {
         switch platform {
         case .amazon:
             return Image("amazon")
-        case .ebay:
-            return Image("ebay")
         case .carboot:
             return Image(systemName: "car.side.rear.open")
-        case .depop:
-            return Image("depop")
-        case .shopify:
-            return Image("shopify")
-        case .etsy:
-            return Image("etsy")
         case .custom:
             return Image(systemName: "wrench.adjustable")
-        case .vinted:
-            return Image("vinted")
-        case .poshmark:
-            return Image("poshmark")
+        case .depop:
+            return Image("depop")
+        case .ebay:
+            return Image("ebay")
+        case .etsy:
+            return Image("etsy")
         case .marketplace:
             return Image("facebook")
         case .gumtree:
             return Image("gumtree")
+        case .numonday:
+            return Image("numonday")
+        case .poshmark:
+            return Image("poshmark")
+        case .shopify:
+            return Image("shopify")
+        case .vinted:
+            return Image("vinted")
         }
     }
+
     
     var body: some View {
         CustomDropdownMenu(

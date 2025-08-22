@@ -103,6 +103,13 @@ class Order {
         }
     }
     
+    
+    var itemsCostTotal: Double {
+        items.reduce(0) { total, item in
+            total + (item.stockItem?.cost ?? 0) * Double(item.quantity)
+        }
+    }
+    
     /// Total order value including items, shipping, and additional costs
     var totalValue: Double {
         itemsTotal + shippingCost + additionalCosts

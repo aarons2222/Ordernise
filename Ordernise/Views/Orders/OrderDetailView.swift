@@ -149,6 +149,8 @@ struct OrderDetailView: View {
         viewModel.orderItems.reduce(0) { $0 + $1.totalPrice }
     }
     
+    
+    
     // Total revenue including items and customer shipping charge
     var totalRevenue: Double {
         totalOrderValue + customerShippingCharge
@@ -358,7 +360,7 @@ struct OrderDetailView: View {
                                 .focused($focusedField, equals: true)
                             }
                             
-                            ListSection(title: String(localized: "Customer Shipping Charge")) {
+                            ListSection(title: String(localized: "Customer Postage Charge")) {
                                 CustomNumberField(
                                     value: (mode.isEditable || isEditMode) ? $customerShippingCharge : .constant(customerShippingCharge),
                                     placeholder: String(localized: "Amount charged to customer"),
@@ -367,14 +369,14 @@ struct OrderDetailView: View {
                                 .focused($focusedField, equals: mode.isEditable || isEditMode)
                             }
                             
-                            ListSection(title: String(localized: "Shipping Costs")) {
+                            ListSection(title: String(localized: "Postage Costs")) {
                                 CustomNumberField(
                                     value: {
                                         let isEditable = (mode.isEditable || isEditMode)
                                         print("🔗 [OrderDetailView] Shipping Cost binding - isEditable: \(isEditable), mode: \(mode), isEditMode: \(isEditMode)")
                                         return isEditable ? $shippingCost : .constant(shippingCost)
                                     }(),
-                                    placeholder: String(localized: "Shipping Costs"),
+                                    placeholder: String(localized: "Postage Costs"),
                                     systemImage: localeManager.currencySymbolName
                                 )
                                 .focused($focusedField, equals: mode.isEditable || isEditMode)
@@ -384,20 +386,20 @@ struct OrderDetailView: View {
                 }
                 
             case .sellingFees:
-                ListSection(title: String(localized: "Selling Fees")) {
+                ListSection(title: String(localized: "Marketplace Fees")) {
                     CustomNumberField(
                         value: (mode.isEditable || isEditMode) ? $sellingFees : .constant(sellingFees),
-                        placeholder: String(localized: "Selling Fees"),
+                        placeholder: String(localized: "Marketplace Fees"),
                         systemImage: localeManager.currencySymbolName
                     )
                     .focused($focusedField, equals: mode.isEditable || isEditMode)
                 }
                 
             case .additionalCosts:
-                ListSection(title: String(localized: "Additional Costs")) {
+                ListSection(title: String(localized: "Other Expenses")) {
                     CustomNumberField(
                         value: (mode.isEditable || isEditMode) ? $additionalCosts : .constant(additionalCosts),
-                        placeholder: String(localized: "Additional Costs"),
+                        placeholder: String(localized: "Other Expenses"),
                         systemImage: localeManager.currencySymbolName
                     )
                     .focused($focusedField, equals: mode.isEditable || isEditMode)
@@ -419,39 +421,39 @@ struct OrderDetailView: View {
                     let validOrderItems = viewModel.orderItems.filter { $0.isValid }
                     if !validOrderItems.isEmpty {
                         ListSection(title: String(localized: "Items")) {
-                            VStack {
-                                ForEach(validOrderItems.indices, id: \.self) { index in
-                                    let orderItem = validOrderItems[index]
-                                    if let stockItem = orderItem.stockItem {
-                                        VStack(alignment: .leading, spacing: 8) {
-                                            HStack(alignment: .top) {
+                            
+                            CustomCardView{
+                                VStack {
+                                    ForEach(validOrderItems.indices, id: \.self) { index in
+                                        let orderItem = validOrderItems[index]
+                                        if let stockItem = orderItem.stockItem {
+                                            
+                                            
+                                            HStack {
                                                 Text("\(orderItem.quantity) × \(orderItem.stockItem?.name ?? "—")")
-                                                    .font(.body)
-                                                    .fontWeight(.medium)
+                                                    .font(.body.bold())
                                                     .foregroundColor(.primary)
-                                                
                                                 Spacer()
-                                                
-                                                Text(orderItem.totalPrice, format: localeManager.currencyFormatStyle)
-                                                    .font(.subheadline)
-                                                    .fontWeight(.semibold)
-                                                    .foregroundColor(.secondary)
+                                                Text(abs(orderItem.totalPrice).formatted(localeManager.currencyFormatStyle))
+                                                    .font(.body.bold())
+                                                    .foregroundColor(.primary)
                                             }
                                             
-                                            
-                                        }
-                                        .padding(.vertical, 6)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            // Find the index in the full viewModel.orderItems array
-                                            if let fullIndex = viewModel.orderItems.firstIndex(where: { $0.id == orderItem.id }) {
-                                                currentOrderItemIndex = fullIndex
-                                                showingStockItemPicker = true
-                                            }
+                                  
+                                                .onTapGesture {
+                                                    // Find the index in the full viewModel.orderItems array
+                                                    if let fullIndex = viewModel.orderItems.firstIndex(where: { $0.id == orderItem.id }) {
+                                                        currentOrderItemIndex = fullIndex
+                                                        showingStockItemPicker = true
+                                                    }
+                                                }
                                         }
                                     }
                                 }
                             }
+                            .padding(.horizontal, 5)
+                         
+                            
                         }.onAppear(){
                             print("validOrderItems \(validOrderItems)")
                             
@@ -485,8 +487,10 @@ struct OrderDetailView: View {
                                 if let date8AM = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: calendar.date(from: dateComponents) ?? newValue) {
                                     orderCompletionDate = date8AM
                                 }
+                                
+                                
                             }
-                    }
+                    }.padding(.horizontal, 5)
                     
                     // Show reminder toggle only if completion date is set and in the future
                     if orderCompletionDate > Date() {
@@ -657,92 +661,134 @@ struct OrderDetailView: View {
                     dynamicFieldsSection
                         .padding(.horizontal)
                     
-                    // Financial Summary
-                    VStack(alignment: .trailing, spacing: 8) {
-                        // Items subtotal
-                        HStack {
-                            Spacer()
-                            Text("\(String(localized: "Items Total: "))\(totalOrderValue, format: localeManager.currencyFormatStyle)")
+           
+                    VStack(alignment: .leading, spacing: 8) {
+                        
+                        Color.clear.frame(height: 10)
+                        HStack{
+                            
+                            Text(String(localized: "Income"))
                                 .font(.body)
+                                .fontWeight(.regular)
+                                .foregroundColor(.text)
+                                .underline(true)
+                            
+                            Spacer()
                         }
+                        
+                        
+                        financialRow(String(localized: "Sales Total"), value: totalOrderValue, isNegative: false)
+
+                        
+                    
+                    
                         
                         // Customer shipping charge (if any)
                         if customerShippingCharge > 0 {
-                            HStack {
-                                Spacer()
-                                Text("\(String(localized: "Shipping Revenue: +"))\(customerShippingCharge, format: localeManager.currencyFormatStyle)")
-                                    .font(.caption)
-                                    .foregroundColor(.green)
-                            }
+                            
+                            
+                            financialRow(String(localized: ("Shipping Income:")), value: customerShippingCharge, isNegative: false)
+                            
+                            
+                            
+                            
+                          
                         }
                         
                         // Total revenue
-                        if customerShippingCharge > 0 {
-                            HStack {
-                                Spacer()
-                                Text("\(String(localized: "Total Revenue: "))\(totalRevenue, format: localeManager.currencyFormatStyle)")
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                            }
+                        if totalRevenue > 0 {
+                            
+                            financialRow(String(localized: ("Gross Revenue")), value: totalRevenue, isNegative: false)
                         }
+                        
+                        
+                      
+                        
+                        
+                        if order?.items.count ?? 0
+                    > 0 {
+                            
+                
+                            
+                            financialRow(String(localized: "Cost of Goods Sold"), value: totalCostOfGoods, isNegative: true)
+                            
+                            
+                      
+                        }
+              
                         
                         // Charges section
                         if totalCharges > 0 {
                             VStack(alignment: .trailing, spacing: 4) {
-                                Text(String(localized: "Charges:"))
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                
+                  
+                                
+                                Divider()
+                                
+                                HStack{
+                                Text(String(localized: "Costs"))
+                                    .font(.body)
+                                    .fontWeight(.regular)
+                                    .foregroundColor(.text)
+                                    .underline(true)
+                                    Spacer()
+                                }
+                                
+                                
                                 
                                 if shippingCost > 0 {
-                                    HStack {
-                                        Spacer()
-                                        Text("\(String(localized: "Shipping: -"))\(shippingCost, format: localeManager.currencyFormatStyle)")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
+                                    
+                                    
+                                    
+                                    financialRow(String(localized: ("Postage Cost")), value: shippingCost, isNegative: true)
+                                    
+                                    
+                                 
                                 }
                                 
                                 if sellingFees > 0 {
-                                    HStack {
-                                        Spacer()
-                                        Text("\(String(localized: "Selling Fees: -"))\(sellingFees, format: localeManager.currencyFormatStyle)")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
+                                    
+                                    financialRow(String(localized: ("Marketplace Fees")), value: sellingFees, isNegative: true)
+                            
                                 }
                                 
                                 if additionalCosts > 0 {
-                                    HStack {
-                                        Spacer()
-                                        Text("\(String(localized: "Additional: -"))\(additionalCosts, format: localeManager.currencyFormatStyle)")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
+                                    
+                                    financialRow(String(localized: ("Other Expenses")), value: additionalCosts, isNegative: true)
+                             
                                 }
                             }
+                            
+                            
                         }
+                        
+                     
+                        
                         
                         Divider()
-                            .padding(.horizontal)
                         
-                        // Net total
-                        HStack {
+                        HStack{
+                        Text(String(localized: "Summary"))
+                            .font(.body)
+                            .fontWeight(.regular)
+                            .foregroundColor(.text)
+                            .underline(true)
                             Spacer()
-                            Text("\(String(localized: "Order Total: "))\(netOrderTotal, format: localeManager.currencyFormatStyle)")
-                                .font(.headline)
-                                .fontWeight(.semibold)
                         }
                         
-                        // Profit
-                        HStack {
-                            Spacer()
-                            Text("\(String(localized: "Profit: "))\(localeManager.formatCurrency(orderProfit))")
-                                .font(.subheadline)
-                                .foregroundColor(orderProfit >= 0 ? .green : .red)
-                                .fontWeight(.medium)
-                        }
+                    
+                            financialRow(String(localized: ("Net Revenue")), value: netOrderTotal, isNegative: false)
+                            
+                       
+                        
+                     
+                        
+                        financialRow("Profit", value: orderProfit, isBold: true)
+                        
+                  
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 20)
+                    
                     
                     Color.clear.frame(height: 50)
                 }
@@ -1018,6 +1064,20 @@ struct OrderDetailView: View {
         }
     }
     
+
+
+    private func financialRow(_ title: String, value: Double, isNegative: Bool = false, isBold: Bool = false) -> some View {
+        HStack {
+            Text(title)
+                .font(isBold ? .body.bold() : .body)
+                .foregroundColor(isBold ? .primary : .secondary)
+            Spacer()
+            Text(abs(value).formatted(localeManager.currencyFormatStyle))
+                .font(isBold ? .body.bold() : .body)
+                .foregroundColor(isNegative ? .red : value < 0 ? .red : (isBold ? .green : .primary))
+        }
+    }
+
     
 
     
@@ -1222,8 +1282,8 @@ struct OrderDetailView: View {
                         print("  - Adjustment: \(adjustment)")
                         do {
                             try stockManager.updateStockForOrderChange(
-                                stockItem: stockItem, 
-                                oldQuantity: 0, 
+                                stockItem: stockItem,
+                                oldQuantity: 0,
                                 newQuantity: -adjustment  // Negative because we want to apply the adjustment
                             )
                             print("  - New quantity: \(stockItem.quantityAvailable)")
@@ -1362,5 +1422,4 @@ struct OrderDetailView: View {
 #Preview {
     OrderDetailView(mode: .add)
 }
-
 

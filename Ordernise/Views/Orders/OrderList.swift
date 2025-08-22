@@ -17,10 +17,13 @@ extension DateFormatter {
     }()
 }
 
-enum OrderFilter: String, CaseIterable {
+enum OrderFilter: String, CaseIterable, Identifiable {
     case received = "Received"
     case inProgress = "In Progress"
     case completed = "Completed"
+    
+    // Conform to Identifiable
+    var id: String { rawValue }
     
     // Localized display name for UI
     var localizedTitle: String {
@@ -47,10 +50,28 @@ enum OrderFilter: String, CaseIterable {
 }
 
 
+enum OrderViewType: String, CaseIterable {
+    case list = "List"
+    case calendar = "Calendar"
+    
+}
+
+
+
+
+
 struct OrderList: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var dummyDataManager = DummyDataManager.shared
     @Query(sort: \Order.orderReceivedDate, order: .reverse) private var realOrders: [Order]
+    
+    @AppStorage("selectedOrderViewType") private var selectedOrderViewTypeRaw: String = OrderViewType.list.rawValue
+    // Bridge between stored raw value and enum
+    private var selectedOrderViewType: OrderViewType {
+        get { OrderViewType(rawValue: selectedOrderViewTypeRaw) ?? .list }
+        set { selectedOrderViewTypeRaw = newValue.rawValue }
+    }
+    
     
     private var allOrders: [Order] {
         if dummyDataManager.isDummyModeEnabled {
@@ -64,7 +85,6 @@ struct OrderList: View {
     @State private var confirmDelete = false
     @State private var selectedOrder: Order?
     @State private var orderToDelete: Order?
-    @State private var showingOrderCalendar = false
 
  
     @State private var selectedFilter: OrderFilter = .received
@@ -152,6 +172,54 @@ struct OrderList: View {
     }
     
     
+    @ViewBuilder
+    private var listView: some View {
+        if allOrders.isEmpty {
+            VStack {
+                Spacer()
+                ContentUnavailableView(
+                    String(localized: "No Orders"),
+                    systemImage: "bag",
+                    description: Text(String(localized: "Tap ")) +
+                    Text(Image(systemName: "plus.circle")) +
+                    Text(String(localized: " to add your first order."))
+                )
+                Spacer()
+            }
+        } else if filteredOrders.isEmpty {
+            VStack {
+                Spacer()
+                ContentUnavailableView(String(localized: "No Results"), systemImage: "magnifyingglass", description: Text(String(localized: "No orders match your search.")))
+                Spacer()
+            }
+        } else {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+                    ForEach(groupedOrders, id: \.0) { dateString, ordersForDate in
+                        Section(header: sectionHeader(dateString)) {
+                            ForEach(ordersForDate) { order in
+                                OrderCardView(height: 90, order: order)
+                                    .swipeActions {
+                                        Action(symbolImage: "trash.fill", tint: .white, background: Color.red) { resetPosition in
+                                            orderToDelete = order
+                                            confirmDelete = true
+                                        }
+                                    }
+                                    .onTapGesture {
+                                        selectedOrder = order
+                                    }
+                                
+                                Color.clear.frame(height: 10)
+                            }
+                        }
+                    }
+                }
+                
+                Color.clear.frame(height: 40)
+            }
+        }
+    }
+    
     private var headerSection: some View {
         
         
@@ -168,22 +236,24 @@ struct OrderList: View {
             
             
             
+       
             
-            Button(action: {
-                self.showingOrderCalendar = true
-            }) {
+            if (selectedOrderViewType == .list){
+                Menu {
+                    Picker("Sort by", selection: $selectedFilter) {
+                        ForEach(OrderFilter.allCases) { option in
+                            Text(option.localizedTitle).tag(option)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down.circle")
+                        .font(.title)
+                        .foregroundColor(.appTint)
+                }
+                .padding(.trailing, 8)
                 
-                Image(systemName: "calendar.circle")
-                    .font(.title)
-                    .foregroundColor(.appTint)
                 
             }
-            .padding(.trailing, 8)
-            
-            
-            
-            
-            
             Button(action: {
                 showingAddOrder = true
             }) {
@@ -210,112 +280,56 @@ struct OrderList: View {
         
         NavigationStack {
             
-            VStack {
+            VStack(spacing: 0) {
                 headerSection
-//
-//                HeaderWithButton(
-//                    title: String(localized: "Orders"),
-//                    buttonContent: "plus.circle",
-//                    isButtonImage: true,
-//                    showTrailingButton: true,
-//                    showLeadingButton: false,
-//                    onButtonTap: {
-//                   
-//                        showingAddOrder = true
-//                    }
-//                )
-//                
-//                
-//                
                 
-                
+                // Isolated SegmentedControl container
+                VStack {
+                    SegmentedControl(
+                        tabs: OrderViewType.allCases,
+                        activeTab: Binding(
+                            get: { selectedOrderViewType },
+                            set: { selectedOrderViewTypeRaw = $0.rawValue }
+                        ),
+                        height: 35,
+                        font: .callout,
+                        activeTint: Color(UIColor.systemBackground),
+                        inActiveTint: .gray.opacity(0.8)
+                    ) { size in
+                        Capsule()
+                            .fill(Color.appTint.gradient)
+                    }
+                    .background(
+                        Capsule()
+                            .fill(.thinMaterial)
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.appTint, lineWidth: 2)
+                            )
+                    )
+                    .padding(.horizontal)
+                }
+                .id("segmentedControlContainer")
                 
 
-                
-                
-                SegmentedControl(
-                    tabs: OrderFilter.allCases,
-                    activeTab: $selectedFilter,
-                    height: 35,
-                    extraText: { filter in countText(for: filter) },
-                    customText: { filter in filter.localizedTitle },
-                    font: .callout,
-                    activeTint: Color(UIColor.systemBackground),
-                    inActiveTint: .gray.opacity(0.8)
-                ) { size in
-                    Capsule()
-                        .fill(Color.appTint.gradient)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                }
-                .background(
-                    Capsule()
-                        .fill(.thinMaterial)
-                        .stroke(Color.appTint, lineWidth: 2)
-                )
-                .padding(.horizontal)
-                
-              
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-               
-                
-          
-                if allOrders.isEmpty {
-                    Spacer()
-                    ContentUnavailableView(
-                        String(localized: "No Orders"), 
-                        systemImage: "bag", 
-                        description: Text(String(localized: "Tap ")) + 
-                                    Text(Image(systemName: "plus.circle")) + 
-                                    Text(String(localized: " to add your first order."))
-                    )
-                    Spacer()
-                } else if filteredOrders.isEmpty {
-                    Spacer()
-                    ContentUnavailableView(String(localized: "No Results"), systemImage: "magnifyingglass", description: Text(String(localized: "No orders match your search.")))
-                    Spacer()
-                } else {
+                Color.clear.frame(height: 5     )
+                // Content container - opacity-based switching to avoid hierarchy changes
+                ZStack {
+                    listView
+                        .opacity(selectedOrderViewType == .list ? 1 : 0)
+                        .allowsHitTesting(selectedOrderViewType == .list)
                     
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
-                            ForEach(groupedOrders, id: \.0) { dateString, ordersForDate in
-                                Section(header: sectionHeader(dateString)) {
-                                    ForEach(ordersForDate) { order in
-                                        
-                                        
-                                        
-                                        OrderCardView(height: 90, order: order)
-                                            .swipeActions {
-                                             
-                                                
-                                                Action(symbolImage: "trash.fill", tint: .white, background: Color.red) { resetPosition in
-                                                    orderToDelete = order
-                                                    confirmDelete = true
-                                                }
-                                            }
-                                            .onTapGesture {
-                                                selectedOrder = order
-                                            }
-                                        
-                                        Color.clear.frame(height: 10)
-                                    }
-                                }
-                            }
-                        }
-                        
-                        Color.clear.frame(height: 40)
-                    }
-                  
+                    OrderCalendarView()
+                        .opacity(selectedOrderViewType == .calendar ? 1 : 0) 
+                        .allowsHitTesting(selectedOrderViewType == .calendar)
                 }
+                
+
+                .animation(.easeInOut(duration: 0.3), value: selectedOrderViewType)
+                
+                
+                
+                
             }
             
             .alert( String(localized: "Confirm deletion"), isPresented: $confirmDelete, actions: {
@@ -347,9 +361,7 @@ struct OrderList: View {
                     OrderDetailView(mode: .add)
                 }
             }
-            .fullScreenCover(isPresented: $showingOrderCalendar) {
-                OrderCalendarView()
-            }
+         
             .fullScreenCover(item: $selectedOrder) { selectedOrder in
                 ZStack{
                     Color(.systemBackground)

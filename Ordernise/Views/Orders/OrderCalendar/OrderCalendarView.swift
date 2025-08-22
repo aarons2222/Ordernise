@@ -35,7 +35,13 @@ struct OrderCalendarView: View {
                         .onChange(of: currentMonth) {
                             // Don't update selectedDate when changing months
                         }
+                    
+                    
+                    Color.clear.frame(height: 60)
                 }
+                
+                
+                
                 
                 Spacer()
             }
@@ -46,16 +52,7 @@ struct OrderCalendarView: View {
         HStack(spacing: 0) {
             
             
-            Button(action: {
-                dismiss()
-            }) {
-                Image(systemName: "chevron.backward.circle")
-                    .font(.title)
-                    .foregroundColor(.appTint)
-                    .padding(.leading)
-            }
-            
-            
+         
 
             
             
@@ -96,6 +93,8 @@ struct OrderCalendarView: View {
             }.padding(.trailing, 10)
             
         }
+        .padding(.horizontal)
+        .padding(.top)
     }
     
     // extrating Year And Month for display...
@@ -147,17 +146,34 @@ struct CustomDatePicker: View {
     // Sheet presentation
     @State private var selectedOrder: Order?
     
+    @Environment(\.colorScheme) var colorScheme
+    
+    
+    
+    
     var body: some View {
         VStack(spacing: 0) {
             dayLabels
             calendarGrid
             ordersSection
         }
-        .sheet(item: $selectedOrder) { order in
-            NavigationView {
-                OrderInfoSheet(order: order)
+        .fullScreenCover(item: $selectedOrder) { order in
+            ZStack{
+                Color(.systemBackground)
+                       .ignoresSafeArea()
+                OrderDetailView(order: order, mode: .view)
             }
         }
+        
+        
+//        .sheet(item: $selectedOrder) { order in
+//            NavigationView {
+//                OrderInfoSheet(order: order)
+//                    .background(colorScheme == .dark ? Color.black : Color.white
+//                    )
+//
+//            }
+//        }
     }
     
     private var dayLabels: some View {
@@ -178,13 +194,6 @@ struct CustomDatePicker: View {
         return LazyVGrid(columns: columns, spacing: 5) {
             ForEach(extractDate()) { value in
                 CardView(value: value)
-                    .background(
-                        Capsule()
-                            .fill(Color.appTint.gradient)
-                            .padding(.horizontal, 8)
-                            .opacity(isSameDay(date1: value.date, date2: selectedDate) ? 1 : 0)
-                    )
-                  
                     .onTapGesture {
                         selectedDate = value.date
                     }
@@ -210,7 +219,27 @@ struct CustomDatePicker: View {
         }
         
         if !ordersForDate.isEmpty {
-            ForEach(ordersForDate, id: \.id) { order in
+            // Sort orders by priority (urgent first, completed last)
+            let sortedOrders = ordersForDate.sorted { order1, order2 in
+                let statusPriority: [OrderStatus: Int] = [
+                    .failed: 9,
+                    .canceled: 9,
+                    .returned: 8,
+                    .onHold: 7,
+                    .refunded: 6,
+                    .pending: 5,
+                    .received: 4,
+                    .processing: 3,
+                    .shipped: 2,
+                    .delivered: 1,
+                    .fulfilled: 1
+                ]
+                let priority1 = statusPriority[order1.status] ?? 0
+                let priority2 = statusPriority[order2.status] ?? 0
+                return priority1 > priority2 // Higher priority first, completed orders last
+            }
+            
+            ForEach(sortedOrders, id: \.id) { order in
                  orderCard(for: order)
                 
             }
@@ -321,55 +350,14 @@ struct CustomDatePicker: View {
         
         
         
-        
-        
-//        VStack(alignment: .leading, spacing: 8) {
-//            HStack {
-//                Text(order.orderReceivedDate, style: .time)
-//                    .font(.caption)
-//                    .foregroundColor(.secondary)
-//                
-//                Spacer()
-//                
-//                Text(order.status.rawValue)
-//                    .font(.caption)
-//                    .padding(.horizontal, 8)
-//                    .padding(.vertical, 2)
-//                    .background(order.status.statusColor.opacity(0.2))
-//                    .foregroundColor(order.status.statusColor)
-//                    .cornerRadius(4)
-//            }
-//            
-//            if let customerName = order.customerName {
-//                Text(customerName)
-//                    .font(.title3.bold())
-//            }
-//            
-//            if let orderRef = order.orderReference {
-//                Text("Ref: \(orderRef)")
-//                    .font(.caption)
-//                    .foregroundColor(.secondary)
-//            }
-//            
-//            Text("\(order.items.count) item(s)")
-//                .font(.caption)
-//                .foregroundColor(.secondary)
-//        }
-//        .padding(.vertical, 10)
-//        .padding(.horizontal)
-//        .frame(maxWidth: .infinity, alignment: .leading)
-//        .background(
-//            Color.appTint
-//                .opacity(0.1)
-//                .cornerRadius(10)
-//        )
+
 
     }
     
     @ViewBuilder
     func CardView(value: DateValue)->some View{
         
-        VStack{
+        VStack(spacing: 4) {
             
             if value.day != -1{
                 
@@ -377,44 +365,40 @@ struct CustomDatePicker: View {
                     return isSameDay(date1: getDisplayDate(for: order), date2: value.date)
                 }
                 
-           
-                    Spacer()
-                    Text("\(value.day)")
-                        .font(.title3.bold())
-                        .foregroundColor(
-                            isSameDay(date1: value.date, date2: selectedDate) ? .white : isSameDay(date1: value.date, date2: today) ? Color.appTint : .primary
-                        )
-                        .frame(maxWidth: .infinity)
-                Spacer()
-                    // Always reserve space for the marker
-                    if hasOrders {
-                        Image(systemName: "largecircle.fill.circle")
-                            .foregroundStyle(
-                                isSameDay(date1: value.date, date2: today) ? getMarkerColor(for: value.date) : getMarkerColor(for: value.date)
-                            )
-                            .frame(width: 6, height: 6)
-                    } else {
-                        // Invisible placeholder to keep spacing consistent
-                        Color.clear
-                            .frame(width: 6, height: 6)
-                    }
+                // Number section - always in same position
+                Text("\(value.day)")
+                    .font(.title3.weight(.medium))
+                    .foregroundColor(
+                        isSameDay(date1: value.date, date2: selectedDate) ? Color.text : isSameDay(date1: value.date, date2: today) ? Color.appTint : .text
+                    )
+                    .frame(width: 32, height: 32)
+                   
+                    .overlay(
+                        Circle()
+                            .stroke(Color.appTint, lineWidth: 3)
+                            .opacity(isSameDay(date1: value.date, date2: selectedDate) ? 1 : 0)
+                    )
+
+
+                Color.clear.frame(height: 2)
+        
                 
+                VStack(spacing: 4) {
+                    if hasOrders {
+                        ForEach(getUniqueStatuses(for: value.date), id: \.self) { status in
+                            Rectangle()
+                                .frame(height: 4)
+                                .cornerRadius(30)
+                                .foregroundStyle(status.statusColor)
+                        }
+                    }
+                }
+                .frame(minHeight: 16, alignment: .top)
+      
                 Spacer()
-    
-//                }
-//                else{
-//                    
-//                    Text("\(value.day)")
-//                        .font(.title3.bold())
-//                        .foregroundColor(isSameDay(date1: value.date, date2: currentDate) ? .white : .primary)
-//                        .frame(maxWidth: .infinity)
-//                    
-//       
-//                }
             }
         }
-        .padding(.bottom,9)
-        .frame(height: 60,alignment: .top)
+        .frame(height: 60, alignment: .center)
     }
     
     // checking dates...
@@ -427,6 +411,38 @@ struct CustomDatePicker: View {
     // Get the display date for an order (orderCompletionDate if set, otherwise orderReceivedDate)
     func getDisplayDate(for order: Order) -> Date {
         return order.orderCompletionDate ?? order.orderReceivedDate
+    }
+    
+    // Get unique order statuses for a specific date, sorted by priority
+    func getUniqueStatuses(for date: Date) -> [OrderStatus] {
+        let ordersForDate = orders.filter { order in
+            return isSameDay(date1: getDisplayDate(for: order), date2: date)
+        }
+        
+        guard !ordersForDate.isEmpty else { return [] }
+        
+        // Define status priority (higher number = higher priority)
+        let statusPriority: [OrderStatus: Int] = [
+            .failed: 9,
+            .canceled: 9,
+            .returned: 8,
+            .onHold: 7,
+            .refunded: 6,
+            .pending: 5,
+            .received: 4,
+            .processing: 3,
+            .shipped: 2,
+            .delivered: 1,
+            .fulfilled: 1
+        ]
+        
+        // Get unique statuses and sort by priority (urgent/attention-needed first, completed last)
+        let uniqueStatuses = Array(Set(ordersForDate.map(\.status)))
+        return uniqueStatuses.sorted { status1, status2 in
+            let priority1 = statusPriority[status1] ?? 0
+            let priority2 = statusPriority[status2] ?? 0
+            return priority1 > priority2 // Higher priority numbers appear first (top), completed orders (low numbers) at bottom
+        }
     }
     
     // Get the highest priority status color for orders on a specific date

@@ -116,6 +116,48 @@ struct DashboardView: View {
         stockItems.filter { $0.quantityAvailable <= 5 }.count
     }
     
+    private var averageOrderValue: Double {
+        let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
+        guard !completedOrders.isEmpty else { return 0 }
+        return totalRevenue / Double(completedOrders.count)
+    }
+    
+    private var averageProfitPerItem: Double {
+        let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
+        let totalItemsSold = completedOrders.reduce(0) { total, order in
+            total + order.items.reduce(0) { itemTotal, orderItem in
+                itemTotal + orderItem.quantity
+            }
+        }
+        guard totalItemsSold > 0 else { return 0 }
+        return totalProfit / Double(totalItemsSold)
+    }
+    
+    private var bestSellingItems: [(StockItem, Int)] {
+        let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
+        
+        // Dictionary to accumulate quantities by stock item
+        var itemQuantities: [StockItem.ID: Int] = [:]
+        
+        // Count quantities for each stock item
+        for order in completedOrders {
+            for orderItem in order.items {
+                if let stockItem = orderItem.stockItem {
+                    itemQuantities[stockItem.id, default: 0] += orderItem.quantity
+                }
+            }
+        }
+        
+        // Convert to array of (StockItem, quantity) and sort by quantity descending
+        let sortedItems = itemQuantities.compactMap { (stockItemId, quantity) -> (StockItem, Int)? in
+            guard let stockItem = stockItems.first(where: { $0.id == stockItemId }) else { return nil }
+            return (stockItem, quantity)
+        }.sorted { $0.1 > $1.1 }
+        
+        // Return top 5
+        return Array(sortedItems.prefix(5))
+    }
+    
     private var salesByCategory: [CategorySalesData] {
         let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
         
@@ -184,10 +226,10 @@ struct DashboardView: View {
                 title: String(localized: "Dashboard"),
                 buttonContent: "info.circle",
                 isButtonImage: true,
-                showTrailingButton: true,
+                showTrailingButton: false,
                 showLeadingButton: false,
                 onButtonTap: {
-                    showingInfoSheet = true
+                  //  showingInfoSheet = true
                 }
             )
             
@@ -213,9 +255,9 @@ struct DashboardView: View {
 
                         metricsGrid
                         salesByCategoryChart
-                        additionalMetrics
-                            
-                            Color.clear.frame(height: 40)
+                        averageMetricsGrid
+                        bestSellingItemsSection
+                        Color.clear.frame(height: 40)
                             
                     }
                 }
@@ -319,6 +361,111 @@ struct DashboardView: View {
         .padding(.horizontal)
     }
     
+    private var averageMetricsGrid: some View {
+        LazyVGrid(columns: [
+            GridItem(.flexible()),
+            GridItem(.flexible())
+        ], spacing: 16) {
+            // Average Order Value
+            MetricCard(
+                title: String(localized: "Avg Order Value"),
+                value: averageOrderValue.formatted(localeManager.currencyFormatStyle),
+                subtitle: String(localized: "Avg Order Value"),
+                icon: "cart.circle",
+                color: .purple
+            )
+            
+            // Average Profit Per Item
+            MetricCard(
+                title: String(localized: "Avg Item Profit"),
+                value: averageProfitPerItem.formatted(localeManager.currencyFormatStyle),
+                subtitle: String(localized: "Avg Item Profit"),
+                icon: "cube.box.fill",
+                color: .cyan
+            )
+        }
+        .padding(.horizontal)
+    }
+    
+    private var bestSellingItemsSection: some View {
+        CustomCardView {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(String(localized: "Best Selling Items"))
+                        .font(.headline)
+                        .fontWeight(.regular)
+                        .foregroundColor(.primary)
+                        .underline()
+                    Spacer()
+                }
+                .padding(.bottom, 8)
+                
+                if bestSellingItems.isEmpty {
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Image(systemName: "chart.bar.xaxis")
+                                .font(.title2)
+                                .foregroundColor(.secondary)
+                            Text(String(localized: "No sales data yet"))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 20)
+                } else {
+                    VStack(spacing: 8) {
+                        ForEach(Array(bestSellingItems.enumerated()), id: \.offset) { index, item in
+                            let (stockItem, quantity) = item
+                            HStack(alignment: .center, spacing: 12) {
+                                // Rank badge
+                                Text("\(index + 1)")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .frame(width: 20, height: 20)
+                                    .background(stockItem.category?.color.gradient ?? Color.appTint.gradient, in: Circle())
+                                
+                                // Item details
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(stockItem.name)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .lineLimit(1)
+                                    
+                                    if let category = stockItem.category {
+                                        Text(category.name)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                // Quantity sold
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text("\(quantity)")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.appTint)
+                                    Text(String(localized: "sold"))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            
+                            if index < bestSellingItems.count - 1 {
+                                Divider()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
     
     private var metricsGrid: some View {
         LazyVGrid(columns: [
@@ -368,62 +515,6 @@ struct DashboardView: View {
     
 
     
-    private var additionalMetrics: some View {
-        
-        
-        
-        // Quick Stats
-        VStack(alignment: .leading, spacing: 12) {
-            Text(String(localized: "Quick Stats"))
-                .font(.headline)
-                .padding(.horizontal)
-            
-            VStack(spacing: 8) {
-                HStack {
-                    Text(String(localized: "Total Orders (\(selectedTimeFrame.localizedTitle))"))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("\(filteredOrders.count)")
-                        .fontWeight(.medium)
-                }
-                
-                HStack {
-                    Text(String(localized: "Pending Orders"))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("\(filteredOrders.filter { $0.status == .pending }.count)")
-                        .fontWeight(.medium)
-                }
-                
-                HStack {
-                    Text(String(localized: "Total Stock Items"))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("\(stockItems.count)")
-                        .fontWeight(.medium)
-                }
-                
-                if totalRevenue > 0 {
-                    Divider()
-                    HStack {
-                        Text(String(localized: "Average Order Value"))
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        
-                        
-                        Text("\(totalRevenue / Double(max(totalSales, 1)), format: localeManager.currencyFormatStyle)")
-
-                            .fontWeight(.medium)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
-            .padding(.horizontal)
-        }
-        
-    }
     
     
     // MARK: - Metric Card Component
@@ -482,9 +573,12 @@ struct DashboardInfoSheet: View {
                             .foregroundColor(.appTint)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            InfoRow(title: String(localized: "Total Sales"), description: String(localized: "Number of completed orders (fulfilled or delivered)"))
+                            InfoRow(title: String(localized: "Sales"), description: String(localized: "Number of completed orders (fulfilled or delivered)"))
                             InfoRow(title: String(localized: "Revenue"), description: String(localized: "Total income from completed orders"))
                             InfoRow(title: String(localized: "Profit"), description: String(localized: "Revenue minus all costs (shipping, fees, product costs)"))
+                            InfoRow(title: String(localized: "Margin"), description: String(localized: "Profit as a percentage of revenue (Profit ÷ Revenue × 100)"))
+                            InfoRow(title: String(localized: "Avg Order Value"), description: String(localized: "Average revenue per completed order (Total Revenue ÷ Number of Orders)"))
+                            InfoRow(title: String(localized: "Avg Item Profit"), description: String(localized: "Average profit per item sold across all completed orders"))
                         }
                     }
                     

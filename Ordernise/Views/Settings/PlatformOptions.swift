@@ -35,6 +35,8 @@ struct PlatformOptions: View {
             return Image("facebook")
         case .gumtree:
             return Image("gumtree")
+        case .numonday:
+            return Image("numonday")
         }
     }
     
@@ -172,6 +174,9 @@ struct PlatformOptions: View {
         case .marketplace: return String(localized: "Facebook marketplace")
         case .gumtree: return String(localized: "Local classified ads")
         case .custom: return String(localized: "Custom platform or other")
+        case .numonday: return String(localized: "Independent artists and makers marketplace")
+ 
+            
         }
     }
 }

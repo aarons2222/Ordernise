@@ -11,15 +11,16 @@ import Foundation
 enum Platform: String, Codable, Identifiable, CaseIterable {
     var id: String { rawValue }
 
-    case ebay = "eBay"
-    case vinted = "Vinted"
-    case shopify = "Shopify"
-    case etsy = "Etsy"
     case amazon = "Amazon"
-    case depop = "Depop"
-    case poshmark = "Poshmark"
     case carboot = "Carboot Sale"
+    case custom = "Custom"
+    case depop = "Depop"
+    case ebay = "eBay"
+    case etsy = "Etsy"
     case marketplace = "Facebook Marketplace"
     case gumtree = "Gumtree"
-    case custom = "Custom"
+    case numonday = "numonday"
+    case poshmark = "Poshmark"
+    case shopify = "Shopify"
+    case vinted = "Vinted"
 }

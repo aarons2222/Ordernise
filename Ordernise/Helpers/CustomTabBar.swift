@@ -60,7 +60,7 @@ struct CustomTabBar: View {
             let size = $0.size
             let tabs = AppTab.allCases.prefix(showsSearchBar ? 4 : 5)
             let tabItemWidth = max(min(size.width / CGFloat(tabs.count + (showsSearchBar ? 1 : 0)), 90), 60)
-            let tabItemHeight: CGFloat = 56
+            let tabItemHeight: CGFloat = 50
 
             ZStack {
                 if isInitialOffsetSet {
@@ -104,7 +104,7 @@ struct CustomTabBar: View {
             }
 
         }
-        .frame(height: 50)
+        .frame(height: 40)
         .padding(.horizontal, 25)
         .padding(.bottom, isKeyboardActive ? 10 : -20)
         .animation(.bouncy, value: dragOffset)
