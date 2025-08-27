@@ -705,8 +705,7 @@ struct OrderDetailView: View {
                       
                         
                         
-                        if order?.items.count ?? 0
-                    > 0 {
+                        if (order?.items?.count ?? 0) > 0 {
                             
                 
                             
@@ -978,8 +977,8 @@ struct OrderDetailView: View {
             orderReceivedDate = existingOrder.orderReceivedDate
             orderReference = existingOrder.orderReference ?? ""
             customerName = existingOrder.customerName ?? ""
-            status = existingOrder.status
-            platform = existingOrder.platform
+            status = existingOrder.status ?? .received
+            platform = existingOrder.platform ?? .amazon
             
             // Load shipping and cost data
             shippingCost = existingOrder.shippingCost
@@ -1183,18 +1182,18 @@ struct OrderDetailView: View {
             let newStatus = status
             
             // If changing to a status that should return stock, and the old status didn't return stock
-            if shouldReturnStockToInventory(newStatus) && !shouldReturnStockToInventory(oldStatus) {
+            if shouldReturnStockToInventory(newStatus) && !shouldReturnStockToInventory(oldStatus ?? .received) {
                 // Return items to stock
-                for orderItem in existingOrder.items {
+                for orderItem in existingOrder.items ?? [] {
                     if let stockItem = orderItem.stockItem {
                         stockItem.quantityAvailable += orderItem.quantity
                     }
                 }
             }
             // If changing from a status that returned stock to one that doesn't, reduce stock again
-            else if !shouldReturnStockToInventory(newStatus) && shouldReturnStockToInventory(oldStatus) {
+            else if !shouldReturnStockToInventory(newStatus) && shouldReturnStockToInventory(oldStatus ?? .received) {
                 // Remove items from stock
-                for orderItem in existingOrder.items {
+                for orderItem in existingOrder.items ?? [] {
                     if let stockItem = orderItem.stockItem {
                         stockItem.quantityAvailable -= orderItem.quantity
                     }
@@ -1261,7 +1260,7 @@ struct OrderDetailView: View {
                 var stockAdjustments: [StockItem.ID: Int] = [:]
                 
                 // Count old quantities (restore to stock)
-                for item in existingOrder.items {
+                for item in existingOrder.items ?? [] {
                     if let stockItem = item.stockItem {
                         stockAdjustments[stockItem.id, default: 0] += item.quantity
                     }
@@ -1298,7 +1297,7 @@ struct OrderDetailView: View {
             }
             
             // Remove existing order items
-            for item in existingOrder.items {
+            for item in existingOrder.items ?? [] {
                 modelContext.delete(item)
             }
             
@@ -1339,25 +1338,26 @@ struct OrderDetailView: View {
                 customerName: customerName.isEmpty ? nil : customerName,
                 status: status,
                 platform: platform,
-                items: [],
                 shippingCost: shippingCost,
                 sellingFees: sellingFees,
-                additionalCosts: additionalCosts,
-                shippingCompany: shippingCompany.isEmpty ? nil : shippingCompany,
-                shippingMethod: shippingMethod.isEmpty ? nil : shippingMethod,
-                trackingReference: trackingReference.isEmpty ? nil : trackingReference,
                 customerShippingCharge: customerShippingCharge,
                 additionalCostNotes: additionalCostNotes.isEmpty ? nil : additionalCostNotes,
                 orderCompletionDate: orderCompletionDate,
                 deliveryMethod: deliveryMethod,
-                reminderEnabled: reminderEnabled, reminderTimeBeforeCompletion: reminderTimePeriod.timeInterval, attributes: attributesToSave
+                reminderEnabled: reminderEnabled,
+                reminderTimeBeforeCompletion: reminderTimePeriod.timeInterval
             )
+            
+            // Initialize items array if nil
+            if newOrder.items == nil {
+                newOrder.items = []
+            }
             
             // Add order items
             for orderItemEntry in validOrderItems {
                 let orderItem = OrderItem(quantity: orderItemEntry.quantity, stockItem: orderItemEntry.stockItem)
                 orderItem.order = newOrder
-                newOrder.items.append(orderItem)
+                newOrder.items?.append(orderItem)
             }
             
             // Commit pending stock changes using StockManager

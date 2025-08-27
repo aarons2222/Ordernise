@@ -125,9 +125,9 @@ struct DashboardView: View {
     private var averageProfitPerItem: Double {
         let completedOrders = filteredOrders.filter { $0.status == .fulfilled || $0.status == .delivered }
         let totalItemsSold = completedOrders.reduce(0) { total, order in
-            total + order.items.reduce(0) { itemTotal, orderItem in
+            total + (order.items?.reduce(0) { itemTotal, orderItem in
                 itemTotal + orderItem.quantity
-            }
+            } ?? 0)
         }
         guard totalItemsSold > 0 else { return 0 }
         return totalProfit / Double(totalItemsSold)
@@ -141,9 +141,11 @@ struct DashboardView: View {
         
         // Count quantities for each stock item
         for order in completedOrders {
-            for orderItem in order.items {
-                if let stockItem = orderItem.stockItem {
-                    itemQuantities[stockItem.id, default: 0] += orderItem.quantity
+            if let items = order.items {
+                for orderItem in items {
+                    if let stockItem = orderItem.stockItem {
+                        itemQuantities[stockItem.id, default: 0] += orderItem.quantity
+                    }
                 }
             }
         }
@@ -166,14 +168,16 @@ struct DashboardView: View {
         
         // Count all items sold by category
         for order in completedOrders {
-            for orderItem in order.items {
-                let itemCategory = orderItem.stockItem?.category
-                let itemQuantity = orderItem.quantity
-                
-                if let existingCount = categoryItemCount[itemCategory] {
-                    categoryItemCount[itemCategory] = existingCount + itemQuantity
-                } else {
-                    categoryItemCount[itemCategory] = itemQuantity
+            if let items = order.items {
+                for orderItem in items {
+                    let itemCategory = orderItem.stockItem?.category
+                    let itemQuantity = orderItem.quantity
+                    
+                    if let existingCount = categoryItemCount[itemCategory] {
+                        categoryItemCount[itemCategory] = existingCount + itemQuantity
+                    } else {
+                        categoryItemCount[itemCategory] = itemQuantity
+                    }
                 }
             }
         }

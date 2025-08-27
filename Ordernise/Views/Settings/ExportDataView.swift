@@ -445,10 +445,10 @@ struct ExportDataView: View {
             }
             
             // Add products information
-            let products = order.items.map { item in
+            let products = order.items?.map { item in
                 let itemName = item.stockItem?.name ?? String(localized: "Unknown Item")
                 return "\(itemName) (x\(item.quantity))"
-            }.joined(separator: "; ")
+            }.joined(separator: "; ") ?? ""
             rowValues.append(products.isEmpty ? String(localized: "No items") : products)
             
             let row = rowValues.joined(separator: ",")
@@ -467,9 +467,9 @@ struct ExportDataView: View {
             case .customerName:
                 return order.customerName?.isEmpty == false ? order.customerName! : String(localized: "N/A")
             case .orderStatus:
-                return order.status.rawValue.capitalized
+                return (order.status ?? .received).rawValue.capitalized
             case .platform:
-                return order.platform.rawValue.capitalized
+                return (order.platform ?? .amazon).rawValue.capitalized
             case .shipping:
                 return String(format: "%.2f", order.shippingCost)
             case .sellingFees:
@@ -479,7 +479,7 @@ struct ExportDataView: View {
             case .notes:
                 return order.additionalCostNotes ?? ""
             case .itemsSection:
-                return "\(order.items.count) " + String(localized: "items")
+                return "\(order.items?.count ?? 0) " + String(localized: "items")
             case .orderCompletionDate:
                 return order.orderCompletionDate?.formatted(.dateTime.year().month().day()) ?? String(localized: "N/A")
             }

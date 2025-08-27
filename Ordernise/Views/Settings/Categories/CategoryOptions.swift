@@ -26,7 +26,9 @@ struct CategoryOptions: View {
     @State private var categoryToEdit: Category?
     @State private var isEditMode = false
     
-    
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @State var showPaywall: Bool = false
+     
     
     var body: some View {
         
@@ -41,10 +43,17 @@ struct CategoryOptions: View {
                 showTrailingButton: true,
                 showLeadingButton: true,
                 onButtonTap: {
-                    isEditMode = false
-                    categoryToEdit = nil
-                    resetCategoryForm()
-                    showingAddCategory = true
+                    
+                    if categories.count >= 2 && !subscriptionManager.isSubscribed {
+                        showPaywall = true
+                    } else {
+                        isEditMode = false
+                        categoryToEdit = nil
+                        resetCategoryForm()
+                        showingAddCategory = true
+                    }
+
+                  
                 }
             )
            
@@ -91,6 +100,12 @@ struct CategoryOptions: View {
                     }
                 
     }
+        
+        
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+    
         
         .navigationBarHidden(true)
         

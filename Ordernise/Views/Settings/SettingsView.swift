@@ -13,14 +13,85 @@ struct SettingsView: View {
     @StateObject private var localeManager = LocaleManager.shared
     @StateObject private var dummyDataManager = DummyDataManager.shared
     @StateObject private var notificationManager = NotificationManager.shared
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @AppStorage("userTintHex") private var tintHex: String = "#ACCDFF"
     @State private var selectedColor: Color = .color1
     
     @State private var showingSupport = false
+    @State private var showingPaywall = false
     
     
     @AppStorage("AppTheme") private var appTheme: AppTheme = .systemDefault
  
+    // Computed properties for subscription status display
+    private var subscriptionStatusText: String {
+        switch subscriptionManager.subscriptionStatus {
+        case .subscribed:
+            return "Active"
+        case .notSubscribed:
+            return "Free"
+        case .expired:
+            return "Expired"
+        case .pending:
+            return "Pending"
+        case .revoked:
+            return "Revoked"
+        case .unknown:
+            return subscriptionManager.isLoading ? "Loading..." : "Unknown"
+        }
+    }
+    
+    private var subscriptionStatusColor: Color {
+        switch subscriptionManager.subscriptionStatus {
+        case .subscribed:
+            return .green
+        case .notSubscribed:
+            return .blue
+        case .expired, .revoked:
+            return .red
+        case .pending:
+            return .orange
+        case .unknown:
+            return .gray
+        }
+    }
+    
+    private var subscriptionStatusDescription: String {
+        switch subscriptionManager.subscriptionStatus {
+        case .subscribed(_, let expirationDate):
+            if let expirationDate = expirationDate {
+                return "You have full access to all premium features until \(formatExpiryDate(expirationDate))"
+            } else {
+                return "You have full access to all premium features"
+            }
+        case .notSubscribed:
+            return "Upgrade to unlock advanced features and unlimited usage"
+        case .expired:
+            return "Your subscription has expired. Renew to continue using premium features"
+        case .pending:
+            return "Your subscription is being processed"
+        case .revoked:
+            return "Your subscription has been cancelled"
+        case .unknown:
+            return "Checking subscription status..."
+        }
+    }
+    
+    private var subscriptionExpiryDate: Date? {
+        switch subscriptionManager.subscriptionStatus {
+        case .subscribed(_, let expirationDate):
+            return expirationDate
+        default:
+            return nil
+        }
+    }
+    
+    private func formatExpiryDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
+    }
 
     
     var body: some View {
@@ -118,6 +189,67 @@ struct SettingsView: View {
                         }
                         
                         
+                        VStack(alignment: .leading){
+                            
+                            SectionHeader(title: String(localized: "Subscription"))
+                            
+                            CustomCardView {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        HStack {
+                                            Text("Subscription Status")
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Spacer()
+                                            
+                                            // Status badge
+                                            Text(subscriptionStatusText)
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(subscriptionStatusColor.opacity(0.2))
+                                                .foregroundColor(subscriptionStatusColor)
+                                                .cornerRadius(12)
+                                        }
+                                        
+                                        Text(subscriptionStatusDescription)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                            .multilineTextAlignment(.leading)
+                                        
+                                        // Show current product if subscribed
+                                        if subscriptionManager.isSubscribed, let productId = subscriptionManager.currentProductId {
+                                            Text("Plan: \(productId.replacingOccurrences(of: "_", with: " ").capitalized)")
+                                                .font(.caption)
+                                                .foregroundColor(.appTint)
+                                                .fontWeight(.medium)
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    // Action button or status icon
+                                    if subscriptionManager.isSubscribed {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .font(.title2)
+                                            .foregroundColor(.green)
+                                    } else {
+                                        Button("Upgrade") {
+                                            showingPaywall = true
+                                        }
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.appTint)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                    }
+                                }
+                            }
+                        }
                         
                         
                         VStack(alignment: .leading){
@@ -580,6 +712,9 @@ struct SettingsView: View {
      
             .fullScreenCover(isPresented: $showingSupport) {
                 SupportView()
+            }
+            .fullScreenCover(isPresented: $showingPaywall) {
+                PaywallView()
             }
     }
     

@@ -66,9 +66,11 @@ class DummyDataManager: ObservableObject {
             var stockItemsDict: [UUID: StockItem] = [:]
             
             for order in orders {
-                for orderItem in order.items {
-                    if let stockItem = orderItem.stockItem {
-                        stockItemsDict[stockItem.id] = stockItem
+                if let items = order.items {
+                    for orderItem in items {
+                        if let stockItem = orderItem.stockItem {
+                            stockItemsDict[stockItem.id] = stockItem
+                        }
                     }
                 }
             }
@@ -128,8 +130,8 @@ class DummyDataManager: ObservableObject {
             let searchableText = [
                 order.customerName,
                 order.orderReference,
-                order.platform.rawValue,
-                order.status.rawValue
+                order.platform?.rawValue,
+                order.status?.rawValue
             ].compactMap { $0 }.joined(separator: " ").lowercased()
             
             return searchableText.contains(searchText.lowercased())

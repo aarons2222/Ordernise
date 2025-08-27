@@ -103,7 +103,7 @@ class OrderDetailViewViewModel: ObservableObject {
         
         var loadedItems: [OrderItemEntry] = []
         
-        for orderItem in order.items {
+        for orderItem in order.items ?? [] {
             if let stockItem = orderItem.stockItem {
             
                 let entry = OrderItemEntry(

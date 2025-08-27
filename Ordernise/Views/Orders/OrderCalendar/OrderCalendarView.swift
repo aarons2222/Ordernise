@@ -234,8 +234,8 @@ struct CustomDatePicker: View {
                     .delivered: 1,
                     .fulfilled: 1
                 ]
-                let priority1 = statusPriority[order1.status] ?? 0
-                let priority2 = statusPriority[order2.status] ?? 0
+                let priority1 = statusPriority[order1.status ?? .received] ?? 0
+                let priority2 = statusPriority[order2.status ?? .received] ?? 0
                 return priority1 > priority2 // Higher priority first, completed orders last
             }
             
@@ -256,7 +256,7 @@ struct CustomDatePicker: View {
         HStack(spacing: 0) {
             // Left color bar
             Rectangle()
-                .fill(order.status.statusColor.gradient)
+                .fill((order.status ?? .received).statusColor.gradient)
                 .frame(width: 20)
                 .frame(minHeight: 25)
                 .cornerRadius(50, corners: [.topLeft, .bottomLeft])
@@ -275,9 +275,9 @@ struct CustomDatePicker: View {
                         
                         
                         
-                        if !order.items.isEmpty {
+                        if let items = order.items, !items.isEmpty {
                             VStack(alignment: .leading) {
-                                ForEach(order.items, id: \.id) { item in
+                                ForEach(items, id: \.id) { item in
                                 
                                         
                                         
@@ -293,7 +293,7 @@ struct CustomDatePicker: View {
                             }
                         }
 
-                        Text(order.platform.rawValue)
+                        Text((order.platform ?? .amazon).rawValue)
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -310,11 +310,11 @@ struct CustomDatePicker: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         HStack(spacing: 6) {
                             Image(systemName: "largecircle.fill.circle")
-                            Text(order.status.localizedTitle)
+                            Text((order.status ?? .received).localizedTitle)
                             
                         }
                         .font(.caption)
-                        .foregroundStyle(order.status.statusColor)
+                        .foregroundStyle((order.status ?? .received).statusColor)
 
                    
 
@@ -326,11 +326,11 @@ struct CustomDatePicker: View {
                 
                 HStack{
                     Spacer()
-                    let totalValue = order.items.reduce(0.0) { total, item in
+                    let totalValue = (order.items ?? []).reduce(0.0) { total, item in
                         total + (item.stockItem?.price ?? 0.0) * Double(item.quantity)
                     }
 
-                    if !order.items.isEmpty {
+                    if !(order.items ?? []).isEmpty {
                         Text("\(String(localized: "Order Total: "))\(totalValue, format: localeManager.currencyFormatStyle)")
                             .font(.footnote)
                     }
@@ -437,7 +437,7 @@ struct CustomDatePicker: View {
         ]
         
         // Get unique statuses and sort by priority (urgent/attention-needed first, completed last)
-        let uniqueStatuses = Array(Set(ordersForDate.map(\.status)))
+        let uniqueStatuses = Array(Set(ordersForDate.map { $0.status ?? .received }))
         return uniqueStatuses.sorted { status1, status2 in
             let priority1 = statusPriority[status1] ?? 0
             let priority2 = statusPriority[status2] ?? 0
@@ -470,7 +470,7 @@ struct CustomDatePicker: View {
         
         // Find the highest priority status
         let highestPriorityStatus = ordersForDate
-            .map(\.status)
+            .map { $0.status ?? .received }
             .max { status1, status2 in
                 let priority1 = statusPriority[status1] ?? 0
                 let priority2 = statusPriority[status2] ?? 0

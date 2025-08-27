@@ -165,6 +165,7 @@ class LocaleManager: ObservableObject {
             .map { _ in UserDefaults.standard.string(forKey: "selectedCurrency") ?? "GBP" }
             .removeDuplicates()
             .compactMap { Currency(rawValue: $0) }
+            .receive(on: DispatchQueue.main)
             .assign(to: &$currentCurrency)
         
         // Create a publisher for selectedLocale changes
@@ -172,6 +173,7 @@ class LocaleManager: ObservableObject {
             .map { _ in UserDefaults.standard.string(forKey: "selectedLocale") ?? SupportedLocale.enGB.rawValue }
             .removeDuplicates()
             .compactMap { SupportedLocale(rawValue: $0) }
+            .receive(on: DispatchQueue.main)
             .assign(to: &$currentLocale)
     }
     

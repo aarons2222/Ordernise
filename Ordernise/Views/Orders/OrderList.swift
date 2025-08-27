@@ -90,18 +90,22 @@ struct OrderList: View {
     @State private var selectedFilter: OrderFilter = .received
     @Binding var searchText: String
     
+    @State var showPaywall: Bool = false
+     
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+
     var filteredOrders: [Order] {
         // Filter by search text
         let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
             // Search in order details
             let orderMatches = order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
                               order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
-                              order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+                              (order.platform ?? .amazon).rawValue.localizedCaseInsensitiveContains(searchText)
             
             // Search in order items (stock item names)
-            let itemMatches = order.items.contains { orderItem in
+            let itemMatches = order.items?.contains { orderItem in
                 orderItem.stockItem?.name.localizedCaseInsensitiveContains(searchText) == true
-            }
+            } ?? false
             
             return orderMatches || itemMatches
         }
@@ -133,7 +137,7 @@ struct OrderList: View {
         let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
             order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
             order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            (order.platform ?? .amazon).rawValue.localizedCaseInsensitiveContains(searchText)
         }
         return searchFiltered.filter { OrderFilter.received.matchesOrder($0) }.count
     }
@@ -142,7 +146,7 @@ struct OrderList: View {
         let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
             order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
             order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            (order.platform ?? .amazon).rawValue.localizedCaseInsensitiveContains(searchText)
         }
         return searchFiltered.filter { OrderFilter.completed.matchesOrder($0) }.count
     }
@@ -152,7 +156,7 @@ struct OrderList: View {
         let searchFiltered = searchText.isEmpty ? allOrders : allOrders.filter { order in
             order.customerName?.localizedCaseInsensitiveContains(searchText) == true ||
             order.orderReference?.localizedCaseInsensitiveContains(searchText) == true ||
-            order.platform.rawValue.localizedCaseInsensitiveContains(searchText)
+            (order.platform ?? .amazon).rawValue.localizedCaseInsensitiveContains(searchText)
         }
         return searchFiltered.filter { OrderFilter.inProgress.matchesOrder($0) }.count
     }
@@ -255,7 +259,16 @@ struct OrderList: View {
                 
             }
             Button(action: {
-                showingAddOrder = true
+                
+                if allOrders.count >= 5 && !subscriptionManager.isSubscribed {
+                    self.showPaywall = true
+                }else{
+                    showingAddOrder = true
+                }
+                
+                
+          
+                
             }) {
                 
                 Image(systemName: "plus.circle")
@@ -270,6 +283,10 @@ struct OrderList: View {
         
         
     }
+    
+  
+
+  
     
     
     var body: some View {
@@ -331,6 +348,10 @@ struct OrderList: View {
                 
                 
             }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+            }
+            
             
             .alert( String(localized: "Confirm deletion"), isPresented: $confirmDelete, actions: {
                 
@@ -385,9 +406,11 @@ struct OrderList: View {
         withAnimation {
             // Return items to stock if order is not fulfilled
             if order.status != .fulfilled {
-                for orderItem in order.items {
-                    if let stockItem = orderItem.stockItem {
-                        stockItem.quantityAvailable += orderItem.quantity
+                if let items = order.items {
+                    for orderItem in items {
+                        if let stockItem = orderItem.stockItem {
+                            stockItem.quantityAvailable += orderItem.quantity
+                        }
                     }
                 }
             }

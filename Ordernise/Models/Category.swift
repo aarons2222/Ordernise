@@ -10,9 +10,9 @@ import SwiftData
 
 @Model
 class Category {
-    var id: UUID
-    var name: String
-    var colorHex: String // Store color as hex string for persistence
+    var id: UUID = UUID()
+    var name: String = ""
+    var colorHex: String = "#007AFF" // Store color as hex string for persistence
     
     @Relationship(deleteRule: .nullify, inverse: \StockItem.category)
     var stockItems: [StockItem]?

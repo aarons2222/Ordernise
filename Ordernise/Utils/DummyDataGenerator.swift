@@ -106,13 +106,8 @@ class DummyDataGenerator {
                 platform: orderData.platform,
                 shippingCost: orderData.shippingCost,
                 sellingFees: orderData.sellingFees,
-                additionalCosts: orderData.additionalCosts,
-                shippingMethod: orderData.shippingMethod,
-                trackingReference: orderData.trackingReference,
                 customerShippingCharge: orderData.customerShippingCharge,
-                deliveryMethod: orderData.deliveryMethod,
-                revenue: orderData.revenue,
-                profit: orderData.profit
+                deliveryMethod: orderData.deliveryMethod
             )
             
             // Add order items based on the hardcoded data
@@ -139,7 +134,10 @@ class DummyDataGenerator {
                     quantity: orderData.quantity,
                     stockItem: stockItem
                 )
-                order.items.append(orderItem)
+                if order.items == nil {
+                    order.items = []
+                }
+                order.items?.append(orderItem)
             }
             
             orders.append(order)
@@ -154,7 +152,7 @@ class DummyDataGenerator {
         print("DEBUG: COMPLETED ORDERS: \(completedOrders.count), Total Revenue: £\(completedOrders.reduce(0) { $0 + $1.revenue })")
         print("DEBUG: INCOMPLETE ORDERS: \(incompleteOrders.count)")
         
-        let statusCounts = Dictionary(grouping: incompleteOrders, by: { $0.status })
+        let statusCounts = Dictionary(grouping: incompleteOrders, by: { $0.status ?? .received })
         for (status, statusOrders) in statusCounts {
             print("DEBUG: \(status.rawValue.uppercased()): \(statusOrders.count) orders")
         }
@@ -476,18 +474,8 @@ class DummyDataGenerator {
             customerName: customerNames.randomElement()!,
             status: generateRealisticStatus(for: date),
             platform: platforms.randomElement()!,
-            items: orderItems,
-            shippingCost: Double(String(format: "%.2f", shippingCost)) ?? shippingCost,
-            sellingFees: Double(String(format: "%.2f", sellingFees)) ?? sellingFees,
-            additionalCosts: Double(String(format: "%.2f", additionalCosts)) ?? additionalCosts,
-            shippingMethod: shippingMethods.randomElement()!,
-            trackingReference: generateTrackingReference(),
-            customerShippingCharge: Double(String(format: "%.2f", customerShippingCharge)) ?? customerShippingCharge,
-            additionalCostNotes: Bool.random() ? "Additional packaging required" : nil,
-            deliveryMethod: deliveryMethods.randomElement()!,
-            revenue: Double(String(format: "%.2f", totalRevenue)) ?? totalRevenue,
-            profit: Double(String(format: "%.2f", profit)) ?? profit,
-            attributes: generateRandomAttributes()
+            shippingCost: shippingCost,
+            sellingFees: sellingFees
         )
         
         return order

@@ -12,11 +12,11 @@ import SwiftData
 
 @Model
 class StockFieldPreferencesModel {
-    @Attribute(.unique) var id: String
-    var fieldItemsData: Data
-    var version: Int
-    var createdAt: Date
-    var updatedAt: Date
+    var id: String = "default"
+    var fieldItemsData: Data = Data()
+    var version: Int = 1
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     init(id: String = "default", fieldItemsData: Data, version: Int = 1) {
         self.id = id
@@ -34,11 +34,11 @@ class StockFieldPreferencesModel {
 
 @Model
 class OrderFieldPreferencesModel {
-    @Attribute(.unique) var id: String
-    var fieldItemsData: Data
-    var version: Int
-    var createdAt: Date
-    var updatedAt: Date
+    var id: String = "default"
+    var fieldItemsData: Data = Data()
+    var version: Int = 1
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     init(id: String = "default", fieldItemsData: Data, version: Int = 1) {
         self.id = id

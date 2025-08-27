@@ -26,7 +26,8 @@ struct OrderniseApp: App {
         
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .private("iCloud.cloud.io.astrickland")
         )
         
         do {

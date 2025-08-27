@@ -10,15 +10,15 @@ import SwiftData
 
 @Model
 class StockItem {
-    var id: UUID
-    var name: String
-    var quantityAvailable: Int
-    var price: Double
-    var cost: Double
-    var currency: Currency
+    var id: UUID = UUID()
+    var name: String = ""
+    var quantityAvailable: Int = 0
+    var price: Double = 0.0
+    var cost: Double = 0.0
+    var currency: Currency?
     
     // Custom field values storage
-    var attributes: [String: String]
+    var attributes: [String: String] = [:]
     
     @Relationship(deleteRule: .nullify)
     var category: Category?
@@ -28,11 +28,11 @@ class StockItem {
 
     init(
         id: UUID = UUID(),
-        name: String,
-        quantityAvailable: Int,
-        price: Double,
-        cost: Double,
-        currency: Currency = .gbp,
+        name: String = "",
+        quantityAvailable: Int = 0,
+        price: Double = 0.0,
+        cost: Double = 0.0,
+        currency: Currency? = nil,
         attributes: [String: String] = [:]
     ) {
         self.id = id

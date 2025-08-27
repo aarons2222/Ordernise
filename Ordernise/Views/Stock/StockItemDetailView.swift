@@ -108,6 +108,9 @@ struct StockItemDetailView: View {
     @State private var errorSubTitle = ""
     
     
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @State var showPaywall: Bool = false
+
 
     
 
@@ -148,6 +151,9 @@ struct StockItemDetailView: View {
               
             
               
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
             }
              .toastieView(toast: $toastie)
              .overlay(alignment: .bottomTrailing) {
@@ -337,7 +343,21 @@ struct StockItemDetailView: View {
                     
                     if categories.isEmpty {
                         GlobalButton(title: String(localized: "Add Category"), showIcon: true, icon: "plus.circle") {
+                            
+                            
+                            
                             showingAddCategory = true
+                            
+                        
+                            
+                              
+
+                                
+               
+                            
+                            
+                            
+                            
                         }
                     } else {
                         CategoryPicker(
@@ -347,7 +367,18 @@ struct StockItemDetailView: View {
                                 showingCategoryOptions = true
                             },
                             onAddCategory: {
-                                showingAddCategory = true
+                                
+                                if categories.count >= 2 && !subscriptionManager.isSubscribed {
+                                    self.showPaywall = true
+                                }else{
+                                
+                                    showingAddCategory = true
+                            }
+                                
+                          
+                                
+                                
+                                
                             }
                         )
                     }

@@ -37,7 +37,7 @@ struct StockFieldSettings: View {
             
   
           
-                    // Instructions
+                
          
                             
                             

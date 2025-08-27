@@ -12,8 +12,8 @@ import SwiftData
 
 @Model
 class OrderItem {
-    var id: UUID
-    var quantity: Int
+    var id: UUID = UUID()
+    var quantity: Int = 1
 
     @Relationship
     var stockItem: StockItem?

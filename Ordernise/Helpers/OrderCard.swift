@@ -20,7 +20,7 @@ struct OrderCardView: View {
         HStack(spacing: 0) {
             // Left color bar
             Rectangle()
-                .fill(order.status.statusColor.gradient)
+                .fill((order.status ?? .received).statusColor.gradient)
                 .frame(width: 20)
                 .frame(minHeight: height)
                 .cornerRadius(50, corners: [.topLeft, .bottomLeft])
@@ -39,9 +39,9 @@ struct OrderCardView: View {
                         
                         
                         
-                        if !order.items.isEmpty {
+                        if let items = order.items, !items.isEmpty {
                             VStack(alignment: .leading) {
-                                ForEach(order.items, id: \.id) { item in
+                                ForEach(items, id: \.id) { item in
                                 
                                         
                                         
@@ -57,7 +57,7 @@ struct OrderCardView: View {
                             }
                         }
 
-                        Text(order.platform.rawValue)
+                        Text((order.platform ?? .amazon).rawValue)
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -74,11 +74,11 @@ struct OrderCardView: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         HStack(spacing: 6) {
                             Image(systemName: "largecircle.fill.circle")
-                            Text(order.status.localizedTitle)
+                            Text((order.status ?? .received).localizedTitle)
                             
                         }
                         .font(.caption)
-                        .foregroundStyle(order.status.statusColor)
+                        .foregroundStyle((order.status ?? .received).statusColor)
 
                    
 
@@ -90,11 +90,11 @@ struct OrderCardView: View {
                 
                 HStack{
                     Spacer()
-                    let totalValue = order.items.reduce(0.0) { total, item in
+                    let totalValue = (order.items ?? []).reduce(0.0) { total, item in
                         total + (item.stockItem?.price ?? 0.0) * Double(item.quantity)
                     }
 
-                    if !order.items.isEmpty {
+                    if !(order.items ?? []).isEmpty {
                         Text("\(String(localized: "Order Total: "))\(totalValue, format: localeManager.currencyFormatStyle)")
                             .font(.footnote)
                     }

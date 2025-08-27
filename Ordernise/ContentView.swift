@@ -34,13 +34,15 @@ struct ContentView: View {
     @State private var searchText: String = ""
     @State private var isKeyboardVisible: Bool = false
     @State private var showSplash = true
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
 
     private let selectedTabKey = "selectedTab"
     @Environment(\.colorScheme) var colorScheme
 
 
     init() {
-        // Load the saved tab from UserDefaults
+
+
         if let savedTab = UserDefaults.standard.string(forKey: selectedTabKey),
            let tab = AppTab(rawValue: savedTab) {
             _activeTab = State(initialValue: tab)
@@ -64,8 +66,10 @@ struct ContentView: View {
         ThemeSwitcher{
             
             ZStack(alignment: .bottom) {
-                // Main content
+              
+                
                 VStack {
+                    
                     switch activeTab {
                     case .dashboard:
                         DashboardView()
@@ -76,6 +80,7 @@ struct ContentView: View {
                     case .settings:
                         SettingsView()
                     }
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(showSplash ? 0 : 1)
@@ -87,7 +92,8 @@ struct ContentView: View {
                             .frame(width: 150, height: 150)
                        
                     } cards: {
-                        /// Cards
+                      
+                        
                         OnBoardingCard(
                             symbol: "cube.box",
                             title: "Manage Your Inventory",
@@ -105,8 +111,10 @@ struct ContentView: View {
                             title: "Insights & Analytics",
                             subTitle: "View sales metrics, profit margins, and category performance to grow your business."
                         )
+                        
                     } footer: {
-                        /// Footer
+                      
+                        
                         VStack(alignment: .leading, spacing: 6) {
                             Image(systemName: "lock.shield.fill")
                                 .foregroundStyle(Color.appTint)
@@ -124,12 +132,11 @@ struct ContentView: View {
                     }
                 }
                 
-                // Tab bar overlay
                 CustomTabBar(
                     activeTab: $activeTab,
                     searchText: $searchText,
                     onSearchBarExpanded: { isExpanded in
-                        // Optional: respond to search bar expand/collapse
+
                     },
                     onSearchTextFieldActive: { isActive in
                         isKeyboardVisible = isActive
@@ -151,7 +158,7 @@ struct ContentView: View {
             
             
             .safeAreaInset(edge: .bottom) {
-                // This creates proper spacing for the tab bar
+
                 Color.clear.frame(height: isKeyboardVisible ? 0 : 10)
             }
             
@@ -166,7 +173,8 @@ struct ContentView: View {
                 if !newValue && shouldShowOnboarding {
                     // Show onboarding after splash screen disappears (only if not seen before)
                     print("🚀 Splash screen finished, showing onboarding...")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
                         print("🚀 Setting showOnBoarding to true")
                         showOnBoarding = true
                     }
@@ -176,6 +184,11 @@ struct ContentView: View {
                 print("🔍 hasSeenOnboarding: \(hasSeenOnboarding)")
                 // For testing - uncomment next line to show onboarding immediately
                 // showOnBoarding = true
+                
+                // Load subscription status during app launch
+                Task {
+                    await subscriptionManager.loadProducts()
+                }
             }
         }
         

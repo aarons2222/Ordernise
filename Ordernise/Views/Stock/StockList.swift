@@ -19,6 +19,7 @@ struct StockList: View {
     @State private var selectedStockItem: StockItem?
     @State private var itemToDelete: StockItem?
     @Binding var searchText: String
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
 
     
     enum StockSortOption: String, CaseIterable, Identifiable {
@@ -148,6 +149,7 @@ struct StockList: View {
         }
     }
 
+    @State var showPaywall: Bool = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -156,7 +158,9 @@ struct StockList: View {
                 mainContentView
             }
             
-            
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+            }
             .fullScreenCover(isPresented: $showingAddStock) {
                 StockItemDetailView(mode: .add)
             }
@@ -223,7 +227,17 @@ struct StockList: View {
             
 
                 Button(action: {
-                    showingAddStock = true
+                    if allStockItems.count >= 2 && !subscriptionManager.isSubscribed {
+                        showPaywall = true
+                    } else {
+                        
+                        
+                        
+                        
+                        showingAddStock = true
+                        
+                    }
+                    
                 }) {
            
                         Image(systemName: "plus.circle")
