@@ -7,6 +7,9 @@
 
 import SwiftUI
 import SwiftData
+// Add to OrderniseApp.swift
+import os.log
+
 
 @main
 struct OrderniseApp: App {
@@ -27,9 +30,11 @@ struct OrderniseApp: App {
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            cloudKitDatabase: .private("iCloud.cloud.io.astrickland")
+            cloudKitDatabase: .private("iCloud.ordernisesales")
         )
         
+        os_log("CloudKit container: iCloud.ordernisesales", log: .default, type: .info)
+
         do {
             return try ModelContainer(
                 for: schema,
@@ -41,6 +46,7 @@ struct OrderniseApp: App {
     }()
     
     
+
 
 
 

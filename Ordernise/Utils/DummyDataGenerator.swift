@@ -107,7 +107,9 @@ class DummyDataGenerator {
                 shippingCost: orderData.shippingCost,
                 sellingFees: orderData.sellingFees,
                 customerShippingCharge: orderData.customerShippingCharge,
-                deliveryMethod: orderData.deliveryMethod
+                deliveryMethod: orderData.deliveryMethod,
+                revenue: orderData.revenue,
+                profit: orderData.profit
             )
             
             // Add order items based on the hardcoded data

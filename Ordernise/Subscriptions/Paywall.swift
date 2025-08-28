@@ -87,7 +87,7 @@ struct PaywallView: View {
                 
                 /// Privacy Policy & Terms of Service
                 HStack(spacing: 3) {
-                    Link("Terms of Service", destination: URL(string: "https://apple.com")!)
+                    Link("Terms of Service", destination: URL(string: "https://ordernise-facd9.web.app")!)
 
                     Text("And")
 

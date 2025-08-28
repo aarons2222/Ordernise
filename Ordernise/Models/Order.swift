@@ -68,6 +68,8 @@ class Order {
         reminderEnabled: Bool? = nil,
         reminderTimeBeforeCompletion: TimeInterval? = nil,
         reminderNotificationId: String? = nil,
+        revenue: Double = 0.0,
+        profit: Double = 0.0,
         notes: String? = nil
     ) {
         self.id = id
@@ -88,6 +90,8 @@ class Order {
         self.reminderEnabled = reminderEnabled
         self.reminderTimeBeforeCompletion = reminderTimeBeforeCompletion
         self.reminderNotificationId = reminderNotificationId
+        self.revenue = revenue
+        self.profit = profit
         self.notes = notes
     }
     

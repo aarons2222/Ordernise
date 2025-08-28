@@ -23,24 +23,7 @@ struct SettingsView: View {
     
     @AppStorage("AppTheme") private var appTheme: AppTheme = .systemDefault
  
-    // Computed properties for subscription status display
-    private var subscriptionStatusText: String {
-        switch subscriptionManager.subscriptionStatus {
-        case .subscribed:
-            return "Active"
-        case .notSubscribed:
-            return "Free"
-        case .expired:
-            return "Expired"
-        case .pending:
-            return "Pending"
-        case .revoked:
-            return "Revoked"
-        case .unknown:
-            return subscriptionManager.isLoading ? "Loading..." : "Unknown"
-        }
-    }
-    
+
     private var subscriptionStatusColor: Color {
         switch subscriptionManager.subscriptionStatus {
         case .subscribed:
@@ -60,14 +43,14 @@ struct SettingsView: View {
         switch subscriptionManager.subscriptionStatus {
         case .subscribed(_, let expirationDate):
             if let expirationDate = expirationDate {
-                return "You have full access to all premium features until \(formatExpiryDate(expirationDate))"
+                return "You have unlimited access until \(formatExpiryDate(expirationDate))"
             } else {
-                return "You have full access to all premium features"
+                return "You have unlimited access"
             }
         case .notSubscribed:
-            return "Upgrade to unlock advanced features and unlimited usage"
+            return "Upgrade now for unlimited usage"
         case .expired:
-            return "Your subscription has expired. Renew to continue using premium features"
+            return "Your subscription has expired. Renew to regain unlimited access"
         case .pending:
             return "Your subscription is being processed"
         case .revoked:
@@ -76,6 +59,7 @@ struct SettingsView: View {
             return "Checking subscription status..."
         }
     }
+
     
     private var subscriptionExpiryDate: Date? {
         switch subscriptionManager.subscriptionStatus {
@@ -201,17 +185,7 @@ struct SettingsView: View {
                                                 .font(.headline)
                                                 .foregroundColor(.text)
                                             
-                                            Spacer()
-                                            
-                                            // Status badge
-                                            Text(subscriptionStatusText)
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 4)
-                                                .background(subscriptionStatusColor.opacity(0.2))
-                                                .foregroundColor(subscriptionStatusColor)
-                                                .cornerRadius(12)
+                                      
                                         }
                                         
                                         Text(subscriptionStatusDescription)
@@ -660,6 +634,36 @@ struct SettingsView: View {
                             SectionHeader(title: String(localized: "Support", table: "Settings"))
                                
 
+                            Button {
+                                if let url = URL(string: "https://ordernise-facd9.web.app") {
+                                    UIApplication.shared.open(url)
+                                }
+                            } label: {
+                                CustomCardView {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text("Terms and Conditions")
+                                                .font(.headline)
+                                                .foregroundColor(.text)
+                                            
+                                            Text("View our terms and conditions")
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.leading)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right.circle")
+                                            .font(.title2)
+                                            .tint(Color.appTint)
+                                    }
+                                }
+                            }
+                            
+                            
+                            
+                            
                             Button{
                                 self.showingSupport = true
                             }label: {
@@ -687,6 +691,7 @@ struct SettingsView: View {
                                 }
                             }
                             
+                         
                             
                             
                         }

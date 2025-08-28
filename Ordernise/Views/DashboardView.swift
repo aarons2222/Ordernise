@@ -237,7 +237,7 @@ struct DashboardView: View {
                 }
             )
             
-            if allOrders.count > 5  {
+            if allOrders.count > 2  {
                 timeFramePicker
                     .padding(.top, 8)
                 
@@ -245,7 +245,7 @@ struct DashboardView: View {
             
             
                 VStack(spacing: 20) {
-                    if filteredOrders.count < 6 {
+                    if filteredOrders.count < 3 {
              
                         
                         ContentUnavailableView(String(localized: "Not enough sales data"), systemImage: "chart.pie", description: Text(String(localized: "As you add orders, you will be able to view sales metrics here")))

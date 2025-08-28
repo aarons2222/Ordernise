@@ -18,9 +18,12 @@
   ],
   "settings" : {
     "_applicationInternalID" : "6751537093",
+    "_compatibilityTimeRate" : {
+      "3" : 6
+    },
     "_developerTeamID" : "WPKGKN3X3Z",
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 777935887.54979706,
+    "_lastSynchronizedDate" : 778091546.39558303,
     "_locale" : "en_GB",
     "_storefront" : "GBR",
     "_storeKitErrors" : [
@@ -69,7 +72,8 @@
         "enabled" : false,
         "name" : "Offer Code Redeem Sheet"
       }
-    ]
+    ],
+    "_timeRate" : 1001
   },
   "subscriptionGroups" : [
     {
@@ -86,12 +90,12 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "14.99",
+          "displayPrice" : "19.99",
           "familyShareable" : false,
           "groupNumber" : 2,
           "internalID" : "6751541509",
           "introductoryOffer" : {
-            "internalID" : "50890F3C",
+            "internalID" : "2DE98B24",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P1W"
@@ -120,7 +124,7 @@
           "groupNumber" : 1,
           "internalID" : "6751541281",
           "introductoryOffer" : {
-            "internalID" : "FA8C86E2",
+            "internalID" : "46DD43F5",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P1W"
