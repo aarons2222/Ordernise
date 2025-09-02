@@ -107,7 +107,7 @@ struct CategoryOptions: View {
         }
     
         
-        .navigationBarHidden(true)
+        .toolbar(.hidden)
         
         
       

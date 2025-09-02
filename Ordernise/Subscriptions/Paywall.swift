@@ -10,7 +10,7 @@ import SwiftUI
 import StoreKit
 
 /// IAP View Images
-enum IAPImage: String, CaseIterable {
+enum IAPImageLight: String, CaseIterable {
     /// Raw value represents the asset image
     case one = "IAP1"
     case two = "IAP2"
@@ -18,10 +18,27 @@ enum IAPImage: String, CaseIterable {
     case four = "IAP4"
 }
 
+
+enum IAPImageDark: String, CaseIterable {
+    /// Raw value represents the asset image
+    case one = "IAP1DARK"
+    case two = "IAP2DARK"
+    case three = "IAP3DARK"
+    case four = "IAP4DARK"
+}
+
 struct PaywallView: View {
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var loadingStatus: (Bool, Bool) = (false, false)
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    
+    
+    
+    
+    
     
     var body: some View {
         GeometryReader {
@@ -85,16 +102,13 @@ struct PaywallView: View {
                     }
                 }
                 
-                /// Privacy Policy & Terms of Service
-                HStack(spacing: 3) {
-                    Link("Terms of Service", destination: URL(string: "https://ordernise-facd9.web.app")!)
-
-                    Text("And")
-
-                    Link("Privacy Policy", destination: URL(string: "https://apple.com")!)
-                }
+      
+                
+            Link("Terms And Privacy", destination: URL(string: "https://ordernise-facd9.web.app")!)
                 .font(.caption)
                 .padding(.bottom, 10)
+                .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.8))
+
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .opacity(isLoadingCompleted ? 1 : 0)
@@ -138,8 +152,6 @@ struct PaywallView: View {
                 }
             }
         }
-        .environment(\.colorScheme, .dark)
-        .tint(.white)
         .statusBarHidden()
         .onAppear {
             // Reset loading states when view appears to prevent frozen state
@@ -175,7 +187,7 @@ struct PaywallView: View {
                 .blur(radius: 70, opaque: true)
                 .overlay {
                     Rectangle()
-                        .fill(.black.opacity(0.2))
+                        .fill(colorScheme == .dark ? .black.opacity(0.6) : .gray.opacity(0.3))
                 }
                 .ignoresSafeArea()
         }
@@ -187,11 +199,11 @@ struct PaywallView: View {
         VStack(spacing: 15) {
             /// App Screenshots View
             HStack(spacing: 25) {
-                ScreenshotsView([.one, .two, .three], offset: -200)
-                ScreenshotsView([.four, .one, .two], offset: -350)
-                ScreenshotsView([.two, .three, .one], offset: -250)
+                ScreenshotsView(lightContent: [.one, .two, .three], darkContent: [.one, .two, .three], offset: -200)
+                ScreenshotsView(lightContent: [.four, .one, .two], darkContent: [.four, .one, .two], offset: -350)
+                ScreenshotsView(lightContent: [.two, .three, .one], darkContent: [.two, .three, .one], offset: -250)
                     .overlay(alignment: .trailing) {
-                        ScreenshotsView([.four, .two, .one], offset: -150)
+                        ScreenshotsView(lightContent: [.four, .two, .one], darkContent: [.four, .two, .one], offset: -150)
                             .visualEffect { content, proxy in
                                 content
                                     .offset(x: proxy.size.width + 25)
@@ -224,10 +236,11 @@ struct PaywallView: View {
                 Text("Never lose track of your business again.")
                     .font(.callout)
                     .multilineTextAlignment(.center)
+                
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(colorScheme == .dark ? Color.white : Color.black.opacity(0.8))
             .padding(.top, 15)
             .padding(.bottom, 18)
             .padding(.horizontal, 15)
@@ -235,13 +248,21 @@ struct PaywallView: View {
     }
     
     @ViewBuilder
-    func ScreenshotsView(_ content: [IAPImage], offset: CGFloat) -> some View {
+    func ScreenshotsView(lightContent: [IAPImageLight], darkContent: [IAPImageDark], offset: CGFloat) -> some View {
         ScrollView(.vertical) {
             VStack(spacing: 10) {
-                ForEach(content.indices, id: \.self) { index in
-                    Image(content[index].rawValue)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                if colorScheme == .dark {
+                    ForEach(darkContent.indices, id: \.self) { index in
+                        Image(darkContent[index].rawValue)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
+                } else {
+                    ForEach(lightContent.indices, id: \.self) { index in
+                        Image(lightContent[index].rawValue)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
                 }
             }
             .offset(y: offset)

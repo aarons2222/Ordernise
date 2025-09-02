@@ -264,7 +264,7 @@ struct OrderDetailView: View {
             case .shipping:
                 // Combined delivery and shipping section
                 VStack(spacing: 16) {
-                    ListSection(title: String(localized: "Shipping Method")) {
+                    ListSection(title: String(localized: "Delivery Method")) {
                         
                         
                         
@@ -340,7 +340,7 @@ struct OrderDetailView: View {
                             
                             
                             
-                            ListSection(title: String(localized: "Shipping Method")) {
+                            ListSection(title: String(localized: "Shipping Service")) {
                                 CustomTextField(
                                     text: $shippingMethod,
                                     placeholder: String(localized: "e.g. Standard, Express, Next Day"),
@@ -428,27 +428,27 @@ struct OrderDetailView: View {
                                         let orderItem = validOrderItems[index]
                                         if let stockItem = orderItem.stockItem {
                                             
-                                            
                                             HStack {
-                                                Text("\(orderItem.quantity) × \(orderItem.stockItem?.name ?? "—")")
+                                                Text("\(orderItem.quantity) × \(stockItem.name)")
                                                     .font(.body.bold())
                                                     .foregroundColor(.primary)
+                                                
                                                 Spacer()
+                                                
                                                 Text(abs(orderItem.totalPrice).formatted(localeManager.currencyFormatStyle))
                                                     .font(.body.bold())
                                                     .foregroundColor(.primary)
                                             }
-                                            
-                                  
-                                                .onTapGesture {
-                                                    // Find the index in the full viewModel.orderItems array
-                                                    if let fullIndex = viewModel.orderItems.firstIndex(where: { $0.id == orderItem.id }) {
-                                                        currentOrderItemIndex = fullIndex
-                                                        showingStockItemPicker = true
-                                                    }
+                                            .onTapGesture {
+                                                // Find the index in the full viewModel.orderItems array
+                                                if let fullIndex = viewModel.orderItems.firstIndex(where: { $0.id == orderItem.id }) {
+                                                    currentOrderItemIndex = fullIndex
+                                                    showingStockItemPicker = true
                                                 }
+                                            }
                                         }
                                     }
+
                                 }
                             }
                             .padding(.horizontal, 5)
@@ -801,7 +801,7 @@ struct OrderDetailView: View {
             
      
 
-            .navigationBarHidden(true)
+            .toolbar(.hidden)
             
          
 

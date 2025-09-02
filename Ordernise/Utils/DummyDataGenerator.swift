@@ -440,7 +440,7 @@ class DummyDataGenerator {
     private func generateSingleOrder(index: Int, date: Date, availableStockItems: [StockItem]) -> Order {
         let platforms = Platform.allCases
       //  let statuses = OrderStatus.allCases
-        let deliveryMethods = DeliveryMethod.allCases
+       // let deliveryMethods = DeliveryMethod.allCases
         
         // Create order items (1-4 items per order)
         let itemCount = Int.random(in: 1...4)
@@ -468,7 +468,7 @@ class DummyDataGenerator {
         totalCost += shippingCost + additionalCosts
         totalRevenue += customerShippingCharge
         
-        let profit = totalRevenue - totalCost - sellingFees
+       // let profit = totalRevenue - totalCost - sellingFees
         
         let order = Order(
             orderReceivedDate: date,

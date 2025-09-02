@@ -233,6 +233,9 @@
     "Categories" : {
 
     },
+    "Change currency" : {
+
+    },
     "Chinese Yuan" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -320,6 +323,9 @@
         }
       }
     },
+    "Contact support, terms and conditions" : {
+
+    },
     "Currency" : {
       "localizations" : {
         "de" : {
@@ -348,13 +354,19 @@
         }
       }
     },
+    "Customise which fields are shown for orders and stock items." : {
+
+    },
     "Customise which fields are shown when creating and editing orders" : {
 
     },
     "Customise which fields are shown when creating and editing stock items." : {
 
     },
-    "Data" : {
+    "Customize how Ordernise looks and feels" : {
+
+    },
+    "Demo mode on — 100 orders." : {
 
     },
     "Dummy Mode" : {
@@ -413,6 +425,9 @@
           }
         }
       }
+    },
+    "Erase All Data" : {
+
     },
     "Euro" : {
       "extractionState" : "manual",
@@ -512,6 +527,12 @@
         }
       }
     },
+    "Off" : {
+
+    },
+    "On" : {
+
+    },
     "Order Fields" : {
 
     },
@@ -572,6 +593,9 @@
       }
     },
     "Organise your stock items by category to keep things easy to find." : {
+
+    },
+    "Permanently delete all orders, stock items, and categories. This cannot be undone." : {
 
     },
     "Pick a color to customise the app's look - some colours may make some UI elements unreadable." : {
@@ -778,6 +802,9 @@
         }
       }
     },
+    "Statuses, platforms, shipping, categories." : {
+
+    },
     "Stock Fields" : {
 
     },
@@ -809,6 +836,9 @@
         }
       }
     },
+    "Support & Legal" : {
+
+    },
     "Swiss Franc" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -838,10 +868,8 @@
         }
       }
     },
-    "Testing" : {
-
-    },
     "This currency will be used for new stock items" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -927,7 +955,11 @@
         }
       }
     },
+    "Use demo mode." : {
+
+    },
     "Use realistic test data instead of your actual business data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -955,7 +987,11 @@
         }
       }
     },
+    "Used for new stock items" : {
+
+    },
     "Using 100 test orders from the last year for demonstration purposes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1011,6 +1047,9 @@
           }
         }
       }
+    },
+    "Workflow" : {
+
     },
     "Workflow Settings" : {
       "extractionState" : "stale",

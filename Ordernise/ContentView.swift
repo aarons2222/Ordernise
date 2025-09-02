@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 
 enum AppTab: String, CaseIterable {
@@ -51,13 +52,22 @@ struct ContentView: View {
     
 
     }
-    @State private var showOnBoarding: Bool = false
+  //  @State private var showOnBoarding: Bool = false
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
+    @State private var showInitialSetup: Bool = false
+    @AppStorage("hasCompletedInitialSetup") private var hasCompletedInitialSetup: Bool = false
+    @Query(sort: \Category.name) private var categories: [Category]
+    @Query(sort: \StockItem.name) private var stockItems: [StockItem]
 
     private var logoImage: Image {
         colorScheme == .dark
             ? Image("LogoDark")
             : Image("Logo")
+    }
+    
+    // Computed property to determine if setup is needed
+    private var needsSetup: Bool {
+        categories.isEmpty || stockItems.isEmpty
     }
     
     
@@ -84,52 +94,9 @@ struct ContentView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(showSplash ? 0 : 1)
-                .sheet(isPresented: $showOnBoarding) {
-                    OnBoardingView(tint: Color.appTint, title: "Welcome to Ordernise") {
-                        /// App Icon
-                        logoImage
-                            .resizable()
-                            .frame(width: 150, height: 150)
-                       
-                    } cards: {
-                      
-                        
-                        OnBoardingCard(
-                            symbol: "cube.box",
-                            title: "Manage Your Inventory",
-                            subTitle: "Track stock levels, organise items by category, and never run out of popular products."
-                        )
-                        
-                        OnBoardingCard(
-                            symbol: "doc.text.fill",
-                            title: "Process Orders Efficiently",
-                            subTitle: "Create orders, track shipping, manage customer details, and monitor completion dates."
-                        )
-                        
-                        OnBoardingCard(
-                            symbol: "chart.line.uptrend.xyaxis",
-                            title: "Insights & Analytics",
-                            subTitle: "View sales metrics, profit margins, and category performance to grow your business."
-                        )
-                        
-                    } footer: {
-                      
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            Image(systemName: "lock.shield.fill")
-                                .foregroundStyle(Color.appTint)
-                            
-                            Text("Your data is stored securely on your device your own iCloud account and never shared with third parties.")
-                                .font(.caption2)
-                                .foregroundStyle(.gray)
-                        }
-                        .padding(.vertical, 15)
-                    } onContinue: {
-                        showOnBoarding = false
-                        hasSeenOnboarding = true
-                        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-                        print("✅ Onboarding completed - set hasSeenOnboarding to true")
-                    }
+
+                .fullScreenCover(isPresented: $showInitialSetup) {
+                    InitialSetupView(hasCompletedInitialSetup: $hasCompletedInitialSetup)
                 }
                 
                 CustomTabBar(
@@ -158,32 +125,46 @@ struct ContentView: View {
             
             
             .safeAreaInset(edge: .bottom) {
-
-                Color.clear.frame(height: isKeyboardVisible ? 0 : 10)
+                let basePadding: CGFloat = isKeyboardVisible ? 0 : 10
+                let macPadding: CGFloat = ProcessInfo.processInfo.isMacCatalystApp ? 50 : 0
+                Color.clear.frame(height: basePadding + macPadding)
             }
             
             .onChange(of: activeTab) {
                 // Save tab to UserDefaults
                 UserDefaults.standard.set(activeTab.rawValue, forKey: selectedTabKey)
             }
+//            .onChange(of: showSplash) { _, newValue in
+//                let shouldShowOnboarding = !UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+//                print("🔍 showSplash changed to: \(newValue), shouldShowOnboarding: \(shouldShowOnboarding)")
+//                
+//                if !newValue && shouldShowOnboarding {
+//                    // Show onboarding after splash screen disappears (only if not seen before)
+//                    print("🚀 Splash screen finished, showing onboarding...")
+//                    Task { @MainActor in
+//                        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
+//                        print("🚀 Setting showOnBoarding to true")
+//                        showOnBoarding = true
+//                    }
+//                }
+//            }
             .onChange(of: showSplash) { _, newValue in
-                let shouldShowOnboarding = !UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
-                print("🔍 showSplash changed to: \(newValue), shouldShowOnboarding: \(shouldShowOnboarding)")
-                
-                if !newValue && shouldShowOnboarding {
-                    // Show onboarding after splash screen disappears (only if not seen before)
-                    print("🚀 Splash screen finished, showing onboarding...")
+                // When splash screen finishes, check if we need to show initial setup
+                if !newValue {
                     Task { @MainActor in
                         try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 seconds
-                        print("🚀 Setting showOnBoarding to true")
-                        showOnBoarding = true
+                        
+                        // Show initial setup if user hasn't completed it or if setup is needed
+                        if !hasCompletedInitialSetup || needsSetup {
+                            showInitialSetup = true
+                        }
                     }
                 }
             }
             .onAppear {
                 print("🔍 hasSeenOnboarding: \(hasSeenOnboarding)")
-                // For testing - uncomment next line to show onboarding immediately
-                // showOnBoarding = true
+                print("🔍 hasCompletedInitialSetup: \(hasCompletedInitialSetup)")
+                print("🔍 needsSetup: \(needsSetup)")
                 
                 // Load subscription status during app launch
                 Task {

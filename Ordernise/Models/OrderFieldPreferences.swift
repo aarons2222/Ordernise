@@ -177,13 +177,14 @@ struct OrderFieldPreferences: Codable, Equatable {
             OrderFieldItem(builtInField: .orderReference, isVisible: true, sortOrder: 1),
             OrderFieldItem(builtInField: .customerName, isVisible: true, sortOrder: 2),
             OrderFieldItem(builtInField: .orderStatus, isVisible: true, sortOrder: 3),
-            OrderFieldItem(builtInField: .platform, isVisible: true, sortOrder: 4),
-            OrderFieldItem(builtInField: .shipping, isVisible: true, sortOrder: 5),
-            OrderFieldItem(builtInField: .sellingFees, isVisible: true, sortOrder: 6),
-            OrderFieldItem(builtInField: .additionalCosts, isVisible: true, sortOrder: 7),
-            OrderFieldItem(builtInField: .orderCompletionDate, isVisible: true, sortOrder: 8),
-            OrderFieldItem(builtInField: .notes, isVisible: true, sortOrder: 9),
-            OrderFieldItem(builtInField: .itemsSection, isVisible: true, sortOrder: 10)
+            OrderFieldItem(builtInField: .itemsSection, isVisible: true, sortOrder: 4),
+            OrderFieldItem(builtInField: .platform, isVisible: true, sortOrder: 5),
+            OrderFieldItem(builtInField: .shipping, isVisible: true, sortOrder: 6),
+            OrderFieldItem(builtInField: .sellingFees, isVisible: true, sortOrder: 7),
+            OrderFieldItem(builtInField: .additionalCosts, isVisible: true, sortOrder: 8),
+            OrderFieldItem(builtInField: .orderCompletionDate, isVisible: true, sortOrder: 9),
+            OrderFieldItem(builtInField: .notes, isVisible: true, sortOrder: 10)
+           
         ]
     }
     

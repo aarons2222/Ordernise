@@ -53,7 +53,7 @@ class DummyDataManager: ObservableObject {
             print("DEBUG: Generated \(weekOrders.count) orders for THIS WEEK")
             
             for order in todayOrders.prefix(3) {
-                print("DEBUG: Today order - Date: \(order.orderReceivedDate), Status: \(order.status), Revenue: \(order.revenue)")
+               print("DEBUG: Today order - Date: \(order.orderReceivedDate), Revenue: \(order.revenue)")
             }
         }
         return _dummyOrders ?? []
@@ -210,6 +210,66 @@ class DummyDataManager: ObservableObject {
         clearDummyDataCache()
         // Force regeneration
         _ = getDummyOrders()
+    }
+    
+    /// Load dummy data into SwiftData context for initial setup
+    @MainActor
+    func loadDummyDataToContext(modelContext: ModelContext) async {
+        // Clear existing data first
+        clearExistingData(modelContext: modelContext)
+        
+        // Enable dummy mode and get dummy data
+        isDummyModeEnabled = true
+        let dummyOrders = getDummyOrders()
+        let dummyStockItems = getDummyStockItems()
+        let dummyCategories = getDummyCategories()
+        
+        // Insert stock items first
+        for stockItem in dummyStockItems {
+            modelContext.insert(stockItem)
+        }
+        
+        // Insert categories
+        for category in dummyCategories {
+            modelContext.insert(category)
+        }
+        
+        // Insert orders (they reference stock items)
+        for order in dummyOrders {
+            modelContext.insert(order)
+        }
+        
+        // Save context
+        try? modelContext.save()
+        
+        // Keep dummy mode enabled to reflect user's choice in settings
+        // User can disable it later from Settings if they want to switch to real data
+    }
+    
+    private func clearExistingData(modelContext: ModelContext) {
+        // Clear existing orders
+        let orderDescriptor = FetchDescriptor<Order>()
+        if let existingOrders = try? modelContext.fetch(orderDescriptor) {
+            for order in existingOrders {
+                modelContext.delete(order)
+            }
+        }
+        
+        // Clear existing stock items
+        let stockDescriptor = FetchDescriptor<StockItem>()
+        if let existingStock = try? modelContext.fetch(stockDescriptor) {
+            for stock in existingStock {
+                modelContext.delete(stock)
+            }
+        }
+        
+        // Clear existing categories
+        let categoryDescriptor = FetchDescriptor<Category>()
+        if let existingCategories = try? modelContext.fetch(categoryDescriptor) {
+            for category in existingCategories {
+                modelContext.delete(category)
+            }
+        }
     }
 }
 

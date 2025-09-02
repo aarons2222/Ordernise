@@ -158,7 +158,7 @@ struct ShippingCompanyOptions: View {
             .padding(.bottom, 60)
             .padding(.horizontal, 20)
         }
-        .navigationBarHidden(true)
+        .toolbar(.hidden)
     }
     
     private func shippingCompanyDescription(for company: ShippingCompany) -> String {

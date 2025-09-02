@@ -16,6 +16,9 @@ struct StockFieldSettings: View {
     @State var isEditMode: Bool = false
     @State var isEmpty: Bool = false
     @State var fieldName: String = ""
+    
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @State var showPaywall: Bool = false
 
     init() {
         let prefs = UserDefaults.standard.stockFieldPreferences
@@ -31,7 +34,14 @@ struct StockFieldSettings: View {
                 showTrailingButton: true,
                 showLeadingButton: true,
                 onButtonTap: {
-                    showingAddFieldSheet = true
+                    
+             
+                    if subscriptionManager.isSubscribed {
+                        showingAddFieldSheet = true
+                    }else{
+                        showPaywall = true
+                    }
+                
                 }
             )
             
@@ -131,7 +141,10 @@ struct StockFieldSettings: View {
             
             
         }
-        .navigationBarHidden(true)
+        .toolbar(.hidden)
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
     
         .onAppear {
             // Reload preferences from UserDefaults to ensure changes are reflected

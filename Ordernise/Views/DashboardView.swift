@@ -655,7 +655,7 @@ struct DashboardInfoSheet: View {
             .navigationTitle(String(localized: "Dashboard Information"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(String(localized: "Done")) {
                         dismiss()
                     }

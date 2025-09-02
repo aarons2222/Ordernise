@@ -347,15 +347,7 @@ struct StockItemDetailView: View {
                             
                             
                             showingAddCategory = true
-                            
-                        
-                            
-                              
-
                                 
-               
-                            
-                            
                             
                             
                         }

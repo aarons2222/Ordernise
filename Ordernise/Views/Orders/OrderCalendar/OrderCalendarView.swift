@@ -186,7 +186,7 @@ struct CustomDatePicker: View {
                     .frame(maxWidth: .infinity)
             }
         }
-        .padding(.top, 5)
+        .padding(.bottom, 10)
     }
     
     private var calendarGrid: some View {

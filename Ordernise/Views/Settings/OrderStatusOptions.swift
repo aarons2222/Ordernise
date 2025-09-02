@@ -132,7 +132,7 @@ struct OrderStatusOptions: View {
             .padding(.bottom, 60)
             .padding(.horizontal, 20)
         }
-        .navigationBarHidden(true)
+        .toolbar(.hidden)
      
        
     

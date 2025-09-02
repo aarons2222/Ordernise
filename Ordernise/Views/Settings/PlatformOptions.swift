@@ -158,7 +158,7 @@ struct PlatformOptions: View {
             .padding(.bottom, 60)
             .padding(.horizontal, 20)
         }
-        .navigationBarHidden(true)
+        .toolbar(.hidden)
     }
     
     private func platformDescription(for platform: Platform) -> String {

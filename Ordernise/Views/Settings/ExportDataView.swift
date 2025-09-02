@@ -329,7 +329,7 @@ struct ExportDataView: View {
                 .padding(.top)
                 .padding(.horizontal, 20)
             }
-            .navigationBarHidden(true)
+            .toolbar(.hidden)
         }
         .sheet(isPresented: $showingShareSheet) {
             if let url = exportedFileURL {

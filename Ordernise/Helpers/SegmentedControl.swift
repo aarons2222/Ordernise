@@ -48,6 +48,7 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
             let size = geometry.size
             let containerWidthForEachTab = size.width / CGFloat(tabs.count)
             
+            
             HStack(spacing: 0) {
                 ForEach(tabs, id: \.self) { tab in
                      Group {
@@ -88,11 +89,13 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
                         if tabs.first == tab {
                             GeometryReader { proxy in
                                 let size = proxy.size
+                                let currentActiveIndex = tabs.firstIndex(of: activeTab) ?? 0
+                                let indicatorX = containerWidthForEachTab * CGFloat(currentActiveIndex)
                                 
-                                indicatorView(size)
-                                    .frame(width: size.width + (excessTabWidth < 0 ? -excessTabWidth : excessTabWidth), height: size.height)
-                                    .frame(width: size.width, alignment: excessTabWidth < 0 ? .trailing : .leading)
-                                    .offset(x: minX)
+                                indicatorView(CGSize(width: containerWidthForEachTab, height: size.height))
+                                    .frame(width: containerWidthForEachTab + (excessTabWidth < 0 ? -excessTabWidth : excessTabWidth), height: size.height)
+                                    .frame(width: containerWidthForEachTab, alignment: excessTabWidth < 0 ? .trailing : .leading)
+                                    .offset(x: indicatorX + minX - indicatorX)
                             }
                         }
                     }
@@ -102,8 +105,33 @@ struct SegmentedControl<Indicator: View, Tab: RawRepresentable & CaseIterable & 
             .preference(key: SizeKey.self, value: size)
             .onPreferenceChange(SizeKey.self) { size in
                 if let index = tabs.firstIndex(of: activeTab) {
-                    minX = containerWidthForEachTab * CGFloat(index)
-                    excessTabWidth = 0
+                    let containerWidth = size.width / CGFloat(tabs.count)
+                    DispatchQueue.main.async {
+                        minX = containerWidth * CGFloat(index)
+                        excessTabWidth = 0
+                    }
+                }
+            }
+            .onAppear {
+                // Ensure proper initial positioning with a small delay for geometry calculations
+                DispatchQueue.main.async {
+                    if let index = tabs.firstIndex(of: activeTab) {
+                        let containerWidthForEachTab = geometry.size.width / CGFloat(tabs.count)
+                        withAnimation(.none) {
+                            minX = containerWidthForEachTab * CGFloat(index)
+                            excessTabWidth = 0
+                        }
+                    }
+                }
+            }
+            .onChange(of: activeTab) { _, newTab in
+                // Recalculate position when activeTab changes
+                if let index = tabs.firstIndex(of: newTab) {
+                    let containerWidthForEachTab = geometry.size.width / CGFloat(tabs.count)
+                    withAnimation(.none) {
+                        minX = containerWidthForEachTab * CGFloat(index)
+                        excessTabWidth = 0
+                    }
                 }
             }
         }
