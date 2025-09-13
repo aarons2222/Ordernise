@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Ordernise - Order Management for Online Sellers",
+  "short_name": "Ordernise",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,9 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#4BB5EF",
   "background_color": "#ffffff",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone"
 }

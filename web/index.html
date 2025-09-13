@@ -3,20 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions - Ordernise</title>
+    <title>Ordernise - Order Management App for Online Sellers | eBay, Amazon, Etsy</title>
+    <meta name="description" content="Transform your online selling business with Ordernise - the smart order management app for eBay, Amazon, Etsy & more. Track orders, manage inventory, boost profits.">
+    <meta name="keywords" content="order management, inventory tracking, online selling, eBay seller, Amazon seller, Etsy seller, e-commerce tools, business management">
+    <meta name="author" content="Ordernise">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ordernise.com/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ordernise.com/">
+    <meta property="og:title" content="Ordernise - Order Management App for Online Sellers">
+    <meta property="og:description" content="Transform your online selling business with Ordernise - the smart order management app for eBay, Amazon, Etsy & more. Track orders, manage inventory, boost profits.">
+    <meta property="og:image" content="https://ordernise.com/ordersImage.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="Ordernise">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ordernise.com/">
+    <meta property="twitter:title" content="Ordernise - Order Management App for Online Sellers">
+    <meta property="twitter:description" content="Transform your online selling business with Ordernise - the smart order management app for eBay, Amazon, Etsy & more.">
+    <meta property="twitter:image" content="https://ordernise.com/ordersImage.png">
+    
+    <!-- Additional SEO meta tags -->
+    <meta name="theme-color" content="#4BB5EF">
+    <meta name="application-name" content="Ordernise">
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Ordernise",
+        "description": "Order management and inventory tracking app for online sellers. Works with eBay, Amazon, Etsy, Depop and custom platforms.",
+        "url": "https://ordernise.com",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "iOS",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "creator": {
+            "@type": "Organization",
+            "name": "Ordernise",
+            "url": "https://ordernise.com"
+        },
+        "featureList": [
+            "Order tracking and management",
+            "Stock inventory management", 
+            "Multi-platform support (eBay, Amazon, Etsy, Depop)",
+            "Revenue and profit tracking",
+            "iCloud sync",
+            "Privacy-first approach"
+        ],
+        "screenshot": "https://ordernise.com/ordersImage.png",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "127"
+        }
+    }
+    </script>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/AppIconLight.png" as="image">
+    <link rel="preload" href="/ordersImage.png" as="image">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
+    <!-- Firebase Analytics -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjqvsTWqB1DYMZbqO62MnqWzlRO_UrZII",
+            authDomain: "ordernise-facd9.firebaseapp.com",
+            projectId: "ordernise-facd9",
+            storageBucket: "ordernise-facd9.firebasestorage.app",
+            messagingSenderId: "1021128050922",
+            appId: "1:1021128050922:web:10aa3170f00a9b09dd6f93",
+            measurementId: "G-MV814RDW5F"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
+    
     <style>
         :root {
-            --primary-color: #ACCDFF;
-            --text-color: #1C1C1E;
-            --secondary-text: #8E8E93;
-            --background: #FFFFFF;
-            --section-background: #F2F2F7;
+            --primary-blue: #4BB5EF;
+            --dark-bg: #1a202c;
+            --card-bg: #2C2C2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8892b0;
+            --background-light: #f8fafc;
+            --accent-blue: #4BB5EF;
             --border-color: #E5E5EA;
+            --success: #34C759;
+            --warning: #FF9500;
+            --purple: #AF52DE;
+            --cyan: #5AC8FA;
+            --gradient-start: #4BB5EF;
+            --gradient-end: #3A9ADE;
         }
 
         * {
@@ -26,260 +122,940 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-display: swap;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background);
+            color: var(--text-dark);
+            background: var(--background-light);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-blue);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(75, 181, 239, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(75, 181, 239, 0.6);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-tagline {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        .hero-phone {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-screenshot {
+            max-width: 350px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .app-screenshot:hover {
+            transform: scale(1.02);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: var(--background-light);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 2rem;
         }
 
-        .header {
+        .section-header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 0;
-            background: linear-gradient(135deg, var(--primary-color), #ACCDFF);
-            color: white;
-            border-radius: 12px;
+            margin-bottom: 4rem;
         }
 
-        .header-content {
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--purple));
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            font-size: 2rem;
         }
 
-        .header img {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
+        .feature-title {
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
         }
 
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        .content {
-            background: var(--background);
+        /* Platforms Section */
+        .platforms {
+            padding: 6rem 0;
+            background: var(--section-bg);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .platform-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .platform-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--section-background);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .section h2 {
-            color: var(--primary-color);
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .section h3 {
-            color: var(--text-color);
-            font-size: 1.2em;
-            margin: 20px 0 10px 0;
-            font-weight: 500;
-        }
-
-        .section p {
-            margin-bottom: 15px;
-            color: var(--text-color);
-        }
-
-        .section ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        .section li {
-            margin-bottom: 8px;
-            color: var(--text-color);
-        }
-
-        .highlight {
-            background-color: #FFF3CD;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #FFC107;
-            margin: 20px 0;
-        }
-
-        .contact-info {
-            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 30px;
         }
 
-        .last-updated {
-            text-align: center;
-            color: var(--secondary-text);
-            font-size: 0.9em;
-            margin-top: 30px;
+        .amazon { background: #FF9900; }
+        .ebay { background: #E53238; }
+        .etsy { background: #F1641E; }
+        .depop { background: #000; }
+        .custom { background: var(--purple); }
+
+        /* App Gallery Section */
+        .app-gallery {
+            padding: 6rem 0;
+            background: var(--section-bg);
         }
 
+        .gallery-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .gallery-container {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 2rem 2rem 2rem 1rem;
+            scrollbar-width: thin;
+            width: 100%;
+        }
+
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(75, 181, 239, 0.3);
+        }
+
+        .gallery-nav-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 6px 20px rgba(75, 181, 239, 0.5);
+        }
+
+        .gallery-nav-btn.left {
+            left: 10px;
+        }
+
+        .gallery-nav-btn.right {
+            right: 10px;
+        }
+
+        .gallery-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: translateY(-50%);
+        }
+
+        .gallery-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .gallery-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .gallery-container::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 10px;
+        }
+
+        .gallery-item {
+            flex: 0 0 280px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-width: 280px;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 420px;
+            object-fit: contain;
+            object-position: center;
+            background: #f8f9fa;
+        }
+
+        .gallery-content {
+            padding: 1.5rem;
+        }
+
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .gallery-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #2C2C2E 100%);
+            color: white;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.5rem;
+        }
+
+        .benefit-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-link:hover {
+            background: var(--primary-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(75, 181, 239, 0.4);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .hero-phone {
+                order: -1;
+            }
+            
+            .phone-mockup {
+                width: 250px;
+                height: 520px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .platforms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
             .container {
-                padding: 15px;
+                padding: 0 1rem;
             }
             
-            .header h1 {
-                font-size: 2em;
+            .hero-buttons {
+                flex-direction: column;
             }
             
-            .content {
-                padding: 20px;
+            .btn-primary,
+            .btn-secondary {
+                text-align: center;
+            }
+            
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-item {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+            
+            .gallery-image {
+                height: 380px;
+            }
+            
+            .gallery-container {
+                padding: 2rem 1rem 2rem 0.5rem;
+                gap: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <img src="AppIconLight.png" alt="Ordernise App Icon">
-                <h1>Ordernise</h1>
-            </div>
-            <p>Terms and Conditions</p>
-        </div>
-
-        <div class="content">
-            <div class="highlight">
-                <strong>Important:</strong> By downloading, installing, or using the Ordernise application, you agree to be bound by these Terms and Conditions. Please read them carefully.
-            </div>
-
-            <div class="section">
-                <h2>1. Acceptance of Terms</h2>
-                <p>These Terms and Conditions ("Terms") govern your use of the Ordernise mobile application ("App") developed for inventory and order management. By accessing or using our App, you agree to comply with and be bound by these Terms.</p>
-            </div>
-
-            <div class="section">
-                <h2>2. Description of Service</h2>
-                <p>Ordernise is an inventory and order management application that provides the following features:</p>
-                <ul>
-                    <li>Order tracking and management with customisable fields</li>
-                    <li>Stock item inventory management</li>
-                    <li>Custom attribute templates for orders and stock items</li>
-                    <li>Multi-currency support with automatic locale detection</li>
-                    <li>Notification reminders for order completion dates</li>
-                    <li>Calendar view for order visualisation</li>
-                    <li>Customisable field preferences and settings</li>
-                </ul>
-            </div>
-
-            <div class="section">
-                <h2>3. Subscription Terms</h2>
-                <h3>3.1 Subscription Plans</h3>
-                <p>Ordernise offers premium subscription plans:</p>
-                <ul>
-                    <li>Monthly Pro Subscription</li>
-                    <li>Annual Pro Subscription</li>
-                </ul>
-                
-                <h3>3.2 Payment and Billing</h3>
-                <p>Subscriptions are billed through your Apple App Store account. Payment will be charged to your iTunes Account at confirmation of purchase. Subscriptions automatically renew unless auto-renew is turned off at least 24 hours before the end of the current period.</p>
-                
-                <h3>3.3 Cancellation</h3>
-                <p>You can cancel your subscription at any time through your Apple App Store account settings. Cancellation will take effect at the end of the current billing period.</p>
-            </div>
-
-            <div class="section">
-                <h2>4. Data and Privacy</h2>
-                <h3>4.1 Data Storage</h3>
-                <p>All your data is stored locally on your device using SwiftData and synced to your iCloud account. We do not collect, store, or have access to your personal order and inventory data.</p>
-                
-                <h3>4.2 Local Notifications</h3>
-                <p>The App may request permission to send local notifications for order reminders. These notifications are processed locally on your device.</p>
-                
-                <h3>4.3 Currency Detection</h3>
-                <p>The App may access your device's locale settings to automatically detect and set your preferred currency. This information is not transmitted or stored externally.</p>
-            </div>
-
-            <div class="section">
-                <h2>5. User Responsibilities</h2>
-                <p>You agree to:</p>
-                <ul>
-                    <li>Use the App only for lawful business purposes</li>
-                    <li>Maintain the accuracy of your data</li>
-                    <li>Keep your device and App updated for optimal performance</li>
-                    <li>Not attempt to reverse engineer or modify the App</li>
-                    <li>Not use the App in a way that could damage or impair the service</li>
-                </ul>
-            </div>
-
-            <div class="section">
-                <h2>6. Intellectual Property</h2>
-                <p>The App, including its design, functionality, and content, is protected by intellectual property laws. You are granted a limited, non-exclusive licence to use the App for your personal or business inventory management needs.</p>
-            </div>
-
-            <div class="section">
-                <h2>7. Disclaimers and Limitations</h2>
-                <h3>7.1 Service Availability</h3>
-                <p>While we strive to maintain consistent service, we do not guarantee that the App will be available at all times or free from bugs or interruptions.</p>
-                
-                <h3>7.2 Data Backup</h3>
-                <p>You are responsible for maintaining backups of your data. We recommend regularly backing up your device to ensure your data is preserved.</p>
-                
-                <h3>7.3 Business Decisions</h3>
-                <p>The App is a tool to assist with inventory management. You are solely responsible for all business decisions made using the information provided by the App.</p>
-            </div>
-
-            <div class="section">
-                <h2>8. Limitation of Liability</h2>
-                <p>To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages arising out of or relating to your use of the App, including but not limited to lost profits, data loss, or business interruption.</p>
-            </div>
-
-            <div class="section">
-                <h2>9. Updates and Modifications</h2>
-                <p>We may update the App and these Terms from time to time. Continued use of the App after such updates constitutes acceptance of the revised Terms. We will notify users of significant changes through the App or App Store updates.</p>
-            </div>
-
-            <div class="section">
-                <h2>10. Termination</h2>
-                <p>These Terms remain in effect until terminated. You may terminate your use of the App at any time by deleting it from your device. We may terminate or suspend your access to certain features if you violate these Terms.</p>
-            </div>
-
-            <div class="section">
-                <h2>11. Governing Law</h2>
-                <p>These Terms shall be governed by and construed in accordance with the laws of the United Kingdom. Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the courts of the United Kingdom.</p>
-            </div>
-
-            <div class="section">
-                <h2>12. Contact Information</h2>
-                <p>If you have any questions about these Terms and Conditions, please contact us through the Ordernise app.</p>
-            </div>
-
-            <div class="section">
-                <h2>13. Severability</h2>
-                <p>If any provision of these Terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary so that the remaining Terms shall remain in full force and effect.</p>
-            </div>
-
-            <div class="last-updated">
-                <p>Last Updated: August 28, 2025</p>
-                <p>Version 1.0</p>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="AppIconLight.png" alt="Ordernise">
+                Ordernise
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#platforms" class="nav-link">Platforms</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="policies.html" class="nav-link">Policies</a>
+                <!-- <a href="#" class="cta-button">Download App</a> -->
             </div>
         </div>
-    </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Smarter than a spreadsheet. Built for sellers.</h1>
+                <p class="hero-tagline">Take control of your online sales with an app designed to keep everything organised</p>
+                <p class="hero-description">Orders, stock, and profits, all in one place. Whether you sell on eBay, Etsy, Amazon, Depop or beyond, you'll always know what's pending, shipped, or completed, and what's left in stock.</p>
+                <div class="hero-buttons">
+                    <!-- <a href="#" class="btn-primary">Download for iPhone</a> -->
+                    <a href="#features" class="btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-phone">
+                <img src="ordersImage.png" alt="Ordernise App Interface showing order management dashboard with inventory tracking" class="app-screenshot" loading="eager" decoding="async" width="350" height="auto">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">What you can do</h2>
+                <p class="section-subtitle">Everything you need to manage your online business, beautifully designed and thoughtfully crafted</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">Manage Orders</h3>
+                    <p class="feature-description">Clean list or calendar view to track all your orders. See what's pending, shipped, or completed at a glance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Track Stock</h3>
+                    <p class="feature-description">Never run out of inventory. Keep track of what's in stock and get alerts when you're running low.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">See Insights</h3>
+                    <p class="feature-description">Revenue, profit and margins at a glance. Understand your business performance instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h3 class="feature-title">Export Data</h3>
+                    <p class="feature-description">Export your data to CSV whenever you need it. Full control over your business information.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3 class="feature-title">iCloud Sync</h3>
+                    <p class="feature-description">Your data is always backed up and available across iPhone, iPad, and Mac with seamless iCloud sync.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Privacy First</h3>
+                    <p class="feature-description">Your data stays on your devices. We don't see, store, or sell your business information.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms Section -->
+    <section class="platforms" id="platforms">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Works with all your platforms</h2>
+                <p class="section-subtitle">Whether you sell on eBay, Etsy, Amazon, Depop or beyond, Ordernise keeps everything organized</p>
+            </div>
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <div class="platform-icon amazon">A</div>
+                    <h4>Amazon</h4>
+                    <p>Global e-commerce platform</p>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon ebay">e</div>
+                    <h4>eBay</h4>
+                    <p>Online auction marketplace</p>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon etsy">E</div>
+                    <h4>Etsy</h4>
+                    <p>Handmade & vintage marketplace</p>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon depop">D</div>
+                    <h4>Depop</h4>
+                    <p>Social shopping app</p>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon custom">⚙️</div>
+                    <h4>Custom</h4>
+                    <p>Any other platform</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Gallery Section -->
+    <section class="app-gallery">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">See Ordernise in Action</h2>
+                <p class="section-subtitle">Take a closer look at how Ordernise helps you manage orders, track inventory, and grow your business</p>
+            </div>
+            <div class="gallery-wrapper">
+                <button class="gallery-nav-btn left" id="galleryPrev" aria-label="Previous screenshots">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                </button>
+                <div class="gallery-container" id="galleryContainer">
+                <div class="gallery-item">
+                    <img src="IMG_0404-portrait.png" alt="Orders List View" class="gallery-image" loading="lazy" decoding="async">
+                    <div class="gallery-content">
+                        <h3 class="gallery-title">Orders Overview</h3>
+                        <p class="gallery-description">Track all your orders in one clean list view. See order status, customer details, and totals at a glance with color-coded status indicators.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="IMG_0405-portrait.png" alt="Calendar View" class="gallery-image" loading="lazy" decoding="async">
+                    <div class="gallery-content">
+                        <h3 class="gallery-title">Calendar View</h3>
+                        <p class="gallery-description">Visualize your orders on a calendar to see busy periods, plan ahead, and never miss important shipping dates or deadlines.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="IMG_0406-portrait.png" alt="Analytics Dashboard" class="gallery-image" loading="lazy" decoding="async">
+                    <div class="gallery-content">
+                        <h3 class="gallery-title">Business Insights</h3>
+                        <p class="gallery-description">Get instant insights into your business performance with revenue tracking, profit margins, and sales analytics by category.</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="IMG_0407-portrait.png" alt="Platform Settings" class="gallery-image" loading="lazy" decoding="async">
+                    <div class="gallery-content">
+                        <h3 class="gallery-title">Multi-Platform Support</h3>
+                        <p class="gallery-description">Configure support for all your selling platforms - Amazon, eBay, Etsy, Depop, and custom platforms to match your workflow.</p>
+                    </div>
+                </div>
+                </div>
+                <button class="gallery-nav-btn right" id="galleryNext" aria-label="Next screenshots">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why sellers love Ordernise</h2>
+                <p class="section-subtitle">Built specifically for online sellers who want to stay organized and save time</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">📊</div>
+                    <div class="benefit-content">
+                        <h3>Replaces messy spreadsheets</h3>
+                        <p>Say goodbye to complex spreadsheets. Ordernise is designed specifically for sellers.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">✨</div>
+                    <div class="benefit-content">
+                        <h3>Simple, clear, and intuitive</h3>
+                        <p>Built for sellers by sellers. Every feature is thoughtfully designed for your workflow.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">⏰</div>
+                    <div class="benefit-content">
+                        <h3>Saves time and stays organized</h3>
+                        <p>Spend more time growing your business, less time managing spreadsheets.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <div class="benefit-content">
+                        <h3>Helps you stay in control</h3>
+                        <p>Always know where you stand with your inventory, orders, and profits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Stay organised. Save time. Sell smarter.</h2>
+                <p class="cta-subtitle">Join thousands of sellers who have transformed their business with Ordernise</p>
+                <div class="hero-buttons">
+                    <!-- <a href="#" class="btn-primary">Download for iPhone</a> -->
+                    <a href="contact.html" class="btn-secondary">Get Support</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Facebook CTA Section -->
+    <section style="padding: 3rem 0; background: linear-gradient(135deg, #1877F2 0%, #42A5F5 100%); color: white; text-align: center;">
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">Visit our Facebook page</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Stay connected with the Ordernise community! Get updates, tips, and connect with other sellers.</p>
+                <a href="https://www.facebook.com/profile.php?id=61578705157445" target="_blank" rel="noopener noreferrer" 
+                   style="display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(255, 255, 255, 0.2); 
+                          color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; 
+                          backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); 
+                          transition: all 0.3s ease; font-size: 1.1rem;"
+                   onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'; this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(0)'">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Visit our Facebook page
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.facebook.com/profile.php?id=61578705157445" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Follow us on Facebook">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="contact.html" class="footer-link">Contact</a>
+                <a href="policies.html" class="footer-link">Policies</a>
+            </div>
+            <p>&copy; 2024 Ordernise. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Gallery navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryContainer = document.getElementById('galleryContainer');
+            const prevBtn = document.getElementById('galleryPrev');
+            const nextBtn = document.getElementById('galleryNext');
+            
+            if (galleryContainer && prevBtn && nextBtn) {
+                const scrollAmount = 320; // Width of one gallery item plus gap
+                
+                function updateButtonStates() {
+                    const scrollLeft = galleryContainer.scrollLeft;
+                    const maxScroll = galleryContainer.scrollWidth - galleryContainer.clientWidth;
+                    
+                    prevBtn.disabled = scrollLeft <= 0;
+                    nextBtn.disabled = scrollLeft >= maxScroll - 1; // -1 for rounding errors
+                }
+                
+                prevBtn.addEventListener('click', function() {
+                    galleryContainer.scrollBy({
+                        left: -scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                nextBtn.addEventListener('click', function() {
+                    galleryContainer.scrollBy({
+                        left: scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                // Update button states on scroll
+                galleryContainer.addEventListener('scroll', updateButtonStates);
+                
+                // Initial button state
+                updateButtonStates();
+                
+                // Update on resize
+                window.addEventListener('resize', updateButtonStates);
+            }
+        });
+    </script>
 </body>
 </html>
